@@ -521,7 +521,7 @@ a.proj{text-decoration:none;color:inherit;}
   transform:translate(-50%,-50%) scale(1.65);}
 .ipod-device .a-glyph:hover{background:rgba(15,13,10,.75);box-shadow:0 0 0 1.5px rgba(232,216,184,.4) inset;}
 .ipod-device .a-glyph.ag-center{background:rgba(84,58,24,.55);}
-.ipod-viz{position:absolute;z-index:-1;pointer-events:none;font-size:13px;}
+.ipod-viz{position:absolute;z-index:1;pointer-events:none;font-size:13px;}
 
 
 .tv-ctl-shelf{position:absolute;display:flex;align-items:center;justify-content:space-around;font-size:22px;line-height:1;pointer-events:none;}
@@ -962,7 +962,7 @@ const ART = [
   container.innerHTML = `
     <div class="ipod-device">
       <pre class="a-pre" id="ipod-art"></pre>
-      <canvas class="ipod-viz" style="left:6ch;top:14.4em;width:25ch;height:1.2em"></canvas>
+      <canvas class="ipod-viz" style="left:6ch;top:13.2em;width:24ch;height:1.1em"></canvas>
       <button class="a-glyph ag-menu" data-a="menu" aria-label="menu" style="left:20ch;top:23.4em">MENU</button>
       <button class="a-glyph" data-a="prev" aria-label="previous track" style="left:11.5ch;top:27.6em">◄</button>
       <button class="a-glyph ag-center" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em">●</button>
