@@ -988,8 +988,9 @@ const ART = [
   //    viz must NEVER gate audio.
   if (ipodVizRaf) cancelAnimationFrame(ipodVizRaf);
   if (ipodVizAC) { ipodVizAC.close(); ipodVizAC = null; }
-  let analyser = null, fbuf = null;
-  const sm = new Array(25).fill(0), pk = new Array(25).fill(0);   // 25 bars over cols 6..30
+  let analyser = null, fbuf = null, edges = null, weights = null;
+  let gPeak = 120;
+  const sm = new Array(25).fill(0);                            // 25 bars over cols 6..30
   const RAMP = [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
   const ensureGraph = () => {                 // call only from inside a user-gesture handler
     if (ipodVizAC) return true;
@@ -1011,25 +1012,32 @@ const ART = [
   const EQCOL = 6, EQN = 25;   // rows 10–11 inner LCD band = cols 6..30 — two-row visualizer
   const eqRows = lines => {    // paint smoothed frequency bars across 2 ascii rows
     if (!analyser || !fbuf || !ipodVizAC || ipodVizAC.state !== 'running') return;
+    if (!edges) {
+      const hi = Math.min(fbuf.length, Math.round(fbuf.length * .72));   // up to ~16 kHz
+      edges = [1];                                                       // float-log band edges
+      for (let k = 1; k <= EQN; k++) edges.push(Math.max(edges[k - 1] + 1, Math.round(Math.pow(hi, k / EQN))));
+      edges[EQN] = hi;
+      weights = new Float32Array(EQN);
+      for (let k = 0; k < EQN; k++) weights[k] = 0.68 + 1.25 * Math.pow(k / (EQN - 1), 0.85);
+    }
     analyser.getByteFrequencyData(fbuf);
-    const hi = Math.min(fbuf.length, Math.round(fbuf.length * .72));   // up to ~16 kHz
-    const edges = [1];                                   // float-log band edges — full coverage, no stranded bands
-    for (let k = 1; k <= EQN; k++) edges.push(Math.max(edges[k - 1] + 1, Math.round(Math.pow(hi, k / EQN))));
-    edges[EQN] = hi;
+    let curMax = 0;
+    for (let k = 0; k < EQN; k++) {
+      let sum = 0;
+      for (let b = edges[k]; b < edges[k + 1] && b < fbuf.length; b++) sum += fbuf[b];
+      const v = (sum / Math.max(1, edges[k + 1] - edges[k])) * weights[k];
+      // envelope: fast attack, smooth fall
+      sm[k] = v > sm[k] ? sm[k] + (v - sm[k]) * .5 : sm[k] + (v - sm[k]) * .08;
+      if (sm[k] > curMax) curMax = sm[k];
+    }
+    // global peak reference tracks track loudness — preserves distinct frequency contour
+    gPeak = Math.max(curMax, gPeak * .995, 100);
     let top = '', bot = '';
     for (let k = 0; k < EQN; k++) {
-      // band = average of its bins (log-spaced) with high-freq pre-emphasis
-      let sum = 0;
-      for (let b = edges[k]; b < edges[k + 1] && b < fbuf.length; b++)
-        sum += fbuf[b] * (0.45 + (b / fbuf.length) * 2.4);
-      const v = sum / Math.max(1, edges[k + 1] - edges[k]);
-      // envelope: fast up, slow fall
-      sm[k] = v > sm[k] ? sm[k] + (v - sm[k]) * .5 : sm[k] + (v - sm[k]) * .08;
-      pk[k] = Math.max(sm[k] * .995, pk[k] * .996);    // peak hugs sustained level
       let units = 0;
-      if (pk[k] > 10) {
-        const ratio = Math.min(1.15, sm[k] / (pk[k] * 1.18));  // reference sits 18% above signal → headroom
-        units = Math.min(16, Math.round(16 * Math.pow(ratio, 1.4) * .55));  // bars live ~6–9; rare beats to ~11
+      if (sm[k] > 6) {
+        const ratio = sm[k] / gPeak;
+        units = Math.min(16, Math.round(16 * Math.pow(ratio, 1.35) * .74));  // bars live ~6–9; beat peaks ~10–12
       }
       top += units > 8 ? RAMP[units - 8] : ' ';
       bot += RAMP[Math.min(8, units)];
@@ -1075,7 +1083,7 @@ const ART = [
     if (!audio.paused && analyser) draw();          // animate only while playing
   };
   tick();
-  const load = n => { i = (n + tracks.length) % tracks.length; ensureGraph(); kickAC(); audio.src = tracks[i].src; audio.load(); audio.play().catch(()=>{}); draw(); };
+  const load = n => { i = (n + tracks.length) % tracks.length; ensureGraph(); kickAC(); sm.fill(0); gPeak = 120; audio.src = tracks[i].src; audio.load(); audio.play().catch(()=>{}); draw(); };
   container.querySelectorAll('.ipod-device .a-rowzone').forEach(b => b.addEventListener('click', () => load(+b.dataset.i)));
   container.querySelectorAll('.ipod-device .a-glyph').forEach(b => b.addEventListener('click', () => {
     const a = b.dataset.a;
