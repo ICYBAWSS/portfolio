@@ -560,41 +560,7 @@ a.proj{text-decoration:none;color:inherit;}
         <button class="work-tab" data-hobby="producer">Music</button>
         <button class="work-tab" data-hobby="vfx">VFX</button>
       </div>
-      <div class="proj-list" id="proj-list">
-        <div class="proj">
-          <div class="proj-card">
-            <div class="proj-main">
-              <div class="proj-num">01</div>
-              <div class="proj-title">Project name here</div>
-              <div class="proj-desc">One sharp sentence — what it does and why it matters.</div>
-              <div class="proj-tags"><span class="tag">Python</span><span class="tag">ML</span><span class="tag">PyTorch</span></div>
-            </div>
-            <div class="proj-arrow">↗</div>
-          </div>
-        </div>
-        <div class="proj">
-          <div class="proj-card">
-            <div class="proj-main">
-              <div class="proj-num">02</div>
-              <div class="proj-title">Another project</div>
-              <div class="proj-desc">What problem did it solve? What was your actual contribution?</div>
-              <div class="proj-tags"><span class="tag">React</span><span class="tag">Node</span></div>
-            </div>
-            <div class="proj-arrow">↗</div>
-          </div>
-        </div>
-        <div class="proj">
-          <div class="proj-card">
-            <div class="proj-main">
-              <div class="proj-num">03</div>
-              <div class="proj-title">Third thing</div>
-              <div class="proj-desc">Outcome over description. Lead with the result.</div>
-              <div class="proj-tags"><span class="tag">API</span><span class="tag">DB</span></div>
-            </div>
-            <div class="proj-arrow">↗</div>
-          </div>
-        </div>
-      </div>
+      <div class="proj-list" id="proj-list"></div>
     </div>
     
     <div class="section" id="sec-board">
@@ -1620,6 +1586,7 @@ document.addEventListener('touchend', () => {
 
 updateStickerPos(stickerX, stickerY);
 bindTilt();
+setHobby('dev');   // render pinned projects on load (not just after a tab click)
 window.addEventListener('load', () => { updateStickerPos(stickerX, stickerY); renderText(); });
 window.addEventListener('resize', () => { updateStickerPos(stickerX, stickerY); renderText(); });
 window.addEventListener('fonts-ready', renderText);
