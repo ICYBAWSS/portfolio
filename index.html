@@ -295,25 +295,23 @@ a.proj{text-decoration:none;color:inherit;}
 .clink::before{content:'';display:inline-block;width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.5;}
 .clink:hover{color:#c4a882;}
 
-/* ── bulletin board (draw pad + cork wall) ── */
-#sec-board{overflow-y:auto;}
-.board{display:flex;flex-direction:column;gap:14px;flex:1;min-height:0;}
-.board-wall{position:relative;flex:0 0 168px;border-radius:6px;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;padding:16px 14px 10px;
-  background:
-    radial-gradient(120% 80% at 30% -10%,rgba(255,255,255,.14),rgba(255,255,255,0) 55%),
-    repeating-linear-gradient(45deg,rgba(70,40,15,.12) 0 2px,transparent 2px 7px),
-    linear-gradient(160deg,#8a5c33,#5f3d1e 70%,#4a2e14);
-  box-shadow:inset 0 2px 3px rgba(255,255,255,.22),inset 0 -3px 6px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.5);
-  border:1px solid #2e1c0c;}
-.board-wall:empty::after{content:'the wall is empty — draw something and pin it';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,236,210,.45);font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
-.board-note{position:relative;flex:0 0 96px;height:62px;margin:14px 10px 8px 0;padding:0;border:none;cursor:pointer;background:#f4ecd8;
-  box-shadow:0 2px 5px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.18) inset;}
+/* ── bulletin board (fixed ASCII cork + draw pad) — lives under contact ── */
+#sec-contact{overflow-y:auto;}
+.board-head{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,226,217,.45);margin:1.4rem 0 .6rem;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.board-head::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.08);}
+.board-scroll{overflow-x:auto;overflow-y:hidden;flex-shrink:0;border:1px solid #000;border-radius:4px;
+  background:radial-gradient(120% 90% at 50% -20%,rgba(190,140,90,.06),rgba(0,0,0,0) 60%),linear-gradient(180deg,#17130f,#0b0a09);
+  box-shadow:inset 0 0 24px rgba(0,0,0,.85),0 1px 0 rgba(255,255,255,.05);}
+.board-art-wrap{position:relative;display:inline-block;padding:.6rem .8rem .8rem;font-size:11px;}
+.board-art{font-size:11px;color:#a07144;text-shadow:0 1px 0 rgba(0,0,0,.4);}
+.board-note{position:absolute;width:76px;height:50px;padding:0;border:none;cursor:pointer;background:#f4ecd8;z-index:2;
+  box-shadow:0 2px 5px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.2) inset;}
 .board-note img{width:100%;height:100%;object-fit:cover;display:block;}
-.board-note::before{content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;z-index:2;
+.board-note::before{content:'';position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;z-index:3;
   background:radial-gradient(circle at 35% 30%,#ff8a74,#d4371b 60%,#8f1e0a);box-shadow:0 1px 2px rgba(0,0,0,.55);}
+.board-note::after{content:'×';position:absolute;top:1px;right:3px;font-size:9px;color:rgba(0,0,0,.35);}
 .board-note:hover{filter:brightness(1.08);}
-.board-note::after{content:'×';position:absolute;top:1px;right:4px;font-size:10px;color:rgba(0,0,0,.35);line-height:1;}
-.board-pad-wrap{display:flex;flex-direction:column;gap:9px;align-items:center;flex-shrink:0;}
+.board-pad-wrap{display:flex;flex-direction:column;gap:9px;align-items:center;margin-top:1rem;flex-shrink:0;}
 .board-pad{width:min(480px,100%);height:auto;background:#efe6d0;border-radius:3px;cursor:crosshair;touch-action:none;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.2),inset 0 0 18px rgba(120,90,40,.18),0 1px 0 rgba(255,255,255,.2) inset;}
 .board-actions{display:flex;gap:10px;align-items:center;}
@@ -525,7 +523,6 @@ a.proj{text-decoration:none;color:inherit;}
     <nav class="left-nav">
       <button class="nav-item active" data-key="life">Things I do</button>
       <button class="nav-item" data-key="work">work</button>
-      <button class="nav-item" data-key="board">bulletin</button>
       <button class="nav-item" data-key="contact">contact</button>
     </nav>
   </div>
@@ -563,22 +560,24 @@ a.proj{text-decoration:none;color:inherit;}
       <div class="proj-list" id="proj-list"></div>
     </div>
     
-    <div class="section" id="sec-board">
-      <div class="sec-label">bulletin</div>
-      <div class="board">
-        <div class="board-wall" id="board-wall"></div>
-        <div class="board-pad-wrap">
-          <canvas id="board-pad" class="board-pad" width="480" height="300"></canvas>
-          <div class="board-actions">
-            <button id="board-pin" class="board-btn">Pin it</button>
-            <button id="board-clear" class="board-btn">Clear pad</button>
-            <span class="board-hint" id="board-hint"></span>
-          </div>
+    <div class="section" id="sec-contact">
+      <div class="sec-label">contact</div>
+      <div class="contact-links"><a class="clink" href="#">rayhan@email.com</a><a class="clink" href="#">github</a><a class="clink" href="#">linkedin</a></div>
+      <div class="board-head">bulletin — leave a doodle</div>
+      <div class="board-scroll">
+        <div class="board-art-wrap" id="board-art-wrap">
+          <pre class="board-art a-pre" id="board-art"></pre>
+        </div>
+      </div>
+      <div class="board-pad-wrap">
+        <canvas id="board-pad" class="board-pad" width="480" height="300"></canvas>
+        <div class="board-actions">
+          <button id="board-pin" class="board-btn">Pin it</button>
+          <button id="board-clear" class="board-btn">Clear pad</button>
+          <span class="board-hint" id="board-hint">pins are per-browser for now</span>
         </div>
       </div>
     </div>
-
-    <div class="section" id="sec-contact"><div class="sec-label">contact</div><div class="contact-links"><a class="clink" href="#">rayhan@email.com</a><a class="clink" href="#">github</a><a class="clink" href="#">linkedin</a></div></div>
   </div>
 
   <div class="sticker-scene" id="sticker-scene">
@@ -1187,7 +1186,7 @@ function jumpTo(k){ const el=document.getElementById('sec-'+k); if(!el) return; 
 navItems.forEach(n=>n.addEventListener('click',()=>jumpTo(n.dataset.key)));
 right.addEventListener('scroll',()=>{
   const mid=right.scrollTop+right.clientHeight/2; let cur='life';
-  ['life','work','board','contact'].forEach(k=>{ const el=document.getElementById('sec-'+k); if(el&&el.offsetTop-right.offsetTop<=mid) cur=k; });
+  ['life','work','contact'].forEach(k=>{ const el=document.getElementById('sec-'+k); if(el&&el.offsetTop-right.offsetTop<=mid) cur=k; });
   navItems.forEach(n=>n.classList.toggle('active',n.dataset.key===cur));
 });
 
@@ -1541,44 +1540,60 @@ document.addEventListener('touchend', () => {
   setup();
 })();
 
-// ── Bulletin board: draw on the pad, pin doodles to the cork wall (localStorage, 12 max) ──
+// ── Bulletin board: fixed-size ASCII cork; draw on the pad, pin doodles (10 slots, localStorage) ──
 (function(){
   const pad = document.getElementById('board-pad');
-  if (!pad) return;
-  const wall = document.getElementById('board-wall');
+  const art = document.getElementById('board-art');
+  const wrap = document.getElementById('board-art-wrap');
+  if (!pad || !art || !wrap) return;
   const pinBtn = document.getElementById('board-pin'), clearBtn = document.getElementById('board-clear'), hint = document.getElementById('board-hint');
   const pctx = pad.getContext('2d');
-  let drawing = false;
+  // seeded cork texture (stable per position, no flicker)
+  const hsh = (x, y) => { let n = (x * 374761393 + y * 668265263) | 0; n = (n ^ (n >>> 13)) | 0; n = (n * 1274126177) | 0; return ((n ^ (n >>> 16)) >>> 0) / 4294967296; };
+  const COLS = 62, ROWS = 11, POOL = [' ', ' ', ' ', '.', '.', ':', ':', 'o', '%'];
+  let lines = ['+' + '-'.repeat(COLS) + '+'];
+  for (let r = 1; r < ROWS - 1; r++) {
+    let s = '|';
+    for (let c = 1; c <= COLS; c++) s += POOL[Math.floor(hsh(c, r) * POOL.length)];
+    lines.push(s + '|');
+  }
+  lines.push('+' + '-'.repeat(COLS) + '+');
+  art.textContent = lines.join('\n');
+  // fixed slot grid: 5 cols × 2 rows (board never grows; oldest drops when full)
+  const SLOTX = [7, 19, 31, 43, 55], SLOTY = [3.6, 8.1], MAX = SLOTX.length * SLOTY.length;
+  const KEY = 'bb-notes';
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ return []; } };
+  const save = notes => { try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch(e){ hint.textContent = 'storage full — oldest pin dropped'; } };
+  const render = () => {
+    wrap.querySelectorAll('.board-note').forEach(n => n.remove());
+    load().slice(0, MAX).forEach((n, i) => {
+      const d = document.createElement('button');
+      d.className = 'board-note';
+      d.style.left = SLOTX[i % SLOTX.length] + 'ch';
+      d.style.top = SLOTY[Math.floor(i / SLOTX.length)] + 'em';
+      d.style.transform = 'translate(-50%,-50%) rotate(' + (n.r || 0) + 'deg)';
+      const img = document.createElement('img'); img.src = n.img; img.alt = 'pinned doodle';
+      d.appendChild(img);
+      d.addEventListener('click', () => { save(load().filter(x => x.id !== n.id)); render(); });
+      wrap.appendChild(d);
+    });
+  };
   const pt = e => { const r = pad.getBoundingClientRect();
     return [ (e.clientX - r.left) * pad.width / r.width, (e.clientY - r.top) * pad.height / r.height ]; };
+  let drawing = false;
   pad.addEventListener('pointerdown', e => { drawing = true; pad.setPointerCapture(e.pointerId);
     pctx.beginPath(); pctx.moveTo(...pt(e)); });
   pad.addEventListener('pointermove', e => { if (!drawing) return;
     pctx.lineWidth = 3; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.strokeStyle = '#2a1f14';
     pctx.lineTo(...pt(e)); pctx.stroke(); });
   ['pointerup','pointercancel','pointerleave'].forEach(ev => pad.addEventListener(ev, () => drawing = false));
-  const KEY = 'bb-notes';
-  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ return []; } };
-  const save = notes => { try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch(e){ hint.textContent = 'storage full — oldest pin dropped'; } };
-  const render = () => {
-    wall.innerHTML = '';
-    load().forEach(n => {
-      const d = document.createElement('button');
-      d.className = 'board-note'; d.title = 'click to remove';
-      d.style.transform = 'rotate(' + (n.r || 0) + 'deg)';
-      const img = document.createElement('img'); img.src = n.img; img.alt = 'pinned doodle';
-      d.appendChild(img);
-      d.addEventListener('click', () => { save(load().filter(x => x.id !== n.id)); render(); });
-      wall.appendChild(d);
-    });
-  };
   pinBtn.addEventListener('click', () => {
     const notes = load();
     notes.push({ id: Date.now() + Math.random().toString(36).slice(2, 6), img: pad.toDataURL('image/png'), r: Math.round((Math.random() * 10 - 5) * 10) / 10 });
-    if (notes.length > 12) notes.shift();
+    while (notes.length > MAX) notes.shift();
     save(notes); render();
     pctx.clearRect(0, 0, pad.width, pad.height);
-    hint.textContent = 'pinned';
+    hint.textContent = notes.length >= MAX ? 'board full — oldest pin dropped' : 'pinned';
   });
   clearBtn.addEventListener('click', () => { pctx.clearRect(0, 0, pad.width, pad.height); });
   render();
