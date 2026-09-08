@@ -301,7 +301,7 @@ a.proj{text-decoration:none;color:inherit;}
 #sec-board::-webkit-scrollbar{display:none;}
 .board-head{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,226,217,.45);margin:1.4rem 0 .6rem;display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .board-head::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.08);}
-.board-scroll{overflow-x:auto;flex-shrink:0;padding:4px;border-radius:2px;background:#0d0c0a;}
+.board-scroll{overflow-x:hidden;flex-shrink:0;padding:4px;border-radius:2px;background:#0d0c0a;width:fit-content;max-width:100%;margin-inline:auto;}
 .board-cork{position:relative;width:546px;height:296px;background:#161512;}
 .board-frame{position:absolute;inset:0;margin:0;padding:0;font-family:'Roboto Mono',monospace;font-size:13px;line-height:1.2;
   color:#d8cfc0;pointer-events:none;user-select:none;}
@@ -456,10 +456,11 @@ a.proj{text-decoration:none;color:inherit;}
 
 @media (max-width: 640px) {
   .left {
-    width: clamp(170px, 35vw, 230px);
-    flex: 0 0 clamp(170px, 35vw, 230px);
+    width: clamp(112px, 30vw, 170px);
+    flex: 0 0 clamp(112px, 30vw, 170px);
     padding: 0.8rem 0.6rem;
   }
+  .sticker-scene{transform:scale(.64);transform-origin:top left;}
   .section {
     padding: 0.8rem 1rem;
   }
@@ -1620,6 +1621,7 @@ document.addEventListener('touchend', () => {
   if (!pad || !cork) return;
   const clearBtn = document.getElementById('board-clear'), hint = document.getElementById('board-hint');
   const emptyMsg = document.getElementById('board-empty');
+  const scrollBox = document.querySelector('.board-scroll');
   const pctx = pad.getContext('2d');
   // ascii frame: 70 chars × 19 rows (546×296px at 13px/1.2 mono) — chunky # border
   const frame = document.getElementById('board-frame');
@@ -1648,7 +1650,25 @@ document.addEventListener('touchend', () => {
       });
       cork.appendChild(d);
     });
+    fitBoard();
   };
+  // cork is a fixed 546×296 design; scale it down to fit narrow panes so the
+  // frame + notes + pins stay coherent (children are %-positioned → scale with it)
+  function fitBoard() {
+    if (!scrollBox) return;
+    scrollBox.style.width = ''; scrollBox.style.height = '';   // measure natural size first
+    const avail = scrollBox.clientWidth - 8;                   // available width minus padding
+    const s = avail >= 546 ? 1 : Math.max(0.3, avail / 546);
+    cork.style.transform = s < 1 ? 'scale(' + s + ')' : '';
+    cork.style.transformOrigin = 'top left';
+    if (s < 1) {
+      scrollBox.style.width = Math.min(Math.round(546 * s) + 8, avail + 8) + 'px';
+      scrollBox.style.height = Math.round(296 * s) + 8 + 'px';
+    }
+  }
+  window.addEventListener('resize', fitBoard);
+  window.addEventListener('load', fitBoard);
+  window.addEventListener('fonts-ready', fitBoard);
   // ── Firebase (compat SDK loaded on demand — board needs internet, rest of page doesn't) ──
   const FBCONFIG = {
     apiKey: "AIzaSyCWIJxLxO1aSo4tICCiA0W-pGg4l5xW4vE",
@@ -1767,6 +1787,7 @@ document.addEventListener('touchend', () => {
     blank(); pad.classList.remove('grabbable');
     hint.textContent = 'draw a doodle below, then drag it onto the board';
   });
+  fitBoard();
   boot();
 })();
 
