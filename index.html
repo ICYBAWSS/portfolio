@@ -963,46 +963,52 @@ const ART = [
     </div>`;
   const art = container.querySelector('#ipod-art');
   // ── 1-row scrolling waveform in the status row (Web Audio time-domain, RMS history) ──
-  // viz must NEVER break playback: any wiring failure → no analyser, element plays straight out.
+  // Graph is built LAZILY inside the first play gesture: Firefox/Safari may keep an early
+  // AudioContext suspended, which would play the song silently. If wiring ever fails the
+  // element plays straight out — viz must NEVER gate sound.
   if (ipodVizRaf) cancelAnimationFrame(ipodVizRaf);
-  if (ipodVizAC) ipodVizAC.close();
-  const kickAC = () => { if (ipodVizAC && ipodVizAC.state === 'suspended') ipodVizAC.resume(); };  // resume inside user gesture
+  if (ipodVizAC) { ipodVizAC.close(); ipodVizAC = null; }
   const viz = container.querySelector('.ipod-viz');
-  try {
-    if (viz && (window.AudioContext || window.webkitAudioContext)) {
+  let analyser = null, vctx = null, buf = null, hist = [];
+  const ensureGraph = () => {                 // call only from inside a user-gesture handler
+    if (ipodVizAC) return true;
+    if (!viz || !(window.AudioContext || window.webkitAudioContext)) return false;
+    try {
       ipodVizAC = new (window.AudioContext || window.webkitAudioContext)();
-      const analyser = ipodVizAC.createAnalyser(); analyser.fftSize = 512;
+      analyser = ipodVizAC.createAnalyser(); analyser.fftSize = 512;
       ipodVizSrc = ipodVizAC.createMediaElementSource(audio);
       ipodVizSrc.connect(analyser); analyser.connect(ipodVizAC.destination);
-      const buf = new Uint8Array(analyser.fftSize);
-      const vctx = viz.getContext('2d');
-      let hist = [];
-      const tick = () => {
-        ipodVizRaf = requestAnimationFrame(tick);
-        const w = viz.offsetWidth, h = viz.offsetHeight; if (!w || !h) return;
-        if (viz.width !== w) viz.width = w;
-        if (viz.height !== h) viz.height = h;
-        let amp = 0;
-        if (!audio.paused && ipodVizAC && ipodVizAC.state === 'running') {
-          analyser.getByteTimeDomainData(buf);
-          let s = 0; for (let k = 0; k < buf.length; k++) s += Math.abs(buf[k] - 128);
-          amp = s / buf.length;
-        }
-        hist.push(amp); if (hist.length > w) hist.shift();
-        vctx.clearRect(0, 0, w, h);
-        vctx.strokeStyle = 'rgba(232,226,217,.5)'; vctx.lineWidth = 1; vctx.beginPath();
-        for (let x = 0; x < hist.length; x++) {
-          const y = Math.max(0, h / 2 - (hist[x] / 80) * h * .85);
-          x ? vctx.lineTo(x, y) : vctx.moveTo(x, y);
-        }
-        vctx.stroke();
-      };
-      tick();
+      buf = new Uint8Array(analyser.fftSize);
+      vctx = viz.getContext('2d'); hist = [];
+      if (ipodVizAC.state === 'suspended') ipodVizAC.resume();
+      return true;
+    } catch(e) {
+      if (ipodVizAC) { ipodVizAC.close(); ipodVizAC = null; }   // audio keeps playing un-routed
+      return false;
     }
-  } catch(e) {
-    if (ipodVizAC) ipodVizAC.close();
-    ipodVizAC = null;                       // viz failed — audio keeps playing un-routed
-  }
+  };
+  const kickAC = () => { if (ipodVizAC && ipodVizAC.state === 'suspended') ipodVizAC.resume(); };
+  const tick = () => {
+    ipodVizRaf = requestAnimationFrame(tick);
+    const w = viz.offsetWidth, h = viz.offsetHeight; if (!w || !h || !vctx) return;
+    if (viz.width !== w) viz.width = w;
+    if (viz.height !== h) viz.height = h;
+    let amp = 0;
+    if (!audio.paused && analyser && ipodVizAC && ipodVizAC.state === 'running') {
+      analyser.getByteTimeDomainData(buf);
+      let s = 0; for (let k = 0; k < buf.length; k++) s += Math.abs(buf[k] - 128);
+      amp = s / buf.length;
+    }
+    hist.push(amp); if (hist.length > w) hist.shift();
+    vctx.clearRect(0, 0, w, h);
+    vctx.strokeStyle = 'rgba(232,226,217,.5)'; vctx.lineWidth = 1; vctx.beginPath();
+    for (let x = 0; x < hist.length; x++) {
+      const y = Math.max(0, h / 2 - (hist[x] / 80) * h * .85);
+      x ? vctx.lineTo(x, y) : vctx.moveTo(x, y);
+    }
+    vctx.stroke();
+  };
+  tick();
   const sp = n => ' '.repeat(n), pad = (s,w) => (s + sp(w)).slice(0, w);
   const TOK = ['Music','Extras','Settings','Shuffle Songs'], SLOT = [4, 6, 8, 10];
   const slotW = (r, tok) => ART[r].indexOf('>', ART[r].indexOf(tok)) - ART[r].indexOf(tok);
@@ -1020,11 +1026,11 @@ const ART = [
     lines[12] = swap(12, 'Backlight', st + sp(Math.max(0, slotW(12,'Backlight') - st.length - right.length)) + right);
     art.textContent = lines.join('\n');
   };
-  const load = n => { i = (n + tracks.length) % tracks.length; kickAC(); audio.src = tracks[i].src; audio.load(); audio.play().catch(()=>{}); draw(); };
+  const load = n => { i = (n + tracks.length) % tracks.length; ensureGraph(); kickAC(); audio.src = tracks[i].src; audio.load(); audio.play().catch(()=>{}); draw(); };
   container.querySelectorAll('.ipod-device .a-rowzone').forEach(b => b.addEventListener('click', () => load(+b.dataset.i)));
   container.querySelectorAll('.ipod-device .a-glyph').forEach(b => b.addEventListener('click', () => {
     const a = b.dataset.a;
-    if (a === 'toggle' || a === 'play') { kickAC(); if (audio.paused) audio.play().catch(()=>{}); else audio.pause(); }
+    if (a === 'toggle' || a === 'play') { ensureGraph(); kickAC(); if (audio.paused) audio.play().catch(()=>{}); else audio.pause(); }
     else if (a === 'menu') { load(0); }
     else load(i + (a === 'next' ? 1 : -1));
   }));
