@@ -977,7 +977,7 @@ const ART = [
       <button class="a-glyph ag-center" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em">●</button>
       <button class="a-glyph" data-a="next" aria-label="next track" style="left:28.5ch;top:27.6em">▶▶</button>
       <button class="a-glyph" data-a="play" aria-label="play or pause" style="left:20ch;top:31.8em">▶</button>
-      ${tracks.map((t,k)=>'<button class="a-rowzone" data-i="' + k + '" aria-label="play ' + t.title + '" style="top:' + ([4,6,8,10][k] * 1.2) + 'em;height:1.2em"></button>').join('\n      ')}
+      ${tracks.slice(0, 3).map((t,k)=>'<button class="a-rowzone" data-i="' + k + '" aria-label="play ' + t.title + '" style="top:' + ([4,6,8][k] * 1.2) + 'em;height:1.2em"></button>').join('\n      ')}
     </div>`;
   const art = container.querySelector('#ipod-art');
   // ── ASCII spectrum visualizer: the blank LCD row above the status line shows 30
@@ -987,7 +987,7 @@ const ART = [
   if (ipodVizRaf) cancelAnimationFrame(ipodVizRaf);
   if (ipodVizAC) { ipodVizAC.close(); ipodVizAC = null; }
   let analyser = null, fbuf = null;
-  const sm = new Array(30).fill(0), pk = new Array(30).fill(0);
+  const sm = new Array(25).fill(0), pk = new Array(25).fill(0);   // 25 bars over cols 6..30
   const RAMP = [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
   const ensureGraph = () => {                 // call only from inside a user-gesture handler
     if (ipodVizAC) return true;
@@ -1006,25 +1006,27 @@ const ART = [
     }
   };
   const kickAC = () => { if (ipodVizAC && ipodVizAC.state === 'suspended') ipodVizAC.resume(); };
-  const EQCOL = 4, EQN = 30;   // row 11 inner LCD band = cols 4..33 (blank row above status)
-  const eqRow = lines => {     // paint smoothed frequency bars into row 11 (ASCII segmented)
+  const EQCOL = 6, EQN = 25;   // rows 10–11 inner LCD band = cols 6..30 — two-row visualizer
+  const eqRows = lines => {    // paint smoothed frequency bars across 2 ascii rows
     if (!analyser || !fbuf || !ipodVizAC || ipodVizAC.state !== 'running') return;
     analyser.getByteFrequencyData(fbuf);
-    let s = '';
+    let top = '', bot = '';
     for (let k = 0; k < EQN; k++) {
       const idx = Math.min(fbuf.length - 1, Math.round(Math.pow(k / (EQN - 1), 1.6) * (fbuf.length - 1)));
       const v = fbuf[idx];
       // envelope: jump up fast, fall slowly — kills the jitter
-      sm[k] = v > sm[k] ? sm[k] + (v - sm[k]) * .55 : sm[k] + (v - sm[k]) * .10;
-      pk[k] = Math.max(sm[k], pk[k] * .994);           // slow-tracking peak reference
-      const ref = Math.max(pk[k], 50);                 // floor so quiet tracks still read
-      const lv = Math.min(8, Math.round(sm[k] / ref * 8));
-      s += RAMP[lv];
+      sm[k] = v > sm[k] ? sm[k] + (v - sm[k]) * .5 : sm[k] + (v - sm[k]) * .07;
+      pk[k] = Math.max(sm[k], pk[k] * .993);           // slow-tracking peak reference
+      const ref = Math.max(pk[k] * 1.6, 96);           // halved sensitivity: bar tops only near sustained loud
+      const units = Math.min(16, Math.round(sm[k] / ref * 16));   // 16 units over the two rows
+      top += units > 8 ? RAMP[units - 8] : ' ';
+      bot += RAMP[Math.min(8, units)];
     }
-    lines[11] = lines[11].slice(0, EQCOL) + s + lines[11].slice(EQCOL + EQN);
+    lines[10] = lines[10].slice(0, EQCOL) + top + lines[10].slice(EQCOL + EQN);
+    lines[11] = lines[11].slice(0, EQCOL) + bot + lines[11].slice(EQCOL + EQN);
   };
   const sp = n => ' '.repeat(n), pad = (s,w) => (s + sp(w)).slice(0, w);
-  const TOK = ['Music','Extras','Settings','Shuffle Songs'], SLOT = [4, 6, 8, 10];
+  const TOK = ['Music', 'Extras', 'Settings'], SLOT = [4, 6, 8];   // 3 rows — rows 10–11 belong to the viz
   const slotW = (r, tok) => ART[r].indexOf('>', ART[r].indexOf(tok)) - ART[r].indexOf(tok);
   const swap = (r, tok, content) => {
     const line = ART[r], ts = line.indexOf(tok), gt = line.indexOf('>', ts);
@@ -1034,15 +1036,14 @@ const ART = [
   const makeLines = () => {
     const lines = ART.slice();
     TOK.forEach((tok, k) => { if (k < tracks.length) lines[SLOT[k]] = swap(SLOT[k], tok, (i === k && !audio.paused ? '▶ ' : '') + tracks[k].title); });
-    if (tracks.length < TOK.length) lines[SLOT[tracks.length]] = swap(SLOT[tracks.length], TOK[tracks.length], '');
     const st = audio.error ? '⚠ can\'t play file' : (audio.paused ? '❚❚ paused' : '▶ playing');
     const right = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
     lines[12] = swap(12, 'Backlight', st + sp(Math.max(0, slotW(12,'Backlight') - st.length - right.length)) + right);
     carve(lines);   // blank the art cells under the wheel buttons so controls look cut out
     return lines;
   };
-  // [row0,row1,col0,col1] regions occupied by the control buttons (row/col in art chars)
-  const CARVES = [[18, 21, 15, 26], [22, 24, 8, 16], [22, 24, 17, 24], [22, 24, 25, 33], [25, 28, 17, 24]];
+  // [row0,row1,col0,col1] regions occupied by the control buttons + the 2-row viz band
+  const CARVES = [[10, 10, 6, 31], [18, 21, 15, 26], [22, 24, 8, 16], [22, 24, 17, 24], [22, 24, 25, 33], [25, 28, 17, 24]];
   const carve = lines => {
     for (let c = 0; c < CARVES.length; c++) {
       const [r0, r1, c0, c1] = CARVES[c];
@@ -1054,7 +1055,7 @@ const ART = [
   };
   const draw = () => {
     const lines = makeLines();
-    if (!audio.paused && analyser && ipodVizAC && ipodVizAC.state === 'running') eqRow(lines);
+    if (!audio.paused && analyser && ipodVizAC && ipodVizAC.state === 'running') eqRows(lines);
     art.textContent = lines.join('\n');
   };
   const tick = () => {
