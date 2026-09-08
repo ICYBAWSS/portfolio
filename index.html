@@ -253,10 +253,11 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
 .proj:hover .proj-card::after{opacity:1;}
 a.proj{text-decoration:none;color:inherit;}
 .proj-card.has-bg{background:#14120e;}
-.proj-bg{position:absolute;inset:-10%;background-size:cover;background-position:center;
-  filter:blur(10px) saturate(.85);transform:scale(1.06);
+.proj-bg{position:absolute;inset:-10%;background-size:cover;background-position:center center;background-repeat:no-repeat;
+  transform-origin:center center;transform:scale(1.06);
+  filter:blur(10px) saturate(.85);
   transition:filter .3s ease,transform .3s ease;}
-.proj:hover .proj-bg{filter:blur(0) saturate(1);transform:scale(1.02);}
+.proj:hover .proj-bg{filter:blur(0) saturate(1);transform:scale(1);}
 .proj-card.has-bg .proj-main,.proj-card.has-bg .proj-arrow{position:relative;z-index:1;transition:opacity .25s ease;}
 .proj:hover .proj-card.has-bg .proj-main,.proj:hover .proj-card.has-bg .proj-arrow{opacity:0;}
 .proj-card.has-bg .proj-desc{-webkit-line-clamp:3;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;}
