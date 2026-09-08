@@ -1025,11 +1025,11 @@ const ART = [
       const v = sum / Math.max(1, edges[k + 1] - edges[k]);
       // envelope: fast up, slow fall
       sm[k] = v > sm[k] ? sm[k] + (v - sm[k]) * .5 : sm[k] + (v - sm[k]) * .08;
-      pk[k] = Math.max(sm[k] * .98, pk[k] * .997);       // peak chases sustained level
+      pk[k] = Math.max(sm[k] * .99, pk[k] * .996);      // peak hugs sustained level — bars rest mid, pump on beats
       let units = 0;
       if (pk[k] > 10) {
         const ratio = Math.min(1.15, sm[k] / pk[k]);     // self-normalized per band
-        units = Math.min(16, Math.round(16 * Math.pow(ratio, 1.7) * .72));  // sustained ≈ 11–12, peaks hit ~15
+        units = Math.min(16, Math.round(16 * Math.pow(ratio, 1.6) * .78));  // sustained ≈ 12–13, beats to 15
       }
       top += units > 8 ? RAMP[units - 8] : ' ';
       bot += RAMP[Math.min(8, units)];
