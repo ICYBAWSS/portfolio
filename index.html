@@ -999,6 +999,7 @@ const ART = [
       ipodVizSrc = ipodVizAC.createMediaElementSource(audio);
       ipodVizSrc.connect(analyser); analyser.connect(ipodVizAC.destination);
       fbuf = new Uint8Array(analyser.frequencyBinCount);
+      window.__eq = { an: analyser, fb: fbuf, ctx: ipodVizAC };
       if (ipodVizAC.state === 'suspended') ipodVizAC.resume();
       return true;
     } catch(e) {
