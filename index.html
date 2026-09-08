@@ -1594,11 +1594,12 @@ document.addEventListener('touchend', () => {
   const clearBtn = document.getElementById('board-clear'), hint = document.getElementById('board-hint');
   const emptyMsg = document.getElementById('board-empty');
   const pctx = pad.getContext('2d');
-  // ascii frame: 70 chars × 19 rows (546×296px at 13px/1.2 mono)
+  // ascii frame: 70 chars × 19 rows (546×296px at 13px/1.2 mono) — chunky # border
   const frame = document.getElementById('board-frame');
   if (frame) {
     const C = 68, R = 17;
-    frame.textContent = '╔' + '═'.repeat(C) + '╗\n' + ('║' + ' '.repeat(C) + '║\n').repeat(R) + '╚' + '═'.repeat(C) + '╝';
+    const bar = '#'.repeat(C + 2);
+    frame.textContent = bar + '\n' + ('#' + ' '.repeat(C) + '#\n').repeat(R) + bar;
   }
   const MAX = 40;
   let myUid = null, notes = [], fs = null;
