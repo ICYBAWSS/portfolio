@@ -1645,64 +1645,80 @@ document.addEventListener('touchend', () => {
       })
       .catch(() => { clearTimeout(t); hint.textContent = 'board offline — needs internet'; });
   }
-  // ── draw pad + drag-to-board ──
+  // ── draw pad: always draw; press & HOLD (250ms) on an existing doodle to peel it off
+  //    and drag it onto the board. Move first and you just keep drawing.
   const pt = e => { const r = pad.getBoundingClientRect();
     return [ (e.clientX - r.left) * pad.width / r.width, (e.clientY - r.top) * pad.height / r.height ]; };
   const blank = () => { pctx.clearRect(0, 0, pad.width, pad.height); };
   const hasDoodle = () => { const d = pctx.getImageData(0, 0, pad.width, pad.height).data;
     for (let i = 3; i < d.length; i += 400) if (d[i]) return true; return false; };
-  let drawing = false, dragging = false, moved = false;
+  let drawing = false, dragging = false, liftTimer = null, downPt = null, strokeMoved = false;
   const ghost = document.createElement('div'); ghost.className = 'board-ghost';
   ghost.style.display = 'none'; document.body.appendChild(ghost);
   const ghostImg = document.createElement('img'); ghost.appendChild(ghostImg);
+  const cancelLift = () => { if (liftTimer) { clearTimeout(liftTimer); liftTimer = null; } };
+  const placeDoodle = e => {
+    const cr = cork.getBoundingClientRect();
+    const x = (e.clientX - cr.left) / cr.width * 100, y = (e.clientY - cr.top) / cr.height * 100;
+    if (x > 0 && x < 100 && y > 0 && y < 100 && fs && myUid) {
+      fs.collection('pins').add({
+        img: pad.toDataURL('image/png'),
+        r: Math.round((Math.random() * 6 - 3) * 10) / 10,
+        x: Math.max(4, Math.min(96, x)), y: Math.max(5, Math.min(95, y)),
+        uid: myUid, ts: window.firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => { blank(); pad.classList.remove('grabbable'); hint.textContent = 'pinned ✓ — draw another'; })
+        .catch(() => hint.textContent = 'pin failed — try again');
+    } else if (!fs || !myUid) {
+      hint.textContent = 'still connecting — try again in a second';
+    } else {
+      hint.textContent = 'release ON the board to pin it';
+    }
+  };
   pad.addEventListener('pointerdown', e => {
     pad.setPointerCapture(e.pointerId);
-    if (hasDoodle()) {                       // grab the finished doodle
-      dragging = true; moved = false;
-      ghostImg.src = pad.toDataURL('image/png');
-      ghost.style.display = 'block';
-      ghost.style.left = (e.clientX - 28) + 'px'; ghost.style.top = (e.clientY - 26) + 'px';
-      hint.textContent = 'release over the board to pin it';
-    } else {                                 // fresh stroke
-      drawing = true; pctx.beginPath(); pctx.moveTo(...pt(e));
+    downPt = { x: e.clientX, y: e.clientY };
+    if (hasDoodle()) {                       // could be a new stroke OR a press-and-hold lift
+      liftTimer = setTimeout(() => {         // held still → peel the doodle up
+        liftTimer = null; dragging = true;
+        ghostImg.src = pad.toDataURL('image/png');
+        ghost.style.display = 'block';
+        ghost.style.left = (e.clientX - 28) + 'px'; ghost.style.top = (e.clientY - 26) + 'px';
+        hint.textContent = 'release over the board to pin it';
+      }, 250);
+    } else {                                 // empty pad — draw right away
+      drawing = true; strokeMoved = false; pctx.beginPath(); pctx.moveTo(...pt(e));
     }
   });
   pad.addEventListener('pointermove', e => {
     if (drawing) {
       pctx.lineWidth = 3; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.strokeStyle = '#2a1f14';
-      pctx.lineTo(...pt(e)); pctx.stroke(); moved = true;
+      pctx.lineTo(...pt(e)); pctx.stroke(); strokeMoved = true;
     } else if (dragging) {
       ghost.style.left = (e.clientX - 28) + 'px'; ghost.style.top = (e.clientY - 26) + 'px';
+    } else if (liftTimer && downPt && Math.hypot(e.clientX - downPt.x, e.clientY - downPt.y) > 6) {
+      cancelLift();                          // moving = drawing, not lifting
+      drawing = true; strokeMoved = false; pctx.beginPath();
+      const p = pt(e); pctx.moveTo(p[0], p[1]);
+      hint.textContent = 'keep drawing — or press & hold your doodle to lift it';
     }
   });
   pad.addEventListener('pointerup', e => {
-    if (drawing) { drawing = false; if (moved) hint.textContent = 'got it — now drag the doodle onto the board'; }
-    else if (dragging) {
-      dragging = false; ghost.style.display = 'none';
-      const cr = cork.getBoundingClientRect();
-      const x = (e.clientX - cr.left) / cr.width * 100, y = (e.clientY - cr.top) / cr.height * 100;
-      if (x > 0 && x < 100 && y > 0 && y < 100 && fs && myUid) {
-        fs.collection('pins').add({
-          img: pad.toDataURL('image/png'),
-          r: Math.round((Math.random() * 6 - 3) * 10) / 10,
-          x: Math.max(4, Math.min(96, x)), y: Math.max(5, Math.min(95, y)),
-          uid: myUid, ts: window.firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => { blank(); pad.classList.remove('grabbable'); hint.textContent = 'pinned ✓ — draw another'; })
-          .catch(() => hint.textContent = 'pin failed — try again');
-      } else if (!fs || !myUid) {
-        hint.textContent = 'still connecting — try again in a second';
-      } else {
-        hint.textContent = 'release ON the board to pin it';
-      }
+    if (drawing) {
+      drawing = false;
+      if (strokeMoved) hint.textContent = 'keep drawing — or press & hold your doodle to lift it onto the board';
+    } else if (dragging) {
+      dragging = false; ghost.style.display = 'none'; placeDoodle(e);
+    } else {
+      cancelLift();                          // plain tap on an existing doodle — nothing
     }
     pad.classList.toggle('grabbable', hasDoodle());
   });
   ['pointercancel'].forEach(ev => pad.addEventListener(ev, () => {
-    drawing = false; dragging = false; ghost.style.display = 'none';
+    drawing = false; dragging = false; cancelLift(); ghost.style.display = 'none';
     pad.classList.toggle('grabbable', hasDoodle());
   }));
   clearBtn.addEventListener('click', () => {
-    blank();
+    blank(); pad.classList.remove('grabbable');
     hint.textContent = 'draw a doodle below, then drag it onto the board';
   });
   boot();
