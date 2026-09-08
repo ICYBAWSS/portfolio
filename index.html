@@ -1723,13 +1723,13 @@ document.addEventListener('touchend', () => {
       cancelLift();                          // moving = drawing, not lifting
       drawing = true; strokeMoved = false; pctx.beginPath();
       const p = pt(e); pctx.moveTo(p[0], p[1]);
-      hint.textContent = 'keep drawing — or press & hold your doodle to lift it';
+      hint.textContent = 'keep drawing, press & hold your doodle to lift it onto the board';
     }
   });
   pad.addEventListener('pointerup', e => {
     if (drawing) {
       drawing = false;
-      if (strokeMoved) hint.textContent = 'keep drawing — or press & hold your doodle to lift it onto the board';
+      if (strokeMoved) hint.textContent = 'keep drawing, press & hold your doodle to lift it onto the board';
     } else if (dragging) {
       dragging = false; ghost.style.display = 'none'; placeDoodle(e);
     } else {
