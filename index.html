@@ -300,20 +300,15 @@ a.proj{text-decoration:none;color:inherit;}
 #sec-contact{overflow-y:auto;}
 .board-head{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,226,217,.45);margin:1.4rem 0 .6rem;display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .board-head::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.08);}
-.board-scroll{overflow-x:auto;flex-shrink:0;padding:7px;border-radius:5px;
-  background:linear-gradient(180deg,#7a5226,#4a2f12 60%,#3a240c);box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 3px 8px rgba(0,0,0,.6);}
-.board-cork{position:relative;width:100%;min-width:460px;height:300px;border-radius:2px;overflow:hidden;
-  background-color:#b07a40;
-  background-image:
-    radial-gradient(130% 90% at 25% 15%,rgba(255,225,175,.28),rgba(255,225,175,0) 55%),
-    radial-gradient(130% 90% at 75% 95%,rgba(70,35,5,.4),rgba(70,35,5,0) 55%),
-    radial-gradient(rgba(255,240,210,.16) .8px,transparent 1px),
-    radial-gradient(rgba(45,20,0,.22) .9px,transparent 1.2px),
-    repeating-linear-gradient(93deg,rgba(140,90,40,.16) 0 2px,transparent 2px 26px),
-    repeating-linear-gradient(88deg,rgba(255,205,150,.05) 0 1px,transparent 1px 19px);
-  background-size:auto,auto,6px 6px,9px 9px,auto,auto;
-  box-shadow:inset 0 2px 3px rgba(255,255,255,.25),inset 0 -4px 8px rgba(0,0,0,.45),inset 3px 0 6px rgba(0,0,0,.25),inset -3px 0 6px rgba(255,255,255,.08);}
-.board-cork:empty::after{content:'draw a doodle below, then drag it here';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(70,40,10,.5);font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-align:center;pointer-events:none;}
+.board-scroll{overflow-x:auto;flex-shrink:0;padding:6px;border-radius:4px;
+  background:linear-gradient(180deg,#3d3831,#14110e 65%,#0b0907);box-shadow:0 1px 0 rgba(255,255,255,.07) inset,0 4px 10px rgba(0,0,0,.6);}
+.board-cork{position:relative;width:546px;height:296px;background:radial-gradient(120% 90% at 50% -10%,#1d1812,#110e0b 70%);
+  box-shadow:inset 0 0 30px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.04);}
+.board-frame{position:absolute;inset:0;margin:0;padding:0;font-family:'Roboto Mono',monospace;font-size:13px;line-height:1.2;
+  color:#b18a50;text-shadow:0 1px 1px rgba(0,0,0,.75),0 0 8px rgba(0,0,0,.55);pointer-events:none;user-select:none;}
+.board-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(232,226,217,.22);text-align:center;}
+.board-empty.hidden{display:none;}
 .board-note{position:absolute;width:56px;height:38px;padding:0;border:none;cursor:pointer;background:#f4ecd8;z-index:2;
   box-shadow:0 2px 4px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.25) inset;}
 .board-note img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
@@ -584,7 +579,10 @@ a.proj{text-decoration:none;color:inherit;}
       <div class="contact-links"><a class="clink" href="#">rayhan@email.com</a><a class="clink" href="#">github</a><a class="clink" href="#">linkedin</a></div>
       <div class="board-head">bulletin — leave a doodle</div>
       <div class="board-scroll">
-        <div class="board-cork" id="board-cork"></div>
+        <div class="board-cork" id="board-cork">
+          <pre class="board-frame" id="board-frame" aria-hidden="true"></pre>
+          <div class="board-empty" id="board-empty">draw a doodle below, then drag it here</div>
+        </div>
       </div>
       <div class="board-pad-wrap">
         <canvas id="board-pad" class="board-pad" width="480" height="300"></canvas>
@@ -1583,11 +1581,19 @@ document.addEventListener('touchend', () => {
   const cork = document.getElementById('board-cork');
   if (!pad || !cork) return;
   const clearBtn = document.getElementById('board-clear'), hint = document.getElementById('board-hint');
+  const emptyMsg = document.getElementById('board-empty');
   const pctx = pad.getContext('2d');
+  // ascii frame: 70 chars × 19 rows (546×296px at 13px/1.2 mono)
+  const frame = document.getElementById('board-frame');
+  if (frame) {
+    const C = 68, R = 17;
+    frame.textContent = '╔' + '═'.repeat(C) + '╗\n' + ('║' + ' '.repeat(C) + '║\n').repeat(R) + '╚' + '═'.repeat(C) + '╝';
+  }
   const MAX = 40;
   let myUid = null, notes = [], fs = null;
   const render = () => {
     cork.querySelectorAll('.board-note').forEach(n => n.remove());
+    if (emptyMsg) emptyMsg.classList.toggle('hidden', notes.length > 0);
     notes.slice(0, MAX).forEach((n, i) => {
       const d = document.createElement('button');
       d.className = 'board-note';
@@ -1664,7 +1670,7 @@ document.addEventListener('touchend', () => {
       fs.collection('pins').add({
         img: pad.toDataURL('image/png'),
         r: Math.round((Math.random() * 6 - 3) * 10) / 10,
-        x: Math.max(4, Math.min(96, x)), y: Math.max(5, Math.min(95, y)),
+        x: Math.max(6, Math.min(94, x)), y: Math.max(14, Math.min(86, y)),
         uid: myUid, ts: window.firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => { blank(); pad.classList.remove('grabbable'); hint.textContent = 'pinned ✓ — draw another'; })
         .catch(() => hint.textContent = 'pin failed — try again');
