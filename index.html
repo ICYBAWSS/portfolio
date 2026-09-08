@@ -1608,15 +1608,15 @@ document.addEventListener('touchend', () => {
     const bar = '#'.repeat(C + 2);
     frame.textContent = bar + '\n' + ('#' + ' '.repeat(C) + '#\n').repeat(R) + bar;
   }
-  const MAX = 40;
+  const KEEP = 300;   // ponytail: no cap — board accumulates; safety slice only (paginate if ever >300)
   let myUid = null, notes = [], fs = null;
   const render = () => {
     cork.querySelectorAll('.board-note').forEach(n => n.remove());
     if (emptyMsg) emptyMsg.classList.toggle('hidden', notes.length > 0);
-    notes.slice(0, MAX).forEach((n, i) => {
+    notes.slice(0, KEEP).forEach((n, i) => {
       const d = document.createElement('button');
       d.className = 'board-note';
-      d.style.zIndex = 100 - i;               // newest (i=0) sits on top of older notes
+      d.style.zIndex = KEEP - i;              // newest (i=0) sits on top of older notes
       d.style.left = (n.x == null ? (i * 9 + 4) % 92 : n.x) + '%';
       d.style.top = (n.y == null ? (i * 17 + 6) % 88 : n.y) + '%';
       d.style.transform = 'translate(-50%,-50%) rotate(' + (n.r || 0) + 'deg)';
@@ -1663,7 +1663,7 @@ document.addEventListener('touchend', () => {
         auth.signInAnonymously()
           .then(u => { myUid = u.user.uid; if (!cork.childElementCount) liftLocal(); })
           .catch(() => hint.textContent = 'board offline — sign-in failed');
-        fs.collection('pins').orderBy('ts', 'desc').limit(MAX).onSnapshot(snap => {
+        fs.collection('pins').orderBy('ts', 'desc').onSnapshot(snap => {
           notes = snap.docs.map(d => { const x = d.data(); return { id: d.id, uid: x.uid, img: x.img, r: x.r || 0, x: x.x, y: x.y }; });
           render();
         }, () => { hint.textContent = 'board offline — check connection'; });
