@@ -1013,24 +1013,23 @@ const ART = [
     if (!analyser || !fbuf || !ipodVizAC || ipodVizAC.state !== 'running') return;
     analyser.getByteFrequencyData(fbuf);
     const hi = Math.min(fbuf.length, Math.round(fbuf.length * .72));   // up to ~16 kHz
-    const c = Math.pow(hi, 1 / EQN);                                   // log band growth
-    let edge = 1;
+    const edges = [1];                                   // float-log band edges — full coverage, no stranded bands
+    for (let k = 1; k <= EQN; k++) edges.push(Math.max(edges[k - 1] + 1, Math.round(Math.pow(hi, k / EQN))));
+    edges[EQN] = hi;
     let top = '', bot = '';
     for (let k = 0; k < EQN; k++) {
       // band = average of its bins (log-spaced) with high-freq pre-emphasis
-      const next = Math.min(hi, Math.max(edge + 2, Math.round(edge * c)));
       let sum = 0;
-      for (let b = edge; b < next && b < fbuf.length; b++)
+      for (let b = edges[k]; b < edges[k + 1] && b < fbuf.length; b++)
         sum += fbuf[b] * (0.45 + (b / fbuf.length) * 2.4);
-      const v = sum / Math.max(1, next - edge);
-      edge = next;
+      const v = sum / Math.max(1, edges[k + 1] - edges[k]);
       // envelope: fast up, slow fall
       sm[k] = v > sm[k] ? sm[k] + (v - sm[k]) * .5 : sm[k] + (v - sm[k]) * .08;
-      pk[k] = Math.max(sm[k] * .985, pk[k] * .997);   // peak chases sustained level → ratio can't pin
+      pk[k] = Math.max(sm[k] * .98, pk[k] * .997);       // peak chases sustained level
       let units = 0;
       if (pk[k] > 10) {
-        const ratio = Math.min(1.12, sm[k] / pk[k]); // self-normalized per band
-        units = Math.min(16, Math.round(16 * Math.pow(ratio, 1.5) * .9));
+        const ratio = Math.min(1.15, sm[k] / pk[k]);     // self-normalized per band
+        units = Math.min(16, Math.round(16 * Math.pow(ratio, 1.7) * .72));  // sustained ≈ 11–12, peaks hit ~15
       }
       top += units > 8 ? RAMP[units - 8] : ' ';
       bot += RAMP[Math.min(8, units)];
