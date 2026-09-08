@@ -1016,10 +1016,13 @@ const ART = [
       const idx = Math.min(fbuf.length - 1, Math.round(Math.pow(k / (EQN - 1), 1.6) * (fbuf.length - 1)));
       const v = fbuf[idx];
       // envelope: jump up fast, fall slowly — kills the jitter
-      sm[k] = v > sm[k] ? sm[k] + (v - sm[k]) * .5 : sm[k] + (v - sm[k]) * .07;
-      pk[k] = Math.max(sm[k], pk[k] * .993);           // slow-tracking peak reference
-      const ref = Math.max(pk[k] * 1.6, 96);           // halved sensitivity: bar tops only near sustained loud
-      const units = Math.min(16, Math.round(sm[k] / ref * 16));   // 16 units over the two rows
+      sm[k] = v > sm[k] ? sm[k] + (v - sm[k]) * .45 : sm[k] + (v - sm[k]) * .06;
+      pk[k] = Math.max(sm[k], pk[k] * .992);           // per-bar slow peak → per-frequency sensitivity
+      let units = 0;
+      if (pk[k] > 12) {
+        const ratio = sm[k] / pk[k];                   // self-normalized: quiet highs dance like loud lows
+        units = Math.min(16, Math.round(16 * Math.pow(ratio, 1.35) * .9));   // damped: sustained ≈ 14/16, never pinned
+      }
       top += units > 8 ? RAMP[units - 8] : ' ';
       bot += RAMP[Math.min(8, units)];
     }
