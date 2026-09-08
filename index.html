@@ -987,7 +987,7 @@ const ART = [
   if (ipodVizRaf) cancelAnimationFrame(ipodVizRaf);
   if (ipodVizAC) { ipodVizAC.close(); ipodVizAC = null; }
   let analyser = null, fbuf = null;
-  const barPeak = new Array(30).fill(0);
+  const sm = new Array(30).fill(0), pk = new Array(30).fill(0);
   const RAMP = [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
   const ensureGraph = () => {                 // call only from inside a user-gesture handler
     if (ipodVizAC) return true;
@@ -1007,15 +1007,18 @@ const ART = [
   };
   const kickAC = () => { if (ipodVizAC && ipodVizAC.state === 'suspended') ipodVizAC.resume(); };
   const EQCOL = 4, EQN = 30;   // row 11 inner LCD band = cols 4..33 (blank row above status)
-  const eqRow = lines => {     // paint frequency bars into row 11 (ASCII segmented)
+  const eqRow = lines => {     // paint smoothed frequency bars into row 11 (ASCII segmented)
     if (!analyser || !fbuf || !ipodVizAC || ipodVizAC.state !== 'running') return;
     analyser.getByteFrequencyData(fbuf);
     let s = '';
     for (let k = 0; k < EQN; k++) {
       const idx = Math.min(fbuf.length - 1, Math.round(Math.pow(k / (EQN - 1), 1.6) * (fbuf.length - 1)));
       const v = fbuf[idx];
-      barPeak[k] = Math.max(v, barPeak[k] * .93);
-      const lv = barPeak[k] > 6 ? Math.min(8, Math.round(v / barPeak[k] * 8)) : 0;
+      // envelope: jump up fast, fall slowly — kills the jitter
+      sm[k] = v > sm[k] ? sm[k] + (v - sm[k]) * .55 : sm[k] + (v - sm[k]) * .10;
+      pk[k] = Math.max(sm[k], pk[k] * .994);           // slow-tracking peak reference
+      const ref = Math.max(pk[k], 50);                 // floor so quiet tracks still read
+      const lv = Math.min(8, Math.round(sm[k] / ref * 8));
       s += RAMP[lv];
     }
     lines[11] = lines[11].slice(0, EQCOL) + s + lines[11].slice(EQCOL + EQN);
