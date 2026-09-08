@@ -1690,7 +1690,7 @@ document.addEventListener('touchend', () => {
         r: Math.round((Math.random() * 6 - 3) * 10) / 10,
         x: Math.max(6, Math.min(94, x)), y: Math.max(14, Math.min(86, y)),
         uid: myUid, ts: window.firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => { blank(); pad.classList.remove('grabbable'); hint.textContent = 'pinned ✓ — draw another'; })
+      }).then(() => { blank(); pad.classList.remove('grabbable'); hint.textContent = ''; })
         .catch(() => hint.textContent = 'pin failed — try again');
     } else if (!fs || !myUid) {
       hint.textContent = 'still connecting — try again in a second';
