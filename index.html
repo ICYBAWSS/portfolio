@@ -1552,7 +1552,8 @@ document.addEventListener('touchend', () => {
   setup();
 })();
 
-// ── Bulletin board: fixed-size ASCII cork; draw on the pad, pin doodles (10 slots, localStorage) ──
+// ── Bulletin board: fixed ASCII cork, 10 slots. Shared via Firebase Firestore (anonymous
+//    auth = per-visitor uid; rules allow delete only for the author). Pins are public by design.
 (function(){
   const pad = document.getElementById('board-pad');
   const art = document.getElementById('board-art');
@@ -1571,14 +1572,12 @@ document.addEventListener('touchend', () => {
   }
   lines.push('+' + '-'.repeat(COLS) + '+');
   art.textContent = lines.join('\n');
-  // fixed slot grid: 5 cols × 2 rows (board never grows; oldest drops when full)
+  // fixed slot grid: 5 cols × 2 rows (wall shows the 10 newest pins)
   const SLOTX = [7, 19, 31, 43, 55], SLOTY = [3.6, 8.1], MAX = SLOTX.length * SLOTY.length;
-  const KEY = 'bb-notes';
-  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ return []; } };
-  const save = notes => { try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch(e){ hint.textContent = 'storage full — oldest pin dropped'; } };
+  let myUid = null, notes = [], fs = null;
   const render = () => {
     wrap.querySelectorAll('.board-note').forEach(n => n.remove());
-    load().slice(0, MAX).forEach((n, i) => {
+    notes.slice(0, MAX).forEach((n, i) => {
       const d = document.createElement('button');
       d.className = 'board-note';
       d.style.left = SLOTX[i % SLOTX.length] + 'ch';
@@ -1586,10 +1585,58 @@ document.addEventListener('touchend', () => {
       d.style.transform = 'translate(-50%,-50%) rotate(' + (n.r || 0) + 'deg)';
       const img = document.createElement('img'); img.src = n.img; img.alt = 'pinned doodle';
       d.appendChild(img);
-      d.addEventListener('click', () => { save(load().filter(x => x.id !== n.id)); render(); });
+      d.addEventListener('click', () => {
+        if (!fs || !myUid || n.uid !== myUid) { hint.textContent = 'only pins you made can be removed'; return; }
+        fs.collection('pins').doc(n.id).delete().catch(() => hint.textContent = 'remove failed — try again');
+      });
       wrap.appendChild(d);
     });
   };
+  // ── Firebase (compat SDK loaded on demand — board needs internet, rest of page doesn't) ──
+  const FBCONFIG = {
+    apiKey: "AIzaSyCWIJxLxO1aSo4tICCiA0W-pGg4l5xW4vE",
+    authDomain: "portfolio-a470f.firebaseapp.com",
+    projectId: "portfolio-a470f",
+    storageBucket: "portfolio-a470f.firebasestorage.app",
+    messagingSenderId: "488369671530",
+    appId: "1:488369671530:web:536bada9c346e757742913"
+  };
+  const G = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const loadScript = src => new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+  const LEGACY_KEY = 'bb-notes';
+  const liftLocal = fs => {                       // one-time: old per-browser pins → shared wall
+    let old = [];
+    try { old = JSON.parse(localStorage.getItem(LEGACY_KEY)) || []; } catch(e) {}
+    if (!old.length) return;
+    old.forEach(n => fs.collection('pins').add({ img: n.img, r: n.r, uid: myUid, ts: window.firebase.firestore.FieldValue.serverTimestamp() }));
+    try { localStorage.removeItem(LEGACY_KEY); } catch(e) {}
+    hint.textContent = 'moved your old pins onto the shared wall';
+  };
+  function boot() {
+    const t = setTimeout(() => { if (!window.firebase) hint.textContent = 'board offline — needs internet'; }, 8000);
+    loadScript(G + 'firebase-app-compat.js')
+      .then(() => loadScript(G + 'firebase-auth-compat.js'))
+      .then(() => loadScript(G + 'firebase-firestore-compat.js'))
+      .then(() => {
+        clearTimeout(t);
+        if (!window.firebase.apps.length) window.firebase.initializeApp(FBCONFIG);
+        const auth = window.firebase.auth(); fs = window.firebase.firestore();
+        auth.signInAnonymously()
+          .then(u => { myUid = u.user.uid; })
+          .catch(() => hint.textContent = 'board offline — sign-in failed');
+        fs.collection('pins').orderBy('ts', 'desc').limit(10).onSnapshot(snap => {
+          notes = snap.docs.map(d => { const x = d.data(); return { id: d.id, uid: x.uid, img: x.img, r: x.r || 0 }; });
+          render();
+          if (snap.empty && myUid) liftLocal(fs);
+        }, () => { hint.textContent = 'board offline — check connection'; });
+        hint.textContent = '';
+      })
+      .catch(() => { clearTimeout(t); hint.textContent = 'board offline — needs internet'; });
+  }
+  // ── draw pad ──
   const pt = e => { const r = pad.getBoundingClientRect();
     return [ (e.clientX - r.left) * pad.width / r.width, (e.clientY - r.top) * pad.height / r.height ]; };
   let drawing = false;
@@ -1600,15 +1647,15 @@ document.addEventListener('touchend', () => {
     pctx.lineTo(...pt(e)); pctx.stroke(); });
   ['pointerup','pointercancel','pointerleave'].forEach(ev => pad.addEventListener(ev, () => drawing = false));
   pinBtn.addEventListener('click', () => {
-    const notes = load();
-    notes.push({ id: Date.now() + Math.random().toString(36).slice(2, 6), img: pad.toDataURL('image/png'), r: Math.round((Math.random() * 10 - 5) * 10) / 10 });
-    while (notes.length > MAX) notes.shift();
-    save(notes); render();
-    pctx.clearRect(0, 0, pad.width, pad.height);
-    hint.textContent = notes.length >= MAX ? 'board full — oldest pin dropped' : 'pinned';
+    if (!fs || !myUid) { hint.textContent = 'still connecting — try again in a second'; return; }
+    fs.collection('pins').add({
+      img: pad.toDataURL('image/png'), r: Math.round((Math.random() * 10 - 5) * 10) / 10,
+      uid: myUid, ts: window.firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => { pctx.clearRect(0, 0, pad.width, pad.height); hint.textContent = 'pinned'; })
+      .catch(() => hint.textContent = 'pin failed — try again');
   });
   clearBtn.addEventListener('click', () => { pctx.clearRect(0, 0, pad.width, pad.height); });
-  render();
+  boot();
 })();
 
 updateStickerPos(stickerX, stickerY);
