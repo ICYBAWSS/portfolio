@@ -1001,12 +1001,15 @@ const ART = [
     }
     hist.push(amp); if (hist.length > w) hist.shift();
     vctx.clearRect(0, 0, w, h);
-    vctx.strokeStyle = 'rgba(232,226,217,.5)'; vctx.lineWidth = 1; vctx.beginPath();
+    // idle = faint center line; playing = line swings above it (amplitude up from center)
+    vctx.strokeStyle = 'rgba(232,226,217,.9)'; vctx.lineWidth = 2; vctx.lineJoin = 'round'; vctx.beginPath();
     for (let x = 0; x < hist.length; x++) {
-      const y = Math.max(0, h / 2 - (hist[x] / 80) * h * .85);
+      const y = h / 2 - Math.min(hist[x], 48) * (h / 2 - 1) / 48;
       x ? vctx.lineTo(x, y) : vctx.moveTo(x, y);
     }
     vctx.stroke();
+    if (audio.paused) { vctx.strokeStyle = 'rgba(232,226,217,.25)'; vctx.beginPath(); vctx.moveTo(0, h/2); vctx.lineTo(w, h/2); vctx.stroke(); }
+    vctx.strokeStyle = 'rgba(232,226,217,.12)'; vctx.lineWidth = 1; vctx.beginPath(); vctx.moveTo(0, h - .5); vctx.lineTo(w, h - .5); vctx.stroke();
   };
   tick();
   const sp = n => ' '.repeat(n), pad = (s,w) => (s + sp(w)).slice(0, w);
