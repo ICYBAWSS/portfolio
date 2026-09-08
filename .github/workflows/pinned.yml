@@ -1,0 +1,35 @@
+name: refresh-pinned
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: fetch pinned + vendor README images
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p assets/projects
+          curl -sS -H "Authorization: bearer $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"query":"{ user(login:\"ICYBAWSS\"){ pinnedItems(first:6,types:REPOSITORY){ nodes{ ... on Repository{ name description url stargazerCount primaryLanguage{ name } } } } } }"}' \
+            https://api.github.com/graphql > /tmp/pinned-graphql.json
+          node .github/scripts/build-pinned.mjs /tmp/pinned-graphql.json pinned.json
+      - name: commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git add pinned.json assets/projects
+          if git diff --cached --quiet; then echo "no changes"; else
+            git commit -m "chore: refresh pinned repos"
+            git push
+          fi

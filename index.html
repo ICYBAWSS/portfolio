@@ -1,9 +1,9 @@
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Valley+Sans:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{background:#0f0e0c;}
-.port{background:radial-gradient(130% 100% at 20% 0%,#1b1612 0%,#0f0e0c 60%,#0a0908 100%);color:#e8e2d9;font-family:'DM Mono',monospace;display:flex;flex-direction:row;height:100vh;height:100dvh;overflow:hidden;position:relative;}
+.port{background:radial-gradient(130% 100% at 20% 0%,#1b1612 0%,#0f0e0c 60%,#0a0908 100%);color:#e8e2d9;font-family:'Valley Sans',sans-serif;display:flex;flex-direction:row;height:100vh;height:100dvh;overflow:hidden;position:relative;}
 
 .left{width:clamp(220px,25vw,330px);flex:0 0 clamp(220px,25vw,330px);height:100%;padding:clamp(1rem,2.5vh,2rem) clamp(0.9rem,1.5vw,1.5rem);display:flex;flex-direction:column;border-right:.5px solid rgba(180,160,130,.18);position:relative;
   background-color:#f0e7d2;
@@ -253,7 +253,7 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
 .proj:hover .proj-card::after{opacity:1;}
 .proj-main{flex:1;}
 .proj-num{font-size:9px;letter-spacing:.13em;color:rgba(96,64,26,.55);margin-bottom:.3rem;}
-.proj-title{font-family:'Instrument Serif',serif;font-size:clamp(16px,1.8vw,21px);color:#241a0c;margin-bottom:.25rem;}
+.proj-title{font-family:'Roboto Mono',monospace;font-weight:700;font-size:clamp(15px,1.6vw,19px);color:#241a0c;margin-bottom:.25rem;}
 .proj-desc{font-size:clamp(10px,1vw,11px);color:rgba(50,35,14,.62);line-height:1.65;}
 .proj-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:.5rem;}
 .tag{font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(96,64,26,.8);border:.5px solid rgba(122,86,40,.35);background:rgba(122,86,40,.07);padding:2px 7px;border-radius:2px;}
@@ -267,7 +267,7 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
 .hcard:hover{background:#191512;border-color:rgba(196,168,130,.25);}
 .hcard.active{background:#1a1612;border-color:rgba(196,168,130,.55);box-shadow:0 0 0 1px rgba(196,168,130,.3) inset;}
 .hc-icon{width:clamp(16px,2vw,20px);height:clamp(16px,2vw,20px);margin-bottom:clamp(3px,0.8vh,8px);flex-shrink:0;}
-.hc-name{font-family:'Instrument Serif',serif;font-size:clamp(14px,1.6vw,17px);color:#e8e2d9;margin-bottom:2px;}
+.hc-name{font-family:'Roboto Mono',monospace;font-weight:700;font-size:clamp(13px,1.5vw,16px);color:#e8e2d9;margin-bottom:2px;}
 .hc-sub{font-size:clamp(9px,1vw,10px);color:rgba(232,226,217,.35);line-height:1.4;}
 
 .about-p{font-size:12.5px;color:rgba(232,226,217,.62);line-height:2;margin-bottom:1.1rem;max-width:470px;}
@@ -288,7 +288,7 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
   background:linear-gradient(160deg,#f4f4f2,#c9c9c3);border-radius:22px;padding:1.15rem 1.3rem;
   box-shadow:0 1px 0 #fff inset,0 22px 44px -20px rgba(0,0,0,.75);}
 .ipod-screen{flex:0 0 200px;background:#c3d0bb;border:2px solid #5f5f57;border-radius:6px;
-  font-family:'DM Mono',monospace;color:#101a0c;padding:.65rem .75rem;box-shadow:0 1px 2px rgba(0,0,0,.25) inset;}
+  font-family:'Roboto Mono',monospace;color:#101a0c;padding:.65rem .75rem;box-shadow:0 1px 2px rgba(0,0,0,.25) inset;}
 .ipod-title{font-size:13px;margin-bottom:.4rem;line-height:1.35;}
 .ipod-status{font-size:10px;color:#2c3a24;}
 .ipod-bar{height:4px;background:#93a489;border-radius:2px;margin-top:.55rem;overflow:hidden;}
@@ -438,10 +438,10 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
   .hc-icon { margin-bottom: 2px; }
 }
 /* ── ASCII re-skin for the iPod & TV widgets ── */
-.a-pre{font-family:'DM Mono',monospace;font-size:12px;line-height:1.2;margin:0;color:#d8cfc0;white-space:pre;user-select:none;pointer-events:none;}
+.a-pre{font-family:'Roboto Mono',monospace;font-size:12px;line-height:1.2;margin:0;color:#d8cfc0;white-space:pre;user-select:none;pointer-events:none;}
 .tv-a,.ipod-device{position:relative;display:inline-block;}
-.a-video{position:absolute;background:#000;object-fit:cover;display:block;font-family:'DM Mono',monospace;font-size:12px;}
-.a-glyph{position:absolute;transform:translate(-50%,-50%);min-width:2.4ch;text-align:center;background:none;border:none;padding:0;line-height:1;font-family:'DM Mono',monospace;font-size:12px;color:#e6dcc9;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+.a-video{position:absolute;background:#000;object-fit:cover;display:block;font-family:'Roboto Mono',monospace;font-size:12px;}
+.a-glyph{position:absolute;transform:translate(-50%,-50%);min-width:2.4ch;text-align:center;background:none;border:none;padding:0;line-height:1;font-family:'Roboto Mono',monospace;font-size:12px;color:#e6dcc9;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
 .a-glyph:hover{color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.85);}
 .a-glyph:active{color:#c9a87c;}
 .a-glyph.ag-center{color:#c9a87c;}
@@ -450,7 +450,7 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
 .ipod-a .ipod-list{flex:1;min-width:200px;}
 .tv-side{display:flex;flex-direction:column;align-items:center;gap:12px;}
 .a-ctlbar{display:flex;align-items:center;gap:10px;}
-.a-ctl{background:none;border:none;padding:4px 7px;color:#cfc4ae;font-family:inherit;font-size:12px;line-height:1;cursor:pointer;border-radius:3px;}
+.a-ctl{background:none;border:none;padding:4px 7px;color:#cfc4ae;font-family:'Roboto Mono',monospace;font-size:12px;line-height:1;cursor:pointer;border-radius:3px;}
 .a-ctl:hover{background:#cfc4ae;color:#13110e;}
 .a-ctl:active{transform:translateY(1px);}
 .a-led{color:#6e3a12;font-size:11px;line-height:1;}
@@ -1091,8 +1091,8 @@ drawFoil();
 
 // ── Pretext Engine (Left Panel Only) — name + per-hobby bio, word-level wrap ──
 const PRETEXT = {
-  name: { text: 'Rayhan Mohamed', font: 'italic 32px Instrument Serif', color: '#241a0c', lh: 38 },
-  bio:  { text: 'Sophomore CS and Stats student, just building whatever catches my interest.', font: '300 13px DM Mono', color: 'rgba(58,42,22,.78)', lh: 22 }
+  name: { text: 'Rayhan Mohamed', font: '700 30px Roboto Mono', color: '#241a0c', lh: 38 },
+  bio:  { text: 'Sophomore CS and Stats student, just building whatever catches my interest.', font: '300 13px Valley Sans', color: 'rgba(58,42,22,.78)', lh: 22 }
 };
 
 function stickerRect() {
@@ -1126,8 +1126,8 @@ function renderText() {
   };
   let y = 28;
   const isNarrow = w < 240;
-  const nameFont = isNarrow ? 'italic 25px Instrument Serif' : PRETEXT.name.font;
-  const bioFont = isNarrow ? '300 11.5px DM Mono' : PRETEXT.bio.font;
+  const nameFont = isNarrow ? '700 24px Roboto Mono' : PRETEXT.name.font;
+  const bioFont = isNarrow ? '300 11.5px Valley Sans' : PRETEXT.bio.font;
   const nameLh = isNarrow ? 30 : PRETEXT.name.lh;
   const bioLh = isNarrow ? 18 : PRETEXT.bio.lh;
 
