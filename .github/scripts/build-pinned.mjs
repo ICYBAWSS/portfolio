@@ -45,18 +45,30 @@ async function vendorImage(repo, url) {
   } catch { return null; }
 }
 
+async function repoLanguages(repo) {
+  // top languages by byte share (same source GitHub's language bar uses)
+  try {
+    const r = await fetch(`${api}/repos/${OWNER}/${repo}/languages`, { headers: auth });
+    if (!r.ok) return null;
+    const langs = await r.json();
+    return Object.entries(langs).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name]) => name);
+  } catch { return null; }
+}
+
 const out = [];
 for (const n of nodes) {
   const image = await vendorImage(n.name, await firstReadmeImage(n.name));
+  const langs = await repoLanguages(n.name);
   out.push({
     name: n.name,
     description: n.description || '',
     url: n.url,
     language: n.primaryLanguage?.name || null,
+    tags: langs || [n.primaryLanguage?.name].filter(Boolean),
     stars: n.stargazerCount || 0,
     image,
   });
-  console.log(`- ${n.name}: image=${image ?? 'none'}`);
+  console.log(`- ${n.name}: image=${image ?? 'none'} tags=${JSON.stringify(out.at(-1).tags)}`);
 }
 
 mkdirSync(dirname(outPath), { recursive: true });

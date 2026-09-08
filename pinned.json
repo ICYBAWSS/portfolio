@@ -4,6 +4,11 @@
     "description": "Map a folder of drum samples into a browsable visual space. Local CLAP embeddings, Rust + wgpu.",
     "url": "https://github.com/ICYBAWSS/pulsemap",
     "language": "Rust",
+    "tags": [
+      "Rust",
+      "Python",
+      "WGSL"
+    ],
     "stars": 0,
     "image": "assets/projects/pulsemap.png"
   },
@@ -12,6 +17,11 @@
     "description": "An interactive web visualization and route-finding engine for the entire English Wikipedia link graph. This application visualizes ~6.9 million articles and ~100 million links as a cohesive layout, allowing users to find paths between arbitrary pages instantly in the browser.",
     "url": "https://github.com/ICYBAWSS/wikipedia_graph",
     "language": "HTML",
+    "tags": [
+      "HTML",
+      "Python",
+      "JavaScript"
+    ],
     "stars": 0,
     "image": "assets/projects/wikipedia_graph.png"
   },
@@ -20,6 +30,9 @@
     "description": "Super simple focus app, place phone face down to focus then set break timers with suggested legnth based on how long you focused for.",
     "url": "https://github.com/ICYBAWSS/FlipFocus",
     "language": "Swift",
+    "tags": [
+      "Swift"
+    ],
     "stars": 0,
     "image": "assets/projects/FlipFocus.png"
   }
