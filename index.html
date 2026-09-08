@@ -524,6 +524,7 @@ a.proj{text-decoration:none;color:inherit;}
   color:#e8dfc9;transform:translate(-50%,-50%) scale(1.45);}
 .ipod-device .a-glyph.ag-menu{min-width:7ch;padding:0 1.2ch;}
 .ipod-device .a-glyph:hover{background:rgba(232,216,184,.08);border-color:rgba(232,216,184,.9);color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.8);}
+.ipod-device .a-glyph svg{width:58%;height:58%;display:block;fill:currentColor;}
 .ipod-device .a-glyph.ag-center{background:#f2efe6;color:#262019;border-color:rgba(0,0,0,.45);box-shadow:0 2px 5px rgba(0,0,0,.35);}
 .ipod-device .a-glyph.ag-center:hover{background:#fff;color:#000;border-color:#000;}
 
@@ -973,10 +974,10 @@ const ART = [
     <div class="ipod-device">
       <pre class="a-pre" id="ipod-art"></pre>
       <button class="a-glyph ag-menu" data-a="menu" aria-label="menu" style="left:20ch;top:23.4em">MENU</button>
-      <button class="a-glyph" data-a="prev" aria-label="previous track" style="left:11.5ch;top:27.6em">◀◀</button>
-      <button class="a-glyph ag-center" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em">●</button>
-      <button class="a-glyph" data-a="next" aria-label="next track" style="left:28.5ch;top:27.6em">▶▶</button>
-      <button class="a-glyph" data-a="play" aria-label="play or pause" style="left:20ch;top:31.8em">▶</button>
+      <button class="a-glyph" data-a="prev" aria-label="previous track" style="left:11.5ch;top:27.6em"><svg viewBox="0 0 24 24"><path d="M10 4 L2 12 L10 20 Z"/><path d="M22 4 L14 12 L22 20 Z"/></svg></button>
+      <button class="a-glyph ag-center" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></svg></button>
+      <button class="a-glyph" data-a="next" aria-label="next track" style="left:28.5ch;top:27.6em"><svg viewBox="0 0 24 24"><path d="M2 4 L10 12 L2 20 Z"/><path d="M14 4 L22 12 L14 20 Z"/></svg></button>
+      <button class="a-glyph" data-a="play" aria-label="play or pause" style="left:20ch;top:31.8em"><svg viewBox="0 0 24 24"><path d="M5 4 L19 12 L5 20 Z"/></svg></button>
       ${tracks.slice(0, 3).map((t,k)=>'<button class="a-rowzone" data-i="' + k + '" aria-label="play ' + t.title + '" style="top:' + ([4,6,8][k] * 1.2) + 'em;height:1.2em"></button>').join('\n      ')}
     </div>`;
   const art = container.querySelector('#ipod-art');
