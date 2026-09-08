@@ -302,7 +302,7 @@ a.proj{text-decoration:none;color:inherit;}
 .board-head::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.08);}
 .board-scroll{overflow-x:auto;flex-shrink:0;padding:7px;border-radius:5px;
   background:linear-gradient(180deg,#7a5226,#4a2f12 60%,#3a240c);box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 3px 8px rgba(0,0,0,.6);}
-.board-cork{position:relative;width:520px;height:190px;border-radius:2px;overflow:hidden;
+.board-cork{position:relative;width:100%;min-width:460px;height:300px;border-radius:2px;overflow:hidden;
   background-color:#b07a40;
   background-image:
     radial-gradient(130% 90% at 25% 15%,rgba(255,225,175,.28),rgba(255,225,175,0) 55%),
@@ -313,14 +313,19 @@ a.proj{text-decoration:none;color:inherit;}
     repeating-linear-gradient(88deg,rgba(255,205,150,.05) 0 1px,transparent 1px 19px);
   background-size:auto,auto,6px 6px,9px 9px,auto,auto;
   box-shadow:inset 0 2px 3px rgba(255,255,255,.25),inset 0 -4px 8px rgba(0,0,0,.45),inset 3px 0 6px rgba(0,0,0,.25),inset -3px 0 6px rgba(255,255,255,.08);}
-.board-cork:empty::after{content:'the wall is empty — draw something and pin it';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(70,40,10,.55);font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-align:center;}
-.board-note{position:absolute;width:78px;height:52px;padding:0;border:none;cursor:pointer;background:#f4ecd8;z-index:2;
-  box-shadow:0 2px 5px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.22) inset;}
-.board-note img{width:100%;height:100%;object-fit:cover;display:block;}
-.board-note::before{content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;z-index:3;
+.board-cork:empty::after{content:'draw a doodle below, then drag it here';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(70,40,10,.5);font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-align:center;pointer-events:none;}
+.board-note{position:absolute;width:56px;height:38px;padding:0;border:none;cursor:pointer;background:#f4ecd8;z-index:2;
+  box-shadow:0 2px 4px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.25) inset;}
+.board-note img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
+.board-note::before{content:'';position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;z-index:3;
   background:radial-gradient(circle at 35% 30%,#ff8a74,#d4371b 60%,#8f1e0a);box-shadow:0 1px 2px rgba(0,0,0,.55);}
-.board-note::after{content:'×';position:absolute;top:1px;right:3px;font-size:9px;color:rgba(0,0,0,.35);}
-.board-note:hover{filter:brightness(1.08);}
+.board-note:hover{filter:brightness(1.1) drop-shadow(0 0 3px rgba(255,255,255,.5));}
+.board-ghost{position:fixed;width:56px;height:38px;z-index:9999;pointer-events:none;background:#f4ecd8;
+  box-shadow:0 6px 14px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.3) inset;}
+.board-ghost img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
+.board-ghost::before{content:'';position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;z-index:3;
+  background:radial-gradient(circle at 35% 30%,#ff8a74,#d4371b 60%,#8f1e0a);}
+.board-pad.grabbable{cursor:grab;}
 .board-pad-wrap{display:flex;flex-direction:column;gap:9px;align-items:center;margin-top:1rem;flex-shrink:0;}
 .board-pad{width:min(480px,100%);height:auto;background:#efe6d0;border-radius:3px;cursor:crosshair;touch-action:none;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.2),inset 0 0 18px rgba(120,90,40,.18),0 1px 0 rgba(255,255,255,.2) inset;}
@@ -582,9 +587,8 @@ a.proj{text-decoration:none;color:inherit;}
       <div class="board-pad-wrap">
         <canvas id="board-pad" class="board-pad" width="480" height="300"></canvas>
         <div class="board-actions">
-          <button id="board-pin" class="board-btn">Pin it</button>
           <button id="board-clear" class="board-btn">Clear pad</button>
-          <span class="board-hint" id="board-hint">pins are per-browser for now</span>
+          <span class="board-hint" id="board-hint">draw a doodle below, then drag it onto the board</span>
         </div>
       </div>
     </div>
@@ -1570,30 +1574,29 @@ document.addEventListener('touchend', () => {
   setup();
 })();
 
-// ── Bulletin board: real cork, 10 slots, shared via Firebase Firestore (anonymous auth;
+// ── Bulletin board: real cork, free placement. Draw → drag the doodle onto the board
+//    (release anywhere, overlap allowed). Shared via Firebase Firestore (anonymous auth;
 //    rules allow delete only for the author). Pins are public by design.
 (function(){
   const pad = document.getElementById('board-pad');
   const cork = document.getElementById('board-cork');
   if (!pad || !cork) return;
-  const pinBtn = document.getElementById('board-pin'), clearBtn = document.getElementById('board-clear'), hint = document.getElementById('board-hint');
+  const clearBtn = document.getElementById('board-clear'), hint = document.getElementById('board-hint');
   const pctx = pad.getContext('2d');
-  // fixed slot grid: 5 cols × 2 rows (wall shows the 10 newest pins)
-  const SLOT = [[10,24],[30,24],[50,24],[70,24],[90,24],[10,77],[30,77],[50,77],[70,77],[90,77]];
-  const MAX = SLOT.length;
+  const MAX = 40;
   let myUid = null, notes = [], fs = null;
   const render = () => {
     cork.querySelectorAll('.board-note').forEach(n => n.remove());
     notes.slice(0, MAX).forEach((n, i) => {
       const d = document.createElement('button');
       d.className = 'board-note';
-      d.style.left = SLOT[i][0] + '%';
-      d.style.top = SLOT[i][1] + '%';
+      d.style.left = (n.x == null ? (i * 9 + 4) % 92 : n.x) + '%';
+      d.style.top = (n.y == null ? (i * 17 + 6) % 88 : n.y) + '%';
       d.style.transform = 'translate(-50%,-50%) rotate(' + (n.r || 0) + 'deg)';
       const img = document.createElement('img'); img.src = n.img; img.alt = 'pinned doodle';
       d.appendChild(img);
       d.addEventListener('click', () => {
-        if (!fs || !myUid || n.uid !== myUid) { hint.textContent = 'only pins you made can be removed'; return; }
+        if (!fs || !myUid || n.uid !== myUid) { hint.textContent = 'only doodles you made can be removed'; return; }
         fs.collection('pins').doc(n.id).delete().catch(() => hint.textContent = 'remove failed — try again');
       });
       cork.appendChild(d);
@@ -1614,13 +1617,12 @@ document.addEventListener('touchend', () => {
     document.head.appendChild(s);
   });
   const LEGACY_KEY = 'bb-notes';
-  const liftLocal = fs => {                       // one-time: old per-browser pins → shared wall
+  const liftLocal = () => {                       // one-time: old per-browser pins → shared wall
     let old = [];
     try { old = JSON.parse(localStorage.getItem(LEGACY_KEY)) || []; } catch(e) {}
-    if (!old.length) return;
+    if (!old.length || !myUid) return;
     old.forEach(n => fs.collection('pins').add({ img: n.img, r: n.r, uid: myUid, ts: window.firebase.firestore.FieldValue.serverTimestamp() }));
     try { localStorage.removeItem(LEGACY_KEY); } catch(e) {}
-    hint.textContent = 'moved your old pins onto the shared wall';
   };
   function boot() {
     const t = setTimeout(() => { if (!window.firebase) hint.textContent = 'board offline — needs internet'; }, 8000);
@@ -1632,36 +1634,76 @@ document.addEventListener('touchend', () => {
         if (!window.firebase.apps.length) window.firebase.initializeApp(FBCONFIG);
         const auth = window.firebase.auth(); fs = window.firebase.firestore();
         auth.signInAnonymously()
-          .then(u => { myUid = u.user.uid; })
+          .then(u => { myUid = u.user.uid; if (!cork.childElementCount) liftLocal(); })
           .catch(() => hint.textContent = 'board offline — sign-in failed');
-        fs.collection('pins').orderBy('ts', 'desc').limit(10).onSnapshot(snap => {
-          notes = snap.docs.map(d => { const x = d.data(); return { id: d.id, uid: x.uid, img: x.img, r: x.r || 0 }; });
+        fs.collection('pins').orderBy('ts', 'desc').limit(MAX).onSnapshot(snap => {
+          notes = snap.docs.map(d => { const x = d.data(); return { id: d.id, uid: x.uid, img: x.img, r: x.r || 0, x: x.x, y: x.y }; });
           render();
-          if (snap.empty && myUid) liftLocal(fs);
         }, () => { hint.textContent = 'board offline — check connection'; });
-        hint.textContent = '';
+        hint.textContent = 'draw a doodle below, then drag it onto the board';
       })
       .catch(() => { clearTimeout(t); hint.textContent = 'board offline — needs internet'; });
   }
-  // ── draw pad ──
+  // ── draw pad + drag-to-board ──
   const pt = e => { const r = pad.getBoundingClientRect();
     return [ (e.clientX - r.left) * pad.width / r.width, (e.clientY - r.top) * pad.height / r.height ]; };
-  let drawing = false;
-  pad.addEventListener('pointerdown', e => { drawing = true; pad.setPointerCapture(e.pointerId);
-    pctx.beginPath(); pctx.moveTo(...pt(e)); });
-  pad.addEventListener('pointermove', e => { if (!drawing) return;
-    pctx.lineWidth = 3; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.strokeStyle = '#2a1f14';
-    pctx.lineTo(...pt(e)); pctx.stroke(); });
-  ['pointerup','pointercancel','pointerleave'].forEach(ev => pad.addEventListener(ev, () => drawing = false));
-  pinBtn.addEventListener('click', () => {
-    if (!fs || !myUid) { hint.textContent = 'still connecting — try again in a second'; return; }
-    fs.collection('pins').add({
-      img: pad.toDataURL('image/png'), r: Math.round((Math.random() * 10 - 5) * 10) / 10,
-      uid: myUid, ts: window.firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => { pctx.clearRect(0, 0, pad.width, pad.height); hint.textContent = 'pinned'; })
-      .catch(() => hint.textContent = 'pin failed — try again');
+  const blank = () => { pctx.clearRect(0, 0, pad.width, pad.height); };
+  const hasDoodle = () => { const d = pctx.getImageData(0, 0, pad.width, pad.height).data;
+    for (let i = 3; i < d.length; i += 400) if (d[i]) return true; return false; };
+  let drawing = false, dragging = false, moved = false;
+  const ghost = document.createElement('div'); ghost.className = 'board-ghost';
+  ghost.style.display = 'none'; document.body.appendChild(ghost);
+  const ghostImg = document.createElement('img'); ghost.appendChild(ghostImg);
+  pad.addEventListener('pointerdown', e => {
+    pad.setPointerCapture(e.pointerId);
+    if (hasDoodle()) {                       // grab the finished doodle
+      dragging = true; moved = false;
+      ghostImg.src = pad.toDataURL('image/png');
+      ghost.style.display = 'block';
+      ghost.style.left = (e.clientX - 28) + 'px'; ghost.style.top = (e.clientY - 26) + 'px';
+      hint.textContent = 'release over the board to pin it';
+    } else {                                 // fresh stroke
+      drawing = true; pctx.beginPath(); pctx.moveTo(...pt(e));
+    }
   });
-  clearBtn.addEventListener('click', () => { pctx.clearRect(0, 0, pad.width, pad.height); });
+  pad.addEventListener('pointermove', e => {
+    if (drawing) {
+      pctx.lineWidth = 3; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.strokeStyle = '#2a1f14';
+      pctx.lineTo(...pt(e)); pctx.stroke(); moved = true;
+    } else if (dragging) {
+      ghost.style.left = (e.clientX - 28) + 'px'; ghost.style.top = (e.clientY - 26) + 'px';
+    }
+  });
+  pad.addEventListener('pointerup', e => {
+    if (drawing) { drawing = false; if (moved) hint.textContent = 'got it — now drag the doodle onto the board'; }
+    else if (dragging) {
+      dragging = false; ghost.style.display = 'none';
+      const cr = cork.getBoundingClientRect();
+      const x = (e.clientX - cr.left) / cr.width * 100, y = (e.clientY - cr.top) / cr.height * 100;
+      if (x > 0 && x < 100 && y > 0 && y < 100 && fs && myUid) {
+        fs.collection('pins').add({
+          img: pad.toDataURL('image/png'),
+          r: Math.round((Math.random() * 6 - 3) * 10) / 10,
+          x: Math.max(4, Math.min(96, x)), y: Math.max(5, Math.min(95, y)),
+          uid: myUid, ts: window.firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => { blank(); pad.classList.remove('grabbable'); hint.textContent = 'pinned ✓ — draw another'; })
+          .catch(() => hint.textContent = 'pin failed — try again');
+      } else if (!fs || !myUid) {
+        hint.textContent = 'still connecting — try again in a second';
+      } else {
+        hint.textContent = 'release ON the board to pin it';
+      }
+    }
+    pad.classList.toggle('grabbable', hasDoodle());
+  });
+  ['pointercancel'].forEach(ev => pad.addEventListener(ev, () => {
+    drawing = false; dragging = false; ghost.style.display = 'none';
+    pad.classList.toggle('grabbable', hasDoodle());
+  }));
+  clearBtn.addEventListener('click', () => {
+    blank();
+    hint.textContent = 'draw a doodle below, then drag it onto the board';
+  });
   boot();
 })();
 
