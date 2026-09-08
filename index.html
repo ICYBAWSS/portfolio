@@ -1608,6 +1608,7 @@ document.addEventListener('touchend', () => {
     notes.slice(0, MAX).forEach((n, i) => {
       const d = document.createElement('button');
       d.className = 'board-note';
+      d.style.zIndex = 100 - i;               // newest (i=0) sits on top of older notes
       d.style.left = (n.x == null ? (i * 9 + 4) % 92 : n.x) + '%';
       d.style.top = (n.y == null ? (i * 17 + 6) % 88 : n.y) + '%';
       d.style.transform = 'translate(-50%,-50%) rotate(' + (n.r || 0) + 'deg)';
