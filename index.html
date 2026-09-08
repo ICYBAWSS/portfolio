@@ -251,6 +251,21 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
 .proj-card::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(130px circle at var(--gx,70%) var(--gy,15%),rgba(255,255,255,.55),rgba(255,255,255,0) 68%);opacity:0;transition:opacity .25s ease;}
 .proj:hover .proj-card{box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 6px 10px -4px rgba(0,0,0,.4),0 26px 44px -16px rgba(0,0,0,.7);}
 .proj:hover .proj-card::after{opacity:1;}
+a.proj{text-decoration:none;color:inherit;}
+.proj-card.has-bg{background:#14120e;}
+.proj-bg{position:absolute;inset:-10%;background-size:cover;background-position:center;
+  filter:blur(10px) saturate(.85);transform:scale(1.06);
+  transition:filter .3s ease,transform .3s ease;}
+.proj:hover .proj-bg{filter:blur(0) saturate(1);transform:scale(1.02);}
+.proj-card.has-bg .proj-main,.proj-card.has-bg .proj-arrow{position:relative;z-index:1;transition:opacity .25s ease;}
+.proj:hover .proj-card.has-bg .proj-main,.proj:hover .proj-card.has-bg .proj-arrow{opacity:0;}
+.proj-card.has-bg .proj-desc{-webkit-line-clamp:3;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;}
+.proj-card.has-bg.light-text .proj-title{color:#fff;}
+.proj-card.has-bg.light-text .proj-num{color:rgba(255,255,255,.6);}
+.proj-card.has-bg.light-text .proj-desc{color:rgba(255,255,255,.82);}
+.proj-card.has-bg.light-text .proj-arrow{color:rgba(255,255,255,.85);}
+.proj-card.has-bg.light-text .tag{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.14);color:rgba(255,255,255,.92);}
+.proj-card.has-bg.dark-text .proj-desc{color:rgba(42,28,12,.68);}
 .proj-main{flex:1;}
 .proj-num{font-size:9px;letter-spacing:.13em;color:rgba(96,64,26,.55);margin-bottom:.3rem;}
 .proj-title{font-family:'Roboto Mono',monospace;font-weight:700;font-size:clamp(15px,1.6vw,19px);color:#241a0c;margin-bottom:.25rem;}
@@ -279,6 +294,32 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
 .clink{font-size:12px;color:rgba(232,226,217,.45);text-decoration:none;letter-spacing:.04em;transition:color .2s;display:flex;align-items:center;gap:6px;}
 .clink::before{content:'';display:inline-block;width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.5;}
 .clink:hover{color:#c4a882;}
+
+/* ── bulletin board (draw pad + cork wall) ── */
+#sec-board{overflow-y:auto;}
+.board{display:flex;flex-direction:column;gap:14px;flex:1;min-height:0;}
+.board-wall{position:relative;flex:0 0 168px;border-radius:6px;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;padding:16px 14px 10px;
+  background:
+    radial-gradient(120% 80% at 30% -10%,rgba(255,255,255,.14),rgba(255,255,255,0) 55%),
+    repeating-linear-gradient(45deg,rgba(70,40,15,.12) 0 2px,transparent 2px 7px),
+    linear-gradient(160deg,#8a5c33,#5f3d1e 70%,#4a2e14);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.22),inset 0 -3px 6px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.5);
+  border:1px solid #2e1c0c;}
+.board-wall:empty::after{content:'the wall is empty — draw something and pin it';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,236,210,.45);font-size:11px;letter-spacing:.08em;text-transform:uppercase;}
+.board-note{position:relative;flex:0 0 96px;height:62px;margin:14px 10px 8px 0;padding:0;border:none;cursor:pointer;background:#f4ecd8;
+  box-shadow:0 2px 5px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.18) inset;}
+.board-note img{width:100%;height:100%;object-fit:cover;display:block;}
+.board-note::before{content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;z-index:2;
+  background:radial-gradient(circle at 35% 30%,#ff8a74,#d4371b 60%,#8f1e0a);box-shadow:0 1px 2px rgba(0,0,0,.55);}
+.board-note:hover{filter:brightness(1.08);}
+.board-note::after{content:'×';position:absolute;top:1px;right:4px;font-size:10px;color:rgba(0,0,0,.35);line-height:1;}
+.board-pad-wrap{display:flex;flex-direction:column;gap:9px;align-items:center;flex-shrink:0;}
+.board-pad{width:min(480px,100%);height:auto;background:#efe6d0;border-radius:3px;cursor:crosshair;touch-action:none;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.2),inset 0 0 18px rgba(120,90,40,.18),0 1px 0 rgba(255,255,255,.2) inset;}
+.board-actions{display:flex;gap:10px;align-items:center;}
+.board-btn{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#e8e2d9;background:none;border:.5px solid rgba(196,168,130,.32);padding:6px 14px;border-radius:999px;cursor:pointer;font-family:inherit;transition:all .2s;}
+.board-btn:hover{color:#1a1308;background:#c9a87c;border-color:#c9a87c;}
+.board-hint{font-size:10px;color:rgba(232,226,217,.45);}
 
 /* ── work section racks (block containers for ipod / tv) ── */
 .work-rack{display:block;max-width:780px;}
@@ -466,6 +507,11 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
 .a-zone:hover{background:rgba(232,216,184,.08);box-shadow:0 0 0 1px rgba(232,216,184,.15) inset;}
 .a-rowzone{position:absolute;left:0;width:100%;background:none;border:none;padding:0;margin:0;cursor:pointer;font-size:12px;}
 .a-rowzone:hover{background:rgba(232,216,184,.06);}
+/* ipod: controls scale with the art (same font-size keeps ch/em anchors true) + always-on chips */
+.ipod-device .a-pre,.ipod-device .a-glyph,.ipod-device .a-rowzone{font-size:13px;}
+.ipod-device .a-glyph{background:rgba(15,13,10,.4);border-radius:999px;font-weight:500;min-width:2.6ch;height:2.3ch;box-shadow:0 0 0 1px rgba(255,255,255,.05) inset;}
+.ipod-device .a-glyph:hover{background:rgba(15,13,10,.72);box-shadow:0 0 0 1px rgba(232,216,184,.28) inset;}
+.ipod-viz{position:absolute;z-index:-1;pointer-events:none;font-size:13px;}
 
 
 .tv-ctl-shelf{position:absolute;display:flex;align-items:center;justify-content:space-around;font-size:22px;line-height:1;pointer-events:none;}
@@ -479,6 +525,7 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
     <nav class="left-nav">
       <button class="nav-item active" data-key="life">Things I do</button>
       <button class="nav-item" data-key="work">work</button>
+      <button class="nav-item" data-key="board">bulletin</button>
       <button class="nav-item" data-key="contact">contact</button>
     </nav>
   </div>
@@ -550,6 +597,21 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
       </div>
     </div>
     
+    <div class="section" id="sec-board">
+      <div class="sec-label">bulletin</div>
+      <div class="board">
+        <div class="board-wall" id="board-wall"></div>
+        <div class="board-pad-wrap">
+          <canvas id="board-pad" class="board-pad" width="480" height="300"></canvas>
+          <div class="board-actions">
+            <button id="board-pin" class="board-btn">Pin it</button>
+            <button id="board-clear" class="board-btn">Clear pad</button>
+            <span class="board-hint" id="board-hint"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="section" id="sec-contact"><div class="sec-label">contact</div><div class="contact-links"><a class="clink" href="#">rayhan@email.com</a><a class="clink" href="#">github</a><a class="clink" href="#">linkedin</a></div></div>
   </div>
 
@@ -798,15 +860,49 @@ const DJ_RADIO = [
   '#########/          |#########|#########|########|/             #########/'
 ];
 
+// ── GitHub projects — pinned.json generated by .github/workflows/pinned.yml ──
+// PROJECT_OVERRIDES: hand-edit to override any card (image/desc/tags/url). Key = repo name.
+const PROJECT_OVERRIDES = {};
+const FALLBACK_PROJECTS = [
+  { name: 'pulsemap', description: 'Map a folder of drum samples into a browsable visual space. Local CLAP embeddings, Rust + wgpu.', url: 'https://github.com/ICYBAWSS/pulsemap', language: 'Rust', image: 'assets/projects/pulsemap.png' },
+  { name: 'wikipedia_graph', description: 'An interactive web visualization and route-finding engine for the entire English Wikipedia link graph.', url: 'https://github.com/ICYBAWSS/wikipedia_graph', language: 'HTML', image: 'assets/projects/wikipedia_graph.png' },
+  { name: 'FlipFocus', description: 'Super simple focus app, place phone face down to focus then set break timers with suggested length based on how long you focused for.', url: 'https://github.com/ICYBAWSS/FlipFocus', language: 'Swift', image: 'assets/projects/FlipFocus.png' }
+];
+async function loadProjects(){
+  try {
+    const r = await fetch('https://raw.githubusercontent.com/ICYBAWSS/rayhan-portfolio/main/pinned.json', { cache: 'no-cache' });
+    if (!r.ok) throw new Error('pinned fetch ' + r.status);
+    return (await r.json()).map(p => Object.assign({}, p, PROJECT_OVERRIDES[p.name] || {}));
+  } catch(e){
+    console.warn('pinned.json fetch failed — using fallback projects', e);
+    return FALLBACK_PROJECTS;
+  }
+}
+let projStamp = 0;
+function applyCardTextColor(){   // sample avg luminance of the card image → light or dark text
+  document.querySelectorAll('.proj-card.has-bg').forEach(card => {
+    const src = card.dataset.img; if (!src) return;
+    const img = new Image();
+    const paint = cls => { if (!card.classList.contains('light-text') && !card.classList.contains('dark-text')) card.classList.add(cls); };
+    img.onload = () => {
+      try {
+        const cv = document.createElement('canvas'); cv.width = cv.height = 1;
+        const cx = cv.getContext('2d', { willReadFrequently: true });
+        cx.drawImage(img, 0, 0, 1, 1);
+        const d = cx.getImageData(0, 0, 1, 1).data;
+        paint(.2126*d[0] + .7152*d[1] + .0722*d[2] < 128 ? 'light-text' : 'dark-text');
+      } catch(e){ paint('light-text'); }
+    };
+    img.onerror = () => paint('dark-text');
+    img.src = src;
+  });
+}
+
 const contentData = {
   dev: {
     label: "Stuff I've coded",
     workType: 'list',
-    work: [
-      { num: '01', title: 'Project name here', desc: 'One sharp sentence — what it does and why it matters.', tags: ['Python', 'ML', 'PyTorch'] },
-      { num: '02', title: 'Another project', desc: 'What problem did it solve? What was your actual contribution?', tags: ['React', 'Node'] },
-      { num: '03', title: 'Third thing', desc: 'Outcome over description. Lead with the result.', tags: ['API', 'DB'] }
-    ]
+    work: []   // real projects load from pinned.json (see loadProjects)
   },
   dj: {
     label: "Listen to my show!",
@@ -839,7 +935,7 @@ function bindTilt(){
   });
 }
 
-let ipodAudio=null; // detached <audio> must be paused manually on re-render
+let ipodAudio=null, tvVideo=null, ipodVizRaf=null, ipodVizSrc=null, ipodVizAC=null; // detached media — pause both on re-render so nothing ghosts
 
 // ── ASCII iPod: wireframe device, screen text (title/status/progress) rendered live,
 //    glyph buttons ◄ ● ► ▶ float over the click-wheel ring at recorded anchors.
@@ -888,6 +984,7 @@ const ART = [
   container.innerHTML = `
     <div class="ipod-device">
       <pre class="a-pre" id="ipod-art"></pre>
+      <canvas class="ipod-viz" style="left:6ch;top:14.4em;width:25ch;height:1.2em"></canvas>
       <button class="a-glyph ag-menu" data-a="menu" aria-label="menu" style="left:20ch;top:23.4em">MENU</button>
       <button class="a-glyph" data-a="prev" aria-label="previous track" style="left:11.5ch;top:27.6em">◄</button>
       <button class="a-glyph ag-center" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em">●</button>
@@ -896,6 +993,41 @@ const ART = [
       ${tracks.map((t,k)=>'<button class="a-rowzone" data-i="' + k + '" aria-label="play ' + t.title + '" style="top:' + ([4,6,8,10][k] * 1.2) + 'em;height:1.2em"></button>').join('\n      ')}
     </div>`;
   const art = container.querySelector('#ipod-art');
+  // ── 1-row scrolling waveform in the status row (Web Audio time-domain, RMS history) ──
+  if (ipodVizRaf) cancelAnimationFrame(ipodVizRaf);
+  if (ipodVizAC) ipodVizAC.close();
+  const viz = container.querySelector('.ipod-viz');
+  if (viz && (window.AudioContext || window.webkitAudioContext)) {
+    ipodVizAC = new (window.AudioContext || window.webkitAudioContext)();
+    const analyser = ipodVizAC.createAnalyser(); analyser.fftSize = 512;
+    ipodVizSrc = ipodVizAC.createMediaElementSource(audio);
+    ipodVizSrc.connect(analyser); analyser.connect(ipodVizAC.destination);
+    audio.addEventListener('play', () => { if (ipodVizAC && ipodVizAC.state === 'suspended') ipodVizAC.resume(); });
+    const buf = new Uint8Array(analyser.fftSize);
+    const vctx = viz.getContext('2d');
+    let hist = [];
+    const tick = () => {
+      ipodVizRaf = requestAnimationFrame(tick);
+      const w = viz.offsetWidth, h = viz.offsetHeight; if (!w || !h) return;
+      if (viz.width !== w) viz.width = w;
+      if (viz.height !== h) viz.height = h;
+      let amp = 0;
+      if (!audio.paused) {
+        analyser.getByteTimeDomainData(buf);
+        let s = 0; for (let k = 0; k < buf.length; k++) s += Math.abs(buf[k] - 128);
+        amp = s / buf.length;
+      }
+      hist.push(amp); if (hist.length > w) hist.shift();
+      vctx.clearRect(0, 0, w, h);
+      vctx.strokeStyle = 'rgba(232,226,217,.5)'; vctx.lineWidth = 1; vctx.beginPath();
+      for (let x = 0; x < hist.length; x++) {
+        const y = Math.max(0, h / 2 - (hist[x] / 80) * h * .85);
+        x ? vctx.lineTo(x, y) : vctx.moveTo(x, y);
+      }
+      vctx.stroke();
+    };
+    tick();
+  }
   const sp = n => ' '.repeat(n), pad = (s,w) => (s + sp(w)).slice(0, w);
   const TOK = ['Music','Extras','Settings','Shuffle Songs'], SLOT = [4, 6, 8, 10];
   const slotW = (r, tok) => ART[r].indexOf('>', ART[r].indexOf(tok)) - ART[r].indexOf(tok);
@@ -925,6 +1057,7 @@ const ART = [
   audio.addEventListener('durationchange', draw);
   audio.addEventListener('play', draw); audio.addEventListener('pause', draw);
   audio.addEventListener('ended', () => load(i + 1));
+  audio.addEventListener('play', () => { if (tvVideo) tvVideo.pause(); });
   draw();
 }
 function initTv(container, videos){
@@ -980,6 +1113,8 @@ function initTv(container, videos){
       </div>
     </div>`;
   const main = container.querySelector('#tv-main');
+  tvVideo = main;
+  main.addEventListener('play', () => { if (ipodAudio) ipodAudio.pause(); });
   const led = container.querySelector('#a-led'), chTxt = container.querySelector('#a-ch'), volTxt = container.querySelector('#a-voltxt');
   // screen hole = texture rows 8..14 (idx 7..20 of each line): 14ch x 7 rows; video hidden till it plays
   main.style.cssText = 'left:7ch;top:9.6em;width:14ch;height:8.4em;font-size:22px;opacity:0';
@@ -1019,6 +1154,8 @@ function initTv(container, videos){
 
 function updateDynamicContent(hobby) {
   const data = contentData[hobby] || contentData.dev;
+  if (ipodAudio) ipodAudio.pause();
+  if (tvVideo) tvVideo.pause();
 
   // Update Section Labels
   const workLabel = document.getElementById('work-label');
@@ -1031,19 +1168,27 @@ function updateDynamicContent(hobby) {
   if (!projList) return;
   if (data.workType === 'list') {
     projList.className = 'proj-list';
-    projList.innerHTML = data.work.map(p => `
-      <div class="proj">
-        <div class="proj-card">
-          <div class="proj-main">
-            <div class="proj-num">${p.num}</div>
-            <div class="proj-title">${p.title}</div>
-            <div class="proj-desc">${p.desc}</div>
-            <div class="proj-tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+    const stamp = ++projStamp;
+    loadProjects().then(items => {
+      if (stamp !== projStamp) return;               // a newer tab-switch superseded us
+      projList.innerHTML = items.map((p, k) => `
+        <a class="proj" href="${p.url}" target="_blank" rel="noopener">
+          <div class="proj-card${p.image ? ' has-bg' : ''}" data-img="${p.image || ''}">
+            ${p.image ? `<div class="proj-bg" style="background-image:url('${p.image}')"></div>` : ''}
+            <div class="proj-main">
+              <div class="proj-num">${String(k + 1).padStart(2, '0')}</div>
+              <div class="proj-title">${p.name}</div>
+              <div class="proj-desc">${p.description || ''}</div>
+              <div class="proj-tags">${(p.tags || (p.language ? [p.language] : [])).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+            </div>
+            <div class="proj-arrow">↗</div>
           </div>
-          <div class="proj-arrow">↗</div>
-        </div>
-      </div>
-    `).join('');
+        </a>
+      `).join('');
+      bindTilt();
+      applyCardTextColor();
+    });
+    return;
   } else if (data.workType === 'ipod') {
     initIpod(projList, data.work);
   } else if (data.workType === 'tv') {
@@ -1076,7 +1221,7 @@ function jumpTo(k){ const el=document.getElementById('sec-'+k); if(!el) return; 
 navItems.forEach(n=>n.addEventListener('click',()=>jumpTo(n.dataset.key)));
 right.addEventListener('scroll',()=>{
   const mid=right.scrollTop+right.clientHeight/2; let cur='life';
-  ['life','work','contact'].forEach(k=>{ const el=document.getElementById('sec-'+k); if(el&&el.offsetTop-right.offsetTop<=mid) cur=k; });
+  ['life','work','board','contact'].forEach(k=>{ const el=document.getElementById('sec-'+k); if(el&&el.offsetTop-right.offsetTop<=mid) cur=k; });
   navItems.forEach(n=>n.classList.toggle('active',n.dataset.key===cur));
 });
 
@@ -1428,6 +1573,49 @@ document.addEventListener('touchend', () => {
   window.addEventListener('pointerup', () => { drawing = false; arm(); });
   window.addEventListener('resize', setup);
   setup();
+})();
+
+// ── Bulletin board: draw on the pad, pin doodles to the cork wall (localStorage, 12 max) ──
+(function(){
+  const pad = document.getElementById('board-pad');
+  if (!pad) return;
+  const wall = document.getElementById('board-wall');
+  const pinBtn = document.getElementById('board-pin'), clearBtn = document.getElementById('board-clear'), hint = document.getElementById('board-hint');
+  const pctx = pad.getContext('2d');
+  let drawing = false;
+  const pt = e => { const r = pad.getBoundingClientRect();
+    return [ (e.clientX - r.left) * pad.width / r.width, (e.clientY - r.top) * pad.height / r.height ]; };
+  pad.addEventListener('pointerdown', e => { drawing = true; pad.setPointerCapture(e.pointerId);
+    pctx.beginPath(); pctx.moveTo(...pt(e)); });
+  pad.addEventListener('pointermove', e => { if (!drawing) return;
+    pctx.lineWidth = 3; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.strokeStyle = '#2a1f14';
+    pctx.lineTo(...pt(e)); pctx.stroke(); });
+  ['pointerup','pointercancel','pointerleave'].forEach(ev => pad.addEventListener(ev, () => drawing = false));
+  const KEY = 'bb-notes';
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch(e){ return []; } };
+  const save = notes => { try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch(e){ hint.textContent = 'storage full — oldest pin dropped'; } };
+  const render = () => {
+    wall.innerHTML = '';
+    load().forEach(n => {
+      const d = document.createElement('button');
+      d.className = 'board-note'; d.title = 'click to remove';
+      d.style.transform = 'rotate(' + (n.r || 0) + 'deg)';
+      const img = document.createElement('img'); img.src = n.img; img.alt = 'pinned doodle';
+      d.appendChild(img);
+      d.addEventListener('click', () => { save(load().filter(x => x.id !== n.id)); render(); });
+      wall.appendChild(d);
+    });
+  };
+  pinBtn.addEventListener('click', () => {
+    const notes = load();
+    notes.push({ id: Date.now() + Math.random().toString(36).slice(2, 6), img: pad.toDataURL('image/png'), r: Math.round((Math.random() * 10 - 5) * 10) / 10 });
+    if (notes.length > 12) notes.shift();
+    save(notes); render();
+    pctx.clearRect(0, 0, pad.width, pad.height);
+    hint.textContent = 'pinned';
+  });
+  clearBtn.addEventListener('click', () => { pctx.clearRect(0, 0, pad.width, pad.height); });
+  render();
 })();
 
 updateStickerPos(stickerX, stickerY);
