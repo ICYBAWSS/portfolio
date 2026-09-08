@@ -515,15 +515,16 @@ a.proj{text-decoration:none;color:inherit;}
 .a-zone:hover{background:rgba(232,216,184,.08);box-shadow:0 0 0 1px rgba(232,216,184,.15) inset;}
 .a-rowzone{position:absolute;left:0;width:100%;background:none;border:none;padding:0;margin:0;cursor:pointer;font-size:12px;}
 .a-rowzone:hover{background:rgba(232,216,184,.06);}
-/* ipod: controls scale with the art (same font-size keeps ch/em anchors true) + always-on chips */
+/* ipod: controls as outline rings over carved art cells — simple, no filled chips (center = white) */
 .ipod-device .a-pre,.ipod-device .a-glyph,.ipod-device .a-rowzone{font-size:13px;}
-.ipod-device .a-glyph{background:rgba(15,13,10,.42);border-radius:999px;font-weight:700;min-width:3ch;height:2.6ch;
-  padding:0;line-height:1;display:inline-flex;align-items:center;justify-content:center;letter-spacing:.02em;
-  box-shadow:0 0 0 1.5px rgba(255,255,255,.14) inset;
-  transform:translate(-50%,-50%) scale(1.6);}
-.ipod-device .a-glyph:hover{background:rgba(15,13,10,.75);box-shadow:0 0 0 1.5px rgba(232,216,184,.4) inset;}
-.ipod-device .a-glyph.ag-center{background:#f2efe6;color:#262019;box-shadow:0 0 0 1.5px rgba(0,0,0,.3) inset,0 2px 4px rgba(0,0,0,.35);}
-.ipod-device .a-glyph.ag-center:hover{background:#fff;color:#000;}
+.ipod-device .a-glyph{background:none;border:1.5px solid rgba(232,216,184,.35);border-radius:999px;
+  font-weight:700;min-width:3.4ch;height:3.4ch;padding:0;line-height:1;box-sizing:border-box;
+  display:inline-flex;align-items:center;justify-content:center;
+  color:#e8dfc9;transform:translate(-50%,-50%) scale(1.45);}
+.ipod-device .a-glyph.ag-menu{min-width:7ch;padding:0 1.2ch;}
+.ipod-device .a-glyph:hover{background:rgba(232,216,184,.08);border-color:rgba(232,216,184,.9);color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.8);}
+.ipod-device .a-glyph.ag-center{background:#f2efe6;color:#262019;border-color:rgba(0,0,0,.45);box-shadow:0 2px 5px rgba(0,0,0,.35);}
+.ipod-device .a-glyph.ag-center:hover{background:#fff;color:#000;border-color:#000;}
 
 
 .tv-ctl-shelf{position:absolute;display:flex;align-items:center;justify-content:space-around;font-size:22px;line-height:1;pointer-events:none;}
@@ -1029,7 +1030,19 @@ const ART = [
     const st = audio.error ? '⚠ can\'t play file' : (audio.paused ? '❚❚ paused' : '▶ playing');
     const right = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
     lines[12] = swap(12, 'Backlight', st + sp(Math.max(0, slotW(12,'Backlight') - st.length - right.length)) + right);
+    carve(lines);   // blank the art cells under the wheel buttons so controls look cut out
     return lines;
+  };
+  // [row0,row1,col0,col1] regions occupied by the control buttons (row/col in art chars)
+  const CARVES = [[18, 21, 15, 26], [22, 24, 8, 16], [22, 24, 17, 24], [22, 24, 25, 33], [25, 28, 17, 24]];
+  const carve = lines => {
+    for (let c = 0; c < CARVES.length; c++) {
+      const [r0, r1, c0, c1] = CARVES[c];
+      for (let r = r0; r <= r1; r++) {
+        const L = lines[r];
+        if (L && L.length > c1) lines[r] = L.slice(0, c0) + ' '.repeat(c1 - c0 + 1) + L.slice(c1 + 1);
+      }
+    }
   };
   const draw = () => {
     const lines = makeLines();
