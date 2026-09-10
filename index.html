@@ -683,14 +683,14 @@ a.proj{text-decoration:none;color:inherit;}
 /* invisible click-wheel hit zones over the ipod art */
 .a-zone{position:absolute;transform:translate(-50%,-50%);background:none;border:none;padding:0;margin:0;cursor:pointer;border-radius:50%;}
 .a-zone:hover{background:rgba(232,216,184,.08);box-shadow:0 0 0 1px rgba(232,216,184,.15) inset;}
-.a-rowzone{position:absolute;left:0;width:100%;background:none;border:none;padding:0;margin:0;cursor:pointer;font-size:12px;}
-.a-rowzone:hover{background:rgba(232,216,184,.06);}
+.a-rowzone{position:absolute;left:0;width:100%;background:none;border:none;padding:0;margin:0;cursor:pointer;font-size:12px;z-index:5;touch-action:manipulation;transition:background .15s;}
+.a-rowzone:hover{background:rgba(232,216,184,.08);}
 /* ipod: controls as outline rings over carved art cells — simple, no filled chips (center = white) */
 .ipod-device .a-pre,.ipod-device .a-glyph,.ipod-device .a-rowzone{font-size:clamp(10px,1.35vh,14.5px);}
-.ipod-device .a-glyph{font-weight:700;color:#e8dfc9;transform:translate(-50%,-50%);}
+.ipod-device .a-glyph{font-weight:700;color:#e8dfc9;transform:translate(-50%,-50%);min-width:32px;min-height:32px;padding:4px;border-radius:4px;z-index:10;touch-action:manipulation;transition:color .12s,text-shadow .12s;}
 .ipod-device .a-glyph.ag-menu{letter-spacing:.06em;}
 .ipod-device .a-glyph:hover{color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.8);}
-.ipod-device .a-glyph.ag-center{color:#c9a87c;}
+.ipod-device .a-glyph.ag-center{color:#c9a87c;min-width:44px;min-height:44px;border-radius:50%;}
 .ipod-device .a-glyph.ag-center:hover{color:#fff7e9;text-shadow:0 0 8px rgba(201,168,124,.9);}
 
 
@@ -772,7 +772,7 @@ a.proj{text-decoration:none;color:inherit;}
             <div class="cc-val">@ICYBAWSS</div>
             <div class="cc-hint">View repositories ↗</div>
           </a>
-          <a class="contact-card" href="https://linkedin.com" target="_blank" rel="noopener">
+          <a class="contact-card" href="https://www.linkedin.com/in/rayhanmohamed/" target="_blank" rel="noopener">
             <div class="cc-label">LinkedIn</div>
             <div class="cc-val">Rayhan Mohamed</div>
             <div class="cc-hint">Connect ↗</div>
@@ -1200,7 +1200,7 @@ let ipodAudio=null, tvVideo=null, ipodVizRaf=null, ipodVizSrc=null, ipodVizAC=nu
 // ── ASCII iPod: wireframe device, screen text (title/status/progress) rendered live,
 //    glyph buttons ◄ ● ► ▶ float over the click-wheel ring at recorded anchors.
 //    Grid: pre at 12px/1.2 line-height → col = 1ch (0.6em), row = 1.2em.
-function initIpod(container, tracks){
+function initIpod(container, tracks, autoPlay = true){
 const ART = [
   '/////,^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^',
   'o^ %xxxx333333oo33oo3o33333333333oo  /',
@@ -1240,6 +1240,8 @@ const ART = [
   if (ipodAudio) ipodAudio.pause();
   let i = 0;
   const audio = ipodAudio = new Audio();
+  audio.preload = 'auto';
+  audio.src = tracks[0].src;
   container.className='work-rack';
   container.innerHTML = `
     <div class="ipod-device">
@@ -1249,65 +1251,82 @@ const ART = [
       <button class="a-glyph ag-center" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em">O</button>
       <button class="a-glyph" data-a="next" aria-label="next track" style="left:28.5ch;top:27.6em">>></button>
       <button class="a-glyph" data-a="play" aria-label="play or pause" style="left:20ch;top:31.8em">></button>
-      ${tracks.slice(0, 3).map((t,k)=>'<button class="a-rowzone" data-i="' + k + '" aria-label="play ' + t.title + '" style="top:' + ([4,6,8][k] * 1.2) + 'em;height:1.2em"></button>').join('\n      ')}
+      ${tracks.slice(0, 3).map((t,k)=>'<button class="a-rowzone" data-i="' + k + '" aria-label="play ' + t.title + '" style="top:' + ([4,6,8][k] * 1.2 - 0.2) + 'em;height:1.6em"></button>').join('\n      ')}
     </div>`;
   const art = container.querySelector('#ipod-art');
-  // ── ASCII spectrum visualizer: the blank LCD row above the status line shows 30
-  //    frequency-segmented bars as ▁▂▃▄▅▆▇█ glyphs. Audio graph is built LAZILY inside
-  //    the first play gesture (autoplay-safe); if wiring fails, sound plays un-routed —
-  //    viz must NEVER gate audio.
+  // ── ASCII spectrum visualizer: the blank LCD row above the status line shows 25
+  //    frequency-segmented bars as ▁▂▃▄▅▆▇█ glyphs. Real Web Audio FFT is used when
+  //    available; a synchronized rhythmic procedural EQ fallback is used if Web Audio
+  //    is suspended, unrouted, or silent, guaranteeing lively visuals whenever audio plays.
   if (ipodVizRaf) cancelAnimationFrame(ipodVizRaf);
-  if (ipodVizAC) { ipodVizAC.close(); ipodVizAC = null; }
+  if (ipodVizAC) { try { ipodVizAC.close(); } catch(_) {} ipodVizAC = null; }
   let analyser = null, fbuf = null, edges = null, weights = null;
   let gPeak = 120;
   const sm = new Array(25).fill(0);                            // 25 bars over cols 6..30
   const RAMP = [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
-  const ensureGraph = () => {                 // call only from inside a user-gesture handler
-    if (ipodVizAC) return true;
-    if (!(window.AudioContext || window.webkitAudioContext)) return false;
+  const ensureGraph = () => {
+    if (ipodVizAC) { kickAC(); return true; }
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
     try {
-      ipodVizAC = new (window.AudioContext || window.webkitAudioContext)();
+      ipodVizAC = new AC();
       analyser = ipodVizAC.createAnalyser(); analyser.fftSize = 1024;
       ipodVizSrc = ipodVizAC.createMediaElementSource(audio);
       ipodVizSrc.connect(analyser); analyser.connect(ipodVizAC.destination);
       fbuf = new Uint8Array(analyser.frequencyBinCount);
-      if (ipodVizAC.state === 'suspended') ipodVizAC.resume();
+      kickAC();
       return true;
     } catch(e) {
-      if (ipodVizAC) { ipodVizAC.close(); ipodVizAC = null; }   // audio keeps playing un-routed
+      if (ipodVizAC) { try { ipodVizAC.close(); } catch(_) {} ipodVizAC = null; }
       return false;
     }
   };
-  const kickAC = () => { if (ipodVizAC && ipodVizAC.state === 'suspended') ipodVizAC.resume(); };
+  const kickAC = () => {
+    if (ipodVizAC && ipodVizAC.state === 'suspended') {
+      ipodVizAC.resume().catch(()=>{});
+    }
+  };
   const EQCOL = 6, EQN = 25;   // rows 10–11 inner LCD band = cols 6..30 — two-row visualizer
-  const eqRows = lines => {    // paint smoothed frequency bars across 2 ascii rows
-    if (!analyser || !fbuf || !ipodVizAC || ipodVizAC.state !== 'running') return;
-    if (!edges) {
-      const hi = Math.min(fbuf.length, Math.round(fbuf.length * .72));   // up to ~16 kHz
-      edges = [1];                                                       // float-log band edges
-      for (let k = 1; k <= EQN; k++) edges.push(Math.max(edges[k - 1] + 1, Math.round(Math.pow(hi, k / EQN))));
-      edges[EQN] = hi;
-      weights = new Float32Array(EQN);
-      for (let k = 0; k < EQN; k++) weights[k] = 0.68 + 1.25 * Math.pow(k / (EQN - 1), 0.85);
-    }
-    analyser.getByteFrequencyData(fbuf);
+  const eqRows = lines => {
     let curMax = 0;
-    for (let k = 0; k < EQN; k++) {
-      let sum = 0;
-      for (let b = edges[k]; b < edges[k + 1] && b < fbuf.length; b++) sum += fbuf[b];
-      const v = (sum / Math.max(1, edges[k + 1] - edges[k])) * weights[k];
-      // envelope: fast attack, smooth fall
-      sm[k] = v > sm[k] ? sm[k] + (v - sm[k]) * .5 : sm[k] + (v - sm[k]) * .08;
-      if (sm[k] > curMax) curMax = sm[k];
+    let hasRealData = false;
+    if (analyser && fbuf && ipodVizAC && ipodVizAC.state === 'running') {
+      if (!edges) {
+        const hi = Math.min(fbuf.length, Math.round(fbuf.length * .72));   // up to ~16 kHz
+        edges = [1];
+        for (let k = 1; k <= EQN; k++) edges.push(Math.max(edges[k - 1] + 1, Math.round(Math.pow(hi, k / EQN))));
+        edges[EQN] = hi;
+        weights = new Float32Array(EQN);
+        for (let k = 0; k < EQN; k++) weights[k] = 0.68 + 1.25 * Math.pow(k / (EQN - 1), 0.85);
+      }
+      analyser.getByteFrequencyData(fbuf);
+      for (let k = 0; k < EQN; k++) {
+        let sum = 0;
+        for (let b = edges[k]; b < edges[k + 1] && b < fbuf.length; b++) sum += fbuf[b];
+        const v = (sum / Math.max(1, edges[k + 1] - edges[k])) * weights[k];
+        sm[k] = v > sm[k] ? sm[k] + (v - sm[k]) * .5 : sm[k] + (v - sm[k]) * .08;
+        if (sm[k] > curMax) curMax = sm[k];
+      }
+      if (curMax > 5) hasRealData = true;
     }
-    // global peak reference tracks track loudness — preserves distinct frequency contour
+    if (!hasRealData && !audio.paused) {
+      const curT = (audio.currentTime > 0 ? audio.currentTime : (performance.now() * 0.001)) * 6.283;
+      for (let k = 0; k < EQN; k++) {
+        const freqBias = Math.sin((k / (EQN - 1)) * Math.PI * 0.85 + 0.15);
+        const beat = Math.pow(Math.sin(curT * 1.8 + k * 0.12) * 0.5 + 0.5, 2);
+        const bounce = Math.sin(curT * 3.2 - k * 0.3) * 0.35 + Math.cos(curT * 1.1 + k * 0.18) * 0.35 + 0.3;
+        const target = Math.max(0, Math.min(15, (beat * 8.5 + bounce * 6) * freqBias * 1.35));
+        sm[k] = sm[k] + (target - sm[k]) * 0.35;
+        if (sm[k] > curMax) curMax = sm[k];
+      }
+    }
     gPeak = Math.max(curMax, gPeak * .995, 100);
     let top = '', bot = '';
     for (let k = 0; k < EQN; k++) {
       let units = 0;
-      if (sm[k] > 6) {
+      if (sm[k] > 4) {
         const ratio = sm[k] / gPeak;
-        units = Math.min(16, Math.round(16 * Math.pow(ratio, 1.35) * .74));  // bars live ~6–9; beat peaks ~10–12
+        units = Math.min(16, Math.round(16 * Math.pow(ratio, 1.35) * .74));
       }
       top += units > 8 ? RAMP[units - 8] : ' ';
       bot += RAMP[Math.min(8, units)];
@@ -1316,23 +1335,28 @@ const ART = [
     lines[11] = lines[11].slice(0, EQCOL) + bot + lines[11].slice(EQCOL + EQN);
   };
   const sp = n => ' '.repeat(n), pad = (s,w) => (s + sp(w)).slice(0, w);
-  const TOK = ['Music', 'Extras', 'Settings'], SLOT = [4, 6, 8];   // 3 rows — rows 10–11 belong to the viz
+  const TOK = ['Music', 'Extras', 'Settings'], SLOT = [4, 6, 8];
   const slotW = (r, tok) => ART[r].indexOf('>', ART[r].indexOf(tok)) - ART[r].indexOf(tok);
   const swap = (r, tok, content) => {
     const line = ART[r], ts = line.indexOf(tok), gt = line.indexOf('>', ts);
     return line.slice(0, ts) + pad(content, gt - ts) + line.slice(gt);
   };
-  const fmt = t => { if (!isFinite(t) || t < 0) t = 0; return Math.floor(t/60) + ':' + String(Math.floor(t%60)).padStart(2,'0'); };
+  const fmt = t => { if (!isFinite(t) || t < 0) return '0:00'; return Math.floor(t/60) + ':' + String(Math.floor(t%60)).padStart(2,'0'); };
   const makeLines = () => {
     const lines = ART.slice();
-    TOK.forEach((tok, k) => { if (k < tracks.length) lines[SLOT[k]] = swap(SLOT[k], tok, (i === k && !audio.paused ? '▶ ' : '') + tracks[k].title); });
+    TOK.forEach((tok, k) => {
+      if (k < tracks.length) {
+        const prefix = i === k ? (audio.paused ? '· ' : '▶ ') : '  ';
+        lines[SLOT[k]] = swap(SLOT[k], tok, prefix + tracks[k].title);
+      }
+    });
     const st = audio.error ? '⚠ can\'t play file' : (audio.paused ? '❚❚ paused' : '▶ playing');
-    const right = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+    const durStr = (audio.duration && isFinite(audio.duration)) ? fmt(audio.duration) : '--:--';
+    const right = fmt(audio.currentTime) + ' / ' + durStr;
     lines[12] = swap(12, 'Backlight', st + sp(Math.max(0, slotW(12,'Backlight') - st.length - right.length)) + right);
-    carve(lines);   // blank the art cells under the wheel buttons so controls look cut out
+    carve(lines);
     return lines;
   };
-  // [row0,row1,col0,col1] regions occupied by the control buttons + the 2-row viz band
   const CARVES = [[10, 10, 6, 31], [18, 21, 15, 26], [22, 24, 8, 16], [22, 24, 17, 24], [22, 24, 25, 33], [25, 28, 17, 24]];
   const carve = lines => {
     for (let c = 0; c < CARVES.length; c++) {
@@ -1345,29 +1369,78 @@ const ART = [
   };
   const draw = () => {
     const lines = makeLines();
-    if (!audio.paused && analyser && ipodVizAC && ipodVizAC.state === 'running') eqRows(lines);
+    if (!audio.paused) eqRows(lines);
     art.textContent = lines.join('\n');
   };
   const tick = () => {
     ipodVizRaf = requestAnimationFrame(tick);
-    if (!audio.paused && analyser) draw();          // animate only while playing
+    if (!audio.paused) draw();
   };
   tick();
-  const load = n => { i = (n + tracks.length) % tracks.length; ensureGraph(); kickAC(); sm.fill(0); gPeak = 120; audio.src = tracks[i].src; audio.load(); audio.play().catch(()=>{}); draw(); };
-  container.querySelectorAll('.ipod-device .a-rowzone').forEach(b => b.addEventListener('click', () => load(+b.dataset.i)));
-  container.querySelectorAll('.ipod-device .a-glyph').forEach(b => b.addEventListener('click', () => {
-    const a = b.dataset.a;
-    if (a === 'toggle' || a === 'play') { ensureGraph(); kickAC(); if (audio.paused) audio.play().catch(()=>{}); else audio.pause(); }
-    else if (a === 'menu') { load(0); }
-    else load(i + (a === 'next' ? 1 : -1));
+  const load = (n, andPlay = true) => {
+    i = (n + tracks.length) % tracks.length;
+    ensureGraph();
+    kickAC();
+    sm.fill(0);
+    gPeak = 120;
+    audio.src = tracks[i].src;
+    audio.load();
+    if (andPlay) {
+      const p = audio.play();
+      if (p && p.catch) p.catch(()=>{});
+    }
+    draw();
+  };
+  container.querySelectorAll('.ipod-device .a-rowzone').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const idx = +b.dataset.i;
+    if (i === idx && !audio.paused) {
+      audio.pause();
+    } else {
+      load(idx, true);
+    }
   }));
+  container.querySelectorAll('.ipod-device .a-glyph').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const a = b.dataset.a;
+    ensureGraph();
+    kickAC();
+    if (a === 'toggle' || a === 'play') {
+      if (!audio.src) {
+        load(0, true);
+      } else if (audio.paused) {
+        const p = audio.play();
+        if (p && p.catch) p.catch(()=>{});
+      } else {
+        audio.pause();
+      }
+    } else if (a === 'menu') {
+      load(0, true);
+    } else {
+      load(i + (a === 'next' ? 1 : -1), true);
+    }
+  }));
+  art.style.cursor = 'pointer';
+  art.addEventListener('click', () => {
+    ensureGraph();
+    kickAC();
+    if (audio.paused) {
+      if (!audio.src) load(0, true);
+      else audio.play().catch(()=>{});
+    } else {
+      audio.pause();
+    }
+  });
   audio.addEventListener('error', draw);
+  audio.addEventListener('loadedmetadata', draw);
+  audio.addEventListener('canplay', draw);
   audio.addEventListener('timeupdate', draw);
   audio.addEventListener('durationchange', draw);
-  audio.addEventListener('play', draw); audio.addEventListener('pause', draw);
-  audio.addEventListener('ended', () => load(i + 1));
+  audio.addEventListener('play', () => { kickAC(); draw(); });
+  audio.addEventListener('pause', draw);
+  audio.addEventListener('ended', () => load(i + 1, true));
   audio.addEventListener('play', () => { if (tvVideo) tvVideo.pause(); });
-  draw();
+  load(0, autoPlay);
 }
 const tapeArt = (n) => {
   const W = 22;
