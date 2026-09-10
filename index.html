@@ -233,9 +233,9 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
 #sec-life{display:flex;flex-direction:column;justify-content:flex-start;}
 #sec-work{display:flex;flex-direction:column;justify-content:flex-start;}
 #sec-life,#sec-contact{display:flex;flex-direction:column;justify-content:flex-start;}
-.weather-bar{flex:0 0 auto;font-family:'Roboto Mono',monospace;color:rgba(232,226,217,.62);padding:.5rem clamp(1.2rem,2.5vw,2.4rem) .6rem;border-bottom:1px solid rgba(232,226,217,.08);}
-.weather-bar .wx-copy{font-size:11px;letter-spacing:.06em;color:rgba(232,226,217,.55);margin-bottom:.4rem;}
-.weather-bar .wx-art{font-size:12px;line-height:1.15;color:#d8cfc0;white-space:pre;margin:0;user-select:none;}
+.weather-card{flex-shrink:0;font-family:'Roboto Mono',monospace;color:rgba(232,226,217,.62);margin-bottom:1rem;}
+.weather-card .wx-copy{font-size:11px;letter-spacing:.06em;color:rgba(232,226,217,.55);margin-bottom:.4rem;}
+.weather-card .wx-art{font-size:12px;line-height:1.15;color:#d8cfc0;white-space:pre;margin:0;user-select:none;overflow:hidden;}
 .sec-label{font-size:clamp(10px,1.1vh,12px);letter-spacing:.2em;text-transform:uppercase;color:rgba(232,226,217,.65);margin-bottom:clamp(0.6rem,1.5vh,1.2rem);display:flex;align-items:center;gap:12px;flex-shrink:0;cursor:pointer;user-select:none;transition:color .2s;}
 .sec-label:hover{color:#fff;}
 .sec-label::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.12);transition:background .2s;}
@@ -564,15 +564,11 @@ a.proj{text-decoration:none;color:inherit;}
 .a-rowzone:hover{background:rgba(232,216,184,.06);}
 /* ipod: controls as outline rings over carved art cells — simple, no filled chips (center = white) */
 .ipod-device .a-pre,.ipod-device .a-glyph,.ipod-device .a-rowzone{font-size:clamp(10px,1.35vh,14.5px);}
-.ipod-device .a-glyph{background:none;border:1.5px solid rgba(232,216,184,.35);border-radius:999px;
-  font-weight:700;min-width:3.4ch;height:3.4ch;padding:0;line-height:1;box-sizing:border-box;
-  display:inline-flex;align-items:center;justify-content:center;
-  color:#e8dfc9;transform:translate(-50%,-50%) scale(1.45);}
-.ipod-device .a-glyph.ag-menu{min-width:7ch;padding:0 1.2ch;}
-.ipod-device .a-glyph:hover{background:rgba(232,216,184,.08);border-color:rgba(232,216,184,.9);color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.8);}
-.ipod-device .a-glyph svg{width:58%;height:58%;display:block;fill:currentColor;}
-.ipod-device .a-glyph.ag-center{background:#f2efe6;color:#262019;border-color:rgba(0,0,0,.45);box-shadow:0 2px 5px rgba(0,0,0,.35);}
-.ipod-device .a-glyph.ag-center:hover{background:#fff;color:#000;border-color:#000;}
+.ipod-device .a-glyph{font-weight:700;color:#e8dfc9;transform:translate(-50%,-50%);}
+.ipod-device .a-glyph.ag-menu{letter-spacing:.06em;}
+.ipod-device .a-glyph:hover{color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.8);}
+.ipod-device .a-glyph.ag-center{color:#c9a87c;}
+.ipod-device .a-glyph.ag-center:hover{color:#fff7e9;text-shadow:0 0 8px rgba(201,168,124,.9);}
 
 
 .tv-ctl-shelf{position:absolute;display:flex;align-items:center;justify-content:space-around;font-size:var(--tvfs);line-height:1;pointer-events:none;}
@@ -591,9 +587,9 @@ a.proj{text-decoration:none;color:inherit;}
   </div>
 
   <div class="right" id="right">
-    <div class="weather-bar" id="weather-bar"></div>
     <div class="section" id="sec-life">
       <div class="sec-label">things i do</div>
+      <div class="weather-card" id="weather-card"></div>
       <div class="hobbies-grid" id="hgrid">
         <button class="hcard active" data-hobby="dev">
           <svg class="hc-icon" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="11" rx="1.5" stroke="#c4a882" stroke-width="1"/><path d="M6 9 L8 11 L6 13" stroke="#c4a882" stroke-width="1.2" stroke-linecap="round"/><line x1="10" y1="13" x2="14" y2="13" stroke="#c4a882" stroke-width="1.2" stroke-linecap="round"/><rect x="7" y="15" width="6" height="1.5" rx=".5" fill="rgba(196,168,130,.4)"/></svg>
@@ -1077,10 +1073,10 @@ const ART = [
     <div class="ipod-device">
       <pre class="a-pre" id="ipod-art"></pre>
       <button class="a-glyph ag-menu" data-a="menu" aria-label="menu" style="left:20ch;top:23.4em">MENU</button>
-      <button class="a-glyph" data-a="prev" aria-label="previous track" style="left:11.5ch;top:27.6em">◄◄</button>
-      <button class="a-glyph ag-center" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em">●</button>
-      <button class="a-glyph" data-a="next" aria-label="next track" style="left:28.5ch;top:27.6em">►►</button>
-      <button class="a-glyph" data-a="play" aria-label="play or pause" style="left:20ch;top:31.8em">▶</button>
+      <button class="a-glyph" data-a="prev" aria-label="previous track" style="left:11.5ch;top:27.6em"><<</button>
+      <button class="a-glyph ag-center" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em">O</button>
+      <button class="a-glyph" data-a="next" aria-label="next track" style="left:28.5ch;top:27.6em">>></button>
+      <button class="a-glyph" data-a="play" aria-label="play or pause" style="left:20ch;top:31.8em">></button>
       ${tracks.slice(0, 3).map((t,k)=>'<button class="a-rowzone" data-i="' + k + '" aria-label="play ' + t.title + '" style="top:' + ([4,6,8][k] * 1.2) + 'em;height:1.2em"></button>').join('\n      ')}
     </div>`;
   const art = container.querySelector('#ipod-art');
@@ -1909,11 +1905,11 @@ document.addEventListener('touchend', () => {
   boot();
 })();
 
-// Weather header — ASCII dithered sky (inspired by chrcit.com). Open-Meteo, no key.
+// Weather — ASCII dithered sky (inspired by chrcit.com). Open-Meteo, no key.
 (function(){
-  const bar = document.getElementById('weather-bar'); if (!bar) return;
+  const host = document.getElementById('weather-card'); if (!host) return;
   const PLACE = 'New Brunswick, US', LAT = 40.4862, LON = -74.4518;
-  const H = 8;
+  const H = 7;
   const RAMP = ' .:-=+*#%@';
   const scene = code => {
     const s = { haze:.1, clouds:.35, sun:.5, rain:0, snow:0, fog:0, storm:0 };
@@ -1934,17 +1930,15 @@ document.addEventListener('touchend', () => {
   const hash = n => { const x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); };
   const clamp = v => v < 0 ? 0 : v > 1 ? 1 : v;
 
-  const copy = document.createElement('div'); copy.className = 'wx-copy';
-  const art = document.createElement('pre'); art.className = 'wx-art';
-  bar.appendChild(copy); bar.appendChild(art);
+  host.innerHTML = '<div class="wx-copy"></div><pre class="wx-art"></pre>';
+  const copy = host.querySelector('.wx-copy'), art = host.querySelector('.wx-art');
 
-  let code = null, tempMax = null;
+  let code = 0, tempMax = null;   // default clear — renders immediately, before fetch
   const night = () => { const h = new Date().getHours(); return h >= 21 || h < 6; };
 
   function draw(t) {
-    if (code == null) return;
     const s = scene(code), isNight = night();
-    const W = Math.max(40, Math.min(72, Math.floor((bar.clientWidth - 16) / 7.2)));
+    const W = Math.max(30, Math.min(80, Math.floor((host.clientWidth - 4) / 7.2)));
     let out = '';
     for (let y = 0; y < H; y++) {
       const ay = y / (H - 1);
@@ -1991,17 +1985,12 @@ document.addEventListener('touchend', () => {
       code = j.current.weather_code;
       tempMax = j.daily && j.daily.temperature_2m_max ? j.daily.temperature_2m_max[0] : j.current.temperature_2m;
       refresh();
-    }).catch(() => { if (code == null) { code = 0; refresh(); } });
+    }).catch(() => {});
   load();
-
-  let raf = null, t0 = performance.now(), on = true;
-  const tick = now => { if (!on) return; draw((now - t0) / 1000); raf = requestAnimationFrame(tick); };
-  const start = () => { if (!on) { on = true; t0 = performance.now(); raf = requestAnimationFrame(tick); } };
-  const stop = () => { on = false; if (raf) cancelAnimationFrame(raf); };
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) draw(3);
-  else start();
-  document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
-  setInterval(load, 15 * 60 * 1000);
+  refresh();
+  let t0 = performance.now();
+  const tick = now => { draw((now - t0) / 1000); requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
 })();
 
 updateStickerPos(stickerX, stickerY);
