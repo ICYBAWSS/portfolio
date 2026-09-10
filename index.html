@@ -215,7 +215,7 @@ html,body{background:#1c1410;}
    The final section fills 100% so no empty space appears below it. */
 .section{flex:0 0 calc(100% - var(--peek));height:calc(100% - var(--peek));min-height:calc(100% - var(--peek));max-height:calc(100% - var(--peek));padding:clamp(0.9rem,2.2vh,1.8rem) clamp(1.2rem,2.5vw,2.4rem);border-bottom:1px solid rgba(232,226,217,.1);scroll-snap-align:start;scroll-snap-stop:normal;display:flex;flex-direction:column;overflow:hidden;position:relative;}
 #sec-work{display:flex;flex-direction:column;justify-content:flex-start;}
-.sec-label{font-family:'Valley Sans',sans-serif;font-weight:700;font-size:clamp(11px,1.2vh,13px);letter-spacing:.16em;text-transform:uppercase;color:rgba(232,226,217,.72);margin-bottom:clamp(0.6rem,1.5vh,1.2rem);display:flex;align-items:center;gap:12px;flex-shrink:0;cursor:pointer;user-select:none;transition:color .2s;}
+.sec-label{font-family:'Valley Sans',sans-serif;font-weight:700;font-size:clamp(12px,1.3vh,14px);letter-spacing:.06em;text-transform:lowercase;color:rgba(232,226,217,.72);margin-bottom:clamp(0.6rem,1.5vh,1.2rem);display:flex;align-items:center;gap:12px;flex-shrink:0;cursor:pointer;user-select:none;transition:color .2s;}
 .sec-label:hover{color:#fff;}
 .sec-label::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.12);transition:background .2s;}
 .sec-label:hover::after{background:rgba(232,226,217,.25);}
@@ -303,7 +303,7 @@ a.proj{text-decoration:none;color:inherit;}
 .proj:hover .proj-arrow{color:#6e4518;transform:translate(2px,-2px);}
 .proj-list.prose{display:block;max-width:600px;padding:.2rem 0;}
 .proj-list.prose .about-p{max-width:580px;}
-.hack-head{grid-column:1/-1;font-family:'Valley Sans',sans-serif;font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(232,226,217,.6);margin-top:1.6rem;display:flex;align-items:center;gap:12px;}
+.hack-head{grid-column:1/-1;font-family:'Valley Sans',sans-serif;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:lowercase;color:rgba(232,226,217,.6);margin-top:1.6rem;display:flex;align-items:center;gap:12px;}
 .hack-head::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.12);}
 
 
@@ -325,7 +325,7 @@ a.proj{text-decoration:none;color:inherit;}
 #sec-board{flex:0 0 100%;height:100%;min-height:100%;max-height:100%;border-bottom:none;justify-content:flex-start;overflow-y:auto;
   scroll-snap-align:start;scroll-snap-stop:normal;scrollbar-width:none;}
 #sec-board::-webkit-scrollbar{display:none;}
-.board-head{font-family:'Valley Sans',sans-serif;font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(232,226,217,.5);margin:1.4rem 0 .6rem;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.board-head{font-family:'Valley Sans',sans-serif;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:lowercase;color:rgba(232,226,217,.5);margin:1.4rem 0 .6rem;display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .board-head::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.08);}
 .board-scroll{overflow-x:hidden;flex-shrink:0;padding:4px;border-radius:2px;background:#0d0c0a;width:fit-content;max-width:100%;margin-inline:auto;}
 .board-cork{position:relative;width:546px;height:296px;background:#161512;}
@@ -588,9 +588,9 @@ a.proj{text-decoration:none;color:inherit;}
   .sec-label {
     font-family: 'Valley Sans', sans-serif !important;
     font-weight: 700 !important;
-    font-size: 13px !important;
-    letter-spacing: .16em !important;
-    text-transform: uppercase !important;
+    font-size: 14px !important;
+    letter-spacing: .06em !important;
+    text-transform: lowercase !important;
     margin-bottom: 1.2rem !important;
   }
   .work-tabs {
@@ -735,7 +735,7 @@ a.proj{text-decoration:none;color:inherit;}
 
   <div class="right" id="right">
     <div class="section" id="sec-work">
-      <div class="sec-label" id="work-label">Stuff I've built</div>
+      <div class="sec-label" id="work-label">stuff i've built</div>
       <div class="work-tabs" id="work-tabs">
         <button class="work-tab active" data-hobby="dev">
           <svg class="tab-icon" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 9 L8 11 L6 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="10" y1="13" x2="14" y2="13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
@@ -1162,22 +1162,22 @@ function applyCardTextColor(){   // sample multi-zone luminance of text area →
 
 const contentData = {
   dev: {
-    label: "Stuff I've built",
+    label: "stuff i've built",
     workType: 'list',
     work: []   // real projects load from pinned.json (see loadProjects)
   },
   dj: {
-    label: "Listen to my show!",
+    label: "listen to my show!",
     workType: 'text',
     work: '<pre class="a-pre">' + DJ_RADIO.join('\n') + '</pre>' + `<p class="about-p"><strong>Radio DJ at The Core on 90.3 FM</strong></p><p class="about-p">Follow the show — <a href="https://www.instagram.com/headphonemusic_on90.3/" target="_blank" rel="noopener">@headphonemusic_on90.3</a></p>`
   },
   producer: {
-    label: "Music I've produced",
+    label: "music i've produced",
     workType: 'ipod',
     work: MEDIA.music
   },
   vfx: {
-    label: 'Watch some of my work',
+    label: 'watch some of my work',
     workType: 'tv',
     work: MEDIA.videos
   }
