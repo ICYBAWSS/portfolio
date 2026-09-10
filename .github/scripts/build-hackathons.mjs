@@ -27,6 +27,15 @@ async function vendorImage(name, url) {
   } catch { return null; }
 }
 
+async function galleryImage(url) {
+  try {
+    const page = await (await fetch(url, { headers })).text();
+    const m = page.match(/software_photos\/[^"]*?\/datas\/gallery\.jpg/);
+    if (!m) return null;
+    return 'https://d112y698adiu2z.cloudfront.net/photos/production/' + m[0].replace('gallery.jpg', 'original.png');
+  } catch { return null; }
+}
+
 const html = await (await fetch(`https://devpost.com/${user}`, { headers })).text();
 const cards = html.split(/class="[^"]*gallery-item[^"]*"/).slice(1);
 const out = [];
@@ -36,7 +45,7 @@ for (const c of cards) {
   const url  = (c.match(/class="[^"]*block-wrapper-link[^"]*"[^>]+href="([^"]+)"/) || [])[1] || `https://devpost.com/${user}`;
   const tag  = ((c.match(/class="[^"]*tagline[^"]*"[^>]*>(.*?)<\/p>/s) || [])[1] || '').replace(/\s+/g, ' ').trim();
   const thumb = (c.match(/class="[^"]*software_thumbnail_image[^"]*"[^>]+(?:src|data-src)="([^"]+)"/) || [])[1];
-  const image = await vendorImage(name, thumb);
+  const image = await vendorImage(name, (await galleryImage(url)) || thumb);
   out.push({ name, description: tag, url, language: null, tags: [], image });
   console.log(`- ${name}: image=${image ?? 'none'} ${url}`);
 }

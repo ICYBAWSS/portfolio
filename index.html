@@ -1711,13 +1711,6 @@ document.addEventListener('touchend', () => {
   const emptyMsg = document.getElementById('board-empty');
   const scrollBox = document.querySelector('.board-scroll');
   const pctx = pad.getContext('2d');
-  // ascii frame: 70 chars × 19 rows (546×296px at 13px/1.2 mono) — chunky # border
-  const frame = document.getElementById('board-frame');
-  if (frame) {
-    const C = 68, R = 17;
-    const bar = '#'.repeat(C + 2);
-    frame.textContent = bar + '\n' + ('#' + ' '.repeat(C) + '#\n').repeat(R) + bar;
-  }
   const KEEP = 300;   // ponytail: no cap — board accumulates; safety slice only (paginate if ever >300)
   let myUid = null, notes = [], fs = null;
   const render = () => {
