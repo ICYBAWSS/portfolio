@@ -509,25 +509,25 @@ a.proj{text-decoration:none;color:inherit;}
     color: #241a0c;
     letter-spacing: -0.02em;
   }
-  /* sticker avatar displayed clearly and beautifully in paper header */
+  /* On mobile: sticker floats as a dynamic companion, visible anywhere, fully draggable */
   .sticker-scene {
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
-    right: auto !important;
-    margin: 6px auto !important;
-    transform: none !important;
-    display: flex !important;
-    justify-content: center !important;
-    z-index: 30 !important;
-    max-width: 220px !important;
-  }
-  .sticker-scene.is-moved {
-    position: absolute !important;
+    position: fixed !important;
+    z-index: 99999 !important;
     margin: 0 !important;
+    touch-action: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    cursor: grab !important;
+    max-width: 140px !important;
+    display: inline-block !important;
+  }
+  .sticker-scene.dragging {
+    cursor: grabbing !important;
+    z-index: 100000 !important;
+    transform: scale(1.06) !important;
   }
   .sticker-img {
-    width: clamp(170px, 48vw, 210px) !important;
+    width: clamp(95px, 25vw, 125px) !important;
     height: auto !important;
   }
   .paper-weather {
@@ -634,16 +634,35 @@ a.proj{text-decoration:none;color:inherit;}
     height: auto !important;
     max-height: none !important;
     overflow: visible !important;
-    padding-bottom: 3.5rem !important;
+    padding-bottom: max(7.5rem, calc(6rem + env(safe-area-inset-bottom, 34px))) !important;
   }
   .board-scroll {
     max-width: 100% !important;
     overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    padding-bottom: 8px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .board-scroll::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
   .board-pad-wrap {
     width: 100% !important;
     max-width: 480px !important;
-    margin: 1rem auto 0 !important;
+    margin: 1.2rem auto 0 !important;
+    padding-bottom: 2.5rem !important;
+  }
+  .board-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 8px !important;
+    padding-bottom: 1rem !important;
   }
   #board-pad {
     width: 100% !important;
@@ -1010,6 +1029,10 @@ window.addEventListener('mousemove', e => {
   triggerEyeUpdate(e.clientX, e.clientY);
 }, { passive: true });
 
+window.addEventListener('touchstart', e => {
+  if (e.touches && e.touches.length) triggerEyeUpdate(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: true });
+
 window.addEventListener('touchmove', e => {
   if (e.touches && e.touches.length) triggerEyeUpdate(e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: true });
@@ -1029,7 +1052,7 @@ setTimeout(blinkEyes, 2500);
 // Click/tap sticker to wink/blink
 if (stickerScene) {
   stickerScene.addEventListener('click', () => {
-    if (isDragging) return;
+    if (isDragging || dragMovedDist > 5) return;
     const eyes = document.querySelectorAll('.sticker-eye');
     eyes.forEach(el => el.classList.add('blinking'));
     setTimeout(() => eyes.forEach(el => el.classList.remove('blinking')), 150);
@@ -1684,15 +1707,25 @@ function renderText() {
 let hasMovedSticker = false;
 let dragStartX = 0, dragStartY = 0;
 let lastDragClientX = 0, lastDragClientY = 0;
+let dragMovedDist = 0;
 
 function updateStickerPos(x, y) {
-  if (window.innerWidth <= 768 && !hasMovedSticker) {
-    stickerScene.style.left = '';
-    stickerScene.style.top = '';
-    stickerScene.style.position = '';
-    if (stickerScene.parentElement !== leftPanel) {
-      leftPanel.insertBefore(stickerScene, document.getElementById('paper-weather'));
+  if (window.innerWidth <= 768) {
+    if (!hasMovedSticker) {
+      const defX = Math.max(10, window.innerWidth - (stickerScene.offsetWidth || 115) - 14);
+      const defY = 14;
+      stickerX = defX;
+      stickerY = defY;
+    } else {
+      const maxX = Math.max(0, window.innerWidth - (stickerScene.offsetWidth || 115));
+      const maxY = Math.max(0, window.innerHeight - (stickerScene.offsetHeight || 140));
+      stickerX = Math.max(0, Math.min(stickerX, maxX));
+      stickerY = Math.max(0, Math.min(stickerY, maxY));
     }
+    stickerScene.style.position = 'fixed';
+    stickerScene.style.left = stickerX + 'px';
+    stickerScene.style.top = stickerY + 'px';
+    stickerScene.style.zIndex = '99999';
     return;
   }
 
@@ -1738,32 +1771,58 @@ function startStickerDrag(clientX, clientY) {
   dragStartY = clientY;
   lastDragClientX = clientX;
   lastDragClientY = clientY;
+  dragMovedDist = 0;
   stickerScene.classList.add('dragging');
 
-  const portEl = document.querySelector('.port') || document.body;
   const curRect = stickerScene.getBoundingClientRect();
   dragOffX = clientX - curRect.left;
   dragOffY = clientY - curRect.top;
 
-  if (stickerScene.parentElement !== portEl) {
-    const portRect = portEl.getBoundingClientRect();
-    portEl.appendChild(stickerScene);
-    stickerScene.style.position = 'absolute';
-    stickerScene.style.left = (curRect.left - portRect.left) + 'px';
-    stickerScene.style.top = (curRect.top - portRect.top) + 'px';
+  if (window.innerWidth <= 768) {
+    if (stickerScene.parentElement !== document.body) {
+      document.body.appendChild(stickerScene);
+    }
+    stickerScene.style.position = 'fixed';
+    stickerScene.style.left = curRect.left + 'px';
+    stickerScene.style.top = curRect.top + 'px';
+    stickerScene.style.zIndex = '100000';
+  } else {
+    const portEl = document.querySelector('.port') || document.body;
+    if (stickerScene.parentElement !== portEl) {
+      const portRect = portEl.getBoundingClientRect();
+      portEl.appendChild(stickerScene);
+      stickerScene.style.position = 'absolute';
+      stickerScene.style.left = (curRect.left - portRect.left) + 'px';
+      stickerScene.style.top = (curRect.top - portRect.top) + 'px';
+    }
+    stickerScene.style.zIndex = '99999';
   }
-  stickerScene.style.zIndex = '99999';
 }
 
 function moveStickerDrag(clientX, clientY) {
   if (!isDragging) return;
+  dragMovedDist += Math.hypot(clientX - lastDragClientX, clientY - lastDragClientY);
   lastDragClientX = clientX;
   lastDragClientY = clientY;
 
-  if (!hasMovedSticker && Math.hypot(clientX - dragStartX, clientY - dragStartY) > 3) {
+  if (!hasMovedSticker && dragMovedDist > 3) {
     hasMovedSticker = true;
     stickerWrap.classList.add('is-moved');
     stickerScene.classList.add('is-moved');
+  }
+
+  if (window.innerWidth <= 768) {
+    const rawX = clientX - dragOffX;
+    const rawY = clientY - dragOffY;
+    const maxX = Math.max(0, window.innerWidth - stickerScene.offsetWidth);
+    const maxY = Math.max(0, window.innerHeight - stickerScene.offsetHeight);
+    stickerX = Math.max(0, Math.min(rawX, maxX));
+    stickerY = Math.max(0, Math.min(rawY, maxY));
+    stickerScene.style.position = 'fixed';
+    stickerScene.style.left = stickerX + 'px';
+    stickerScene.style.top = stickerY + 'px';
+    if (typeof triggerEyeUpdate === 'function') triggerEyeUpdate(clientX, clientY);
+    return;
   }
 
   const portEl = document.querySelector('.port') || document.body;
@@ -1784,6 +1843,14 @@ function endStickerDrag() {
   if (!isDragging) return;
   isDragging = false;
   stickerScene.classList.remove('dragging');
+
+  if (window.innerWidth <= 768) {
+    stickerScene.style.position = 'fixed';
+    stickerScene.style.left = stickerX + 'px';
+    stickerScene.style.top = stickerY + 'px';
+    stickerScene.style.zIndex = '99999';
+    return;
+  }
 
   const portEl = document.querySelector('.port') || document.body;
   const rightEl = document.getElementById('right');
@@ -1826,44 +1893,79 @@ function endStickerDrag() {
     }
   }
 
-  if (window.innerWidth <= 768 && !hasMovedSticker) {
-    leftPanel.insertBefore(stickerScene, document.getElementById('paper-weather'));
-    stickerScene.style.position = '';
-    stickerScene.style.left = '';
-    stickerScene.style.top = '';
-    stickerScene.style.zIndex = '30';
-  } else {
-    portEl.appendChild(stickerScene);
-    stickerScene.style.position = 'absolute';
-    stickerScene.style.left = stickerX + 'px';
-    stickerScene.style.top = stickerY + 'px';
-    stickerScene.style.zIndex = '99999';
-  }
+  portEl.appendChild(stickerScene);
+  stickerScene.style.position = 'absolute';
+  stickerScene.style.left = stickerX + 'px';
+  stickerScene.style.top = stickerY + 'px';
+  stickerScene.style.zIndex = '99999';
   renderText();
 }
 
-stickerScene.addEventListener('mousedown', e => {
+let pointerDragging = false;
+
+stickerScene.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  pointerDragging = true;
+  try { stickerScene.setPointerCapture(e.pointerId); } catch(_) {}
   startStickerDrag(e.clientX, e.clientY);
   e.preventDefault();
 });
-document.addEventListener('mousemove', e => {
-  moveStickerDrag(e.clientX, e.clientY);
-});
-document.addEventListener('mouseup', endStickerDrag);
-window.addEventListener('blur', endStickerDrag);
 
+stickerScene.addEventListener('mousedown', e => {
+  if (pointerDragging) return;
+  if (e.button !== 0) return;
+  startStickerDrag(e.clientX, e.clientY);
+  e.preventDefault();
+});
+
+stickerScene.addEventListener('pointermove', e => {
+  if (!isDragging) return;
+  moveStickerDrag(e.clientX, e.clientY);
+  e.preventDefault();
+});
+
+const onPointerUp = e => {
+  if (!isDragging && !pointerDragging) return;
+  pointerDragging = false;
+  try { stickerScene.releasePointerCapture(e.pointerId); } catch(_) {}
+  endStickerDrag();
+};
+
+stickerScene.addEventListener('pointerup', onPointerUp);
+stickerScene.addEventListener('pointercancel', onPointerUp);
+
+// Global fallback listeners for mouse
+document.addEventListener('mousemove', e => {
+  if (isDragging && !pointerDragging) moveStickerDrag(e.clientX, e.clientY);
+});
+document.addEventListener('mouseup', () => {
+  if (isDragging && !pointerDragging) endStickerDrag();
+});
+window.addEventListener('blur', () => {
+  if (isDragging) endStickerDrag();
+});
+
+// Touch fallback listeners
 stickerScene.addEventListener('touchstart', e => {
   if (e.touches.length !== 1) return;
   const t = e.touches[0];
   startStickerDrag(t.clientX, t.clientY);
-}, { passive: true });
+  e.preventDefault();
+}, { passive: false });
+
 document.addEventListener('touchmove', e => {
   if (!isDragging || e.touches.length !== 1) return;
   const t = e.touches[0];
   moveStickerDrag(t.clientX, t.clientY);
-}, { passive: true });
-document.addEventListener('touchend', endStickerDrag);
-document.addEventListener('touchcancel', endStickerDrag);
+  e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('touchend', () => {
+  if (isDragging) endStickerDrag();
+});
+document.addEventListener('touchcancel', () => {
+  if (isDragging) endStickerDrag();
+});
 
 // ── wet-ink, InkField-style: spring-damper brush (thickness = base − speed, size drains,
 //    bristle "fly branches" + spray dots, fly-white gaps) onto a force-field diffusion grid
