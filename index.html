@@ -191,6 +191,7 @@ html,body{background:#1c1410;}
 }
 
 /* ── Live ASCII sky, stamped straight on the paper (no card, nothing to set by hand) ── */
+.mobile-bar{display:contents;}
 .mobile-brand{display:none;}
 .paper-weather{margin-top:auto;position:relative;z-index:10;font-family:'Roboto Mono',monospace;color:#2a1f14;user-select:none;}
 .wx-ascii{font-size:10px;line-height:1.15;white-space:pre;margin:0;overflow:hidden;color:rgba(60,45,30,.2);}
@@ -317,6 +318,9 @@ a.proj{text-decoration:none;color:inherit;}
 .contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(200px,20vw,280px),1fr));gap:clamp(12px,1.5vw,18px);}
 .contact-card{background:#14120e;border:1px solid rgba(196,168,130,.2);border-radius:4px;padding:clamp(1rem,2vh,1.4rem) clamp(1rem,1.6vw,1.4rem);display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;transition:all .2s ease;box-shadow:0 2px 5px rgba(0,0,0,.25);}
 .contact-card:hover{background:#1d1813;border-color:#c9a87c;transform:translateY(-2px);box-shadow:0 6px 16px -4px rgba(0,0,0,.45);}
+.cc-header{display:flex;align-items:center;gap:7px;}
+.cc-logo{width:15px;height:15px;color:#c4a882;flex-shrink:0;transition:color .2s ease,transform .2s ease;}
+.contact-card:hover .cc-logo{color:#e8dfc9;transform:scale(1.1);}
 .cc-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#c4a882;font-family:'Roboto Mono',monospace;font-weight:700;}
 .cc-val{font-size:clamp(13px,1.2vw,15px);color:#e8e2d9;font-weight:500;font-family:'Roboto Mono',monospace;}
 .cc-hint{font-size:11px;color:rgba(196,168,130,.6);margin-top:2px;}
@@ -466,8 +470,14 @@ a.proj{text-decoration:none;color:inherit;}
 
 /* ── Mobile: natural vertical flow with full paper header, readable cards, and live ASCII weather ── */
 @media (max-width: 768px) {
-  html, body {
+  html {
     overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    min-height: 100dvh !important;
+  }
+  body {
+    overflow: visible !important;
     height: auto !important;
     min-height: 100dvh !important;
   }
@@ -475,8 +485,7 @@ a.proj{text-decoration:none;color:inherit;}
     flex-direction: column !important;
     height: auto !important;
     min-height: 100dvh !important;
-    overflow-y: visible !important;
-    overflow-x: hidden !important;
+    overflow: visible !important;
   }
   .left {
     width: 100% !important;
@@ -484,78 +493,92 @@ a.proj{text-decoration:none;color:inherit;}
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
-    padding: 24px 18px 20px !important;
+    padding: 16px 18px 12px !important;
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important;
+    align-items: stretch !important;
     justify-content: flex-start !important;
-    gap: 14px !important;
+    gap: 0 !important;
     border-right: none !important;
-    border-bottom: 2px solid rgba(130, 95, 55, .35) !important;
-    position: relative !important;
+    border-bottom: 1.5px solid rgba(130, 95, 55, .32) !important;
+    position: sticky !important;
+    top: 0 !important;
     z-index: 500 !important;
     box-sizing: border-box !important;
-    transition: padding 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.25s ease,
-                background-color 0.25s ease !important;
-  }
-  /* When scrolled: the whole paper section gets thin */
-  .left.is-compact {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    height: 52px !important;
-    max-height: 52px !important;
-    padding: 6px 18px !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    gap: 12px !important;
     background: #f7f3eb !important;
+    touch-action: none !important;
+    transition: padding 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.38s ease,
+                background-color 0.38s ease,
+                border-color 0.38s ease !important;
+  }
+  /* When scrolled: the whole paper section gets thin smoothly */
+  .left.is-compact {
+    position: sticky !important;
+    top: 0 !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    flex-direction: column !important;
+    padding: 7px 18px !important;
+    background: rgba(247, 243, 235, 0.96) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     border-bottom: 1.5px solid rgba(130, 95, 55, .42) !important;
-    box-shadow: 0 4px 18px rgba(40, 25, 15, .15) !important;
-    z-index: 1000 !important;
+    box-shadow: 0 4px 18px rgba(40, 25, 15, .12) !important;
+    touch-action: auto !important;
   }
   .left.is-compact .ink-canvas { display: none !important; }
   #text-canvas { display: none !important; }
 
+  .mobile-bar {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    z-index: 10 !important;
+    gap: 12px !important;
+  }
+
   .mobile-brand {
     display: flex !important;
     flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
+    align-items: flex-start !important;
+    text-align: left !important;
     cursor: pointer !important;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
   }
   .mobile-brand .mb-name {
     font-family: 'Roboto Mono', monospace;
     font-weight: 700;
-    font-size: clamp(20px, 6vw, 26px);
+    font-size: clamp(20px, 5.5vw, 24px);
     color: #241a0c;
     letter-spacing: -0.02em;
-    text-transform: lowercase;
-    transition: font-size 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  }
-  .left.is-compact .mobile-brand {
-    align-items: flex-start !important;
-    text-align: left !important;
-    margin: 0 !important;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: font-size 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                letter-spacing 0.38s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
   .left.is-compact .mobile-brand .mb-name {
     font-size: 16px !important;
     letter-spacing: -0.01em !important;
-    line-height: 1 !important;
   }
 
-  /* Sticker on mobile: docked inside paper section, scales smaller when compact */
+  /* Sticker on mobile: docked inside mobile-bar, scales smaller when compact */
   .sticker-scene {
     position: relative !important;
     left: auto !important;
     top: auto !important;
     z-index: 10 !important;
     margin: 0 !important;
+    flex: 0 0 auto !important;
     cursor: pointer !important;
     touch-action: manipulation !important;
     user-select: none !important;
@@ -573,28 +596,47 @@ a.proj{text-decoration:none;color:inherit;}
     transform: scale(1.08) !important;
   }
   .sticker-img {
-    width: clamp(90px, 24vw, 115px) !important;
+    width: clamp(72px, 19vw, 84px) !important;
     height: auto !important;
-    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: block !important;
+    transition: width 0.38s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
   /* In thin compact header, sticker scales smaller */
-  .left.is-compact .sticker-scene {
-    order: 2 !important;
-    margin: 0 !important;
-  }
   .left.is-compact .sticker-img {
-    width: 38px !important;
+    width: 36px !important;
     height: auto !important;
+  }
+  /* On mobile: disable synthetic eye overlay to reveal Rayhan's real photo eyes */
+  .sticker-eyes,
+  .glasses-glare {
+    display: none !important;
   }
 
   .paper-weather {
-    margin-top: 4px !important;
     width: 100% !important;
     max-width: 420px !important;
+    margin: 8px auto 0 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    transition: opacity 0.2s ease !important;
+    max-height: 280px !important;
+    opacity: 1 !important;
+    transform: translateY(0) scaleY(1) !important;
+    transform-origin: top center !important;
+    overflow: hidden !important;
+    transition: max-height 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                margin-top 0.42s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  /* When paper section gets thin: the weather animation smoothly collapses and disappears */
+  .left.is-compact .paper-weather {
+    display: flex !important;
+    max-height: 0 !important;
+    opacity: 0 !important;
+    transform: translateY(-8px) scaleY(0.85) !important;
+    margin-top: 0 !important;
+    pointer-events: none !important;
   }
   /* live ASCII weather sky: always prioritized and visible across all mobile dimensions */
   .paper-weather .wx-ascii {
@@ -621,11 +663,6 @@ a.proj{text-decoration:none;color:inherit;}
   .paper-weather .wx-cond { font-size: 11px !important; }
   .paper-weather .wx-place { font-size: 11px !important; font-weight: 600 !important; }
   .paper-weather .wx-clock { font-size: 11px !important; }
-
-  /* When paper section gets thin: the weather animation and widget disappear */
-  .left.is-compact .paper-weather {
-    display: none !important;
-  }
 
   /* Natural vertical scrolling for sections */
   .right {
@@ -784,23 +821,25 @@ a.proj{text-decoration:none;color:inherit;}
 
   <div class="left" id="left">
     <canvas id="text-canvas" style="position:absolute;top:0;left:0;pointer-events:none;width:100%;height:100%;"></canvas>
-    <div class="mobile-brand">
-      <div class="mb-name">rayhan mohamed</div>
-    </div>
-    <div class="sticker-scene" id="sticker-scene">
-      <div class="sticker-wrap" id="sticker-wrap">
-        <img id="sticker-art" class="sticker-img" alt="Rayhan" draggable="false" src="assets/stickers/default.png">
-        <div class="sticker-eyes" id="sticker-eyes">
-          <div class="sticker-eye eye-left" data-eye="left">
-            <div class="sticker-pupil"></div>
+    <div class="mobile-bar" id="mobile-bar">
+      <div class="mobile-brand">
+        <div class="mb-name">Rayhan Mohamed</div>
+      </div>
+      <div class="sticker-scene" id="sticker-scene">
+        <div class="sticker-wrap" id="sticker-wrap">
+          <img id="sticker-art" class="sticker-img" alt="Rayhan" draggable="false" src="assets/stickers/default.png">
+          <div class="sticker-eyes" id="sticker-eyes">
+            <div class="sticker-eye eye-left" data-eye="left">
+              <div class="sticker-pupil"></div>
+            </div>
+            <div class="sticker-eye eye-right" data-eye="right">
+              <div class="sticker-pupil"></div>
+            </div>
           </div>
-          <div class="sticker-eye eye-right" data-eye="right">
-            <div class="sticker-pupil"></div>
+          <div class="glasses-glare">
+            <div class="glare-left"></div>
+            <div class="glare-right"></div>
           </div>
-        </div>
-        <div class="glasses-glare">
-          <div class="glare-left"></div>
-          <div class="glare-right"></div>
         </div>
       </div>
     </div>
@@ -814,7 +853,6 @@ a.proj{text-decoration:none;color:inherit;}
       </div>
     </div>
   </div>
-  <div class="paper-spacer" id="paper-spacer" style="display:none;width:100%;"></div>
 
   <div class="right" id="right">
     <div class="section" id="sec-work">
@@ -846,17 +884,33 @@ a.proj{text-decoration:none;color:inherit;}
         <div class="contact-intro">Talk to me!</div>
         <div class="contact-grid">
           <a class="contact-card" href="mailto:rayhan@email.com" target="_blank" rel="noopener">
-            <div class="cc-label">Email</div>
+            <div class="cc-header">
+              <svg class="cc-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+              <div class="cc-label">Email</div>
+            </div>
             <div class="cc-val">rayhan@email.com</div>
             <div class="cc-hint">Send a note ↗</div>
           </a>
           <a class="contact-card" href="https://github.com/ICYBAWSS" target="_blank" rel="noopener">
-            <div class="cc-label">GitHub</div>
+            <div class="cc-header">
+              <svg class="cc-logo" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              <div class="cc-label">GitHub</div>
+            </div>
             <div class="cc-val">@ICYBAWSS</div>
             <div class="cc-hint">View repositories ↗</div>
           </a>
           <a class="contact-card" href="https://www.linkedin.com/in/rayhanmohamed/" target="_blank" rel="noopener">
-            <div class="cc-label">LinkedIn</div>
+            <div class="cc-header">
+              <svg class="cc-logo" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+              <div class="cc-label">LinkedIn</div>
+            </div>
             <div class="cc-val">Rayhan Mohamed</div>
             <div class="cc-hint">Connect ↗</div>
           </a>
@@ -1042,6 +1096,7 @@ let currentLookX = targetCursorX, currentLookY = targetCursorY;
 let eyeAnimRunning = false;
 
 function updateStickerEyes(cursorX, cursorY) {
+  if (window.innerWidth <= 768) return;
   const eyes = document.querySelectorAll('.sticker-eye');
   if (!eyes.length) return;
   eyes.forEach(eye => {
@@ -1774,20 +1829,22 @@ let lastDragClientX = 0, lastDragClientY = 0;
 let dragMovedDist = 0;
 
 function updateStickerPos(x, y) {
+  const mobileBar = document.getElementById('mobile-bar');
   if (window.innerWidth <= 768) {
-    if (stickerScene.parentElement !== leftPanel) {
-      const brand = leftPanel.querySelector('.mobile-brand');
-      if (brand && brand.nextSibling) {
-        leftPanel.insertBefore(stickerScene, brand.nextSibling);
-      } else {
-        leftPanel.appendChild(stickerScene);
-      }
+    const parentTarget = mobileBar || leftPanel;
+    if (stickerScene.parentElement !== parentTarget) {
+      parentTarget.appendChild(stickerScene);
     }
     stickerScene.style.position = '';
     stickerScene.style.left = '';
     stickerScene.style.top = '';
     stickerScene.style.zIndex = '';
     return;
+  }
+
+  // On desktop: if sticker was inside mobile-bar, move directly to leftPanel
+  if (mobileBar && stickerScene.parentElement === mobileBar) {
+    leftPanel.appendChild(stickerScene);
   }
 
   const portEl = document.querySelector('.port') || document.body;
@@ -2025,17 +2082,10 @@ document.addEventListener('touchcancel', () => {
 });
 
 // Mobile sticky compact header controller
-const paperSpacer = document.getElementById('paper-spacer');
-let lastExpandedHeight = 360;
-
 function updateMobileHeader() {
   if (window.innerWidth > 768) {
     if (leftPanel && leftPanel.classList.contains('is-compact')) {
       leftPanel.classList.remove('is-compact');
-    }
-    if (paperSpacer) {
-      paperSpacer.style.height = '0px';
-      paperSpacer.style.display = 'none';
     }
     return;
   }
@@ -2043,23 +2093,10 @@ function updateMobileHeader() {
   const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
   const isCurrentlyCompact = leftPanel.classList.contains('is-compact');
 
-  if (!isCurrentlyCompact) {
-    const h = leftPanel.offsetHeight;
-    if (h > 100) lastExpandedHeight = h;
-  }
-
   if (scrollY > 35 && !isCurrentlyCompact) {
     leftPanel.classList.add('is-compact');
-    if (paperSpacer) {
-      paperSpacer.style.height = lastExpandedHeight + 'px';
-      paperSpacer.style.display = 'block';
-    }
   } else if (scrollY < 15 && isCurrentlyCompact) {
     leftPanel.classList.remove('is-compact');
-    if (paperSpacer) {
-      paperSpacer.style.height = '0px';
-      paperSpacer.style.display = 'none';
-    }
   }
 }
 
@@ -2242,7 +2279,10 @@ if (mobileBrand) {
     return { x: Math.min(Math.max(e.clientX - r.left, 0), W - 1), y: Math.min(Math.max(e.clientY - r.top, 0), H - 1) };
   };
   paper.addEventListener('pointerdown', e => {
-    if (e.button !== 0 || e.target.closest('button')) return;
+    if (e.button !== 0 || e.target.closest('button') || e.target.closest('a') || e.target.closest('#sticker-scene') || paper.classList.contains('is-compact')) return;
+    if (paper.setPointerCapture) {
+      try { paper.setPointerCapture(e.pointerId); } catch(_) {}
+    }
     if (fade.on) { fade.on = false; wipe(); }                        // new stroke cancels the wipe
     const p = point(e); drawing = true; ax = ay = sp = 0;
     bx = mx = p.x; by = my = p.y; dlx = dly = -1;
@@ -2263,7 +2303,18 @@ if (mobileBrand) {
     }
     cur = Math.max(1.2, cur - .02 * (1 + sp * .04));                 // running out of ink
   });
-  window.addEventListener('pointerup', () => { drawing = false; arm(); });
+  const stopDraw = () => { if (drawing) { drawing = false; arm(); } };
+  window.addEventListener('pointerup', stopDraw);
+  window.addEventListener('pointercancel', stopDraw);
+  paper.addEventListener('touchstart', e => {
+    if (e.target.closest('button') || e.target.closest('a') || e.target.closest('#sticker-scene') || paper.classList.contains('is-compact')) return;
+    e.preventDefault();
+  }, { passive: false });
+  paper.addEventListener('touchmove', e => {
+    if (drawing && !paper.classList.contains('is-compact')) {
+      e.preventDefault();
+    }
+  }, { passive: false });
   window.addEventListener('resize', setup);
   setup();
 })();
