@@ -20,8 +20,8 @@ html,body{background:#1c1410;}
 .sticker-scene{
   position:absolute;
   z-index:99999;
-  width:150px;
-  height:185px;
+  width:200px;
+  height:300px;
   cursor: grab;
   top:12px;
   left:160px;
@@ -67,15 +67,15 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
 .sticker-wrap:has(img),
 .sticker-wrap.is-photo{
   --peel-size: 32px;
-  width: 150px;
-  height: 185px;
+  width: 200px;
+  height: 300px;
   border-radius: 4px;
 }
 .sticker-wrap:has(img) .sticker-media,
 .sticker-wrap.is-photo .sticker-media,
 .sticker-photo{
-  width: 150px;
-  height: 185px;
+  width: 200px;
+  height: 300px;
   object-fit: cover;
   border-radius: 4px;
   clip-path: polygon(
@@ -800,13 +800,15 @@ function drawPixels(pixels){
   }
 }
 // ── Sticker Photoset — drop image paths here to replace the pixel art sticker with any photo/photoset ──
-// Leave empty [] to keep the interactive pixel avatar.
-// If 1 image, displays that photo as the sticker.
-// If multiple images, clicking the sticker cycles through the photoset!
-const STICKER_PHOTOSET = [
-  // 'assets/your-photo-1.jpg',
-  // 'assets/your-photo-2.jpg',
-];
+// ASCII-art sticker (per hobby) — replaces the pixel avatar.
+const STICKER_ASCII = {
+  default:  'assets/stickers/default-ascii.png',
+  dev:      'assets/stickers/developer-ascii.png',
+  dj:       'assets/stickers/dj-ascii.png',
+  producer: 'assets/stickers/producer-ascii.png',
+  vfx:      'assets/stickers/vfx-ascii.png',
+};
+const STICKER_PHOTOSET = [STICKER_ASCII.default];
 
 let stickerPhotoIdx = 0;
 function initStickerPhotoset() {
@@ -862,24 +864,12 @@ function updatePeelPosition(key){
   }
 }
 function switchOutfit(k){
-  updatePeelPosition(k);
-  if(animFrame)cancelAnimationFrame(animFrame);
-  const target=buildOutfit(k), from=currentPx.map(p=>[...p]);
-  const allCoords=new Set(); [...from,...target].forEach(([x,y])=>allCoords.add(`${x},${y}`));
-  const coords=[...allCoords].map(s=>{const[x,y]=s.split(',').map(Number);return[x,y];});
-  const fromMap=new Map(from.map(([x,y,c])=>[`${x},${y}`,c])), targetMap=new Map(target.map(([x,y,c])=>[`${x},${y}`,c]));
-  const start=performance.now();
-  function step(now){
-    const t=Math.min((now-start)/280,1), e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
-    ctx.clearRect(0,0,34,42); const blended=[];
-    for(const[x,y]of coords){
-      const fc=hexRgb(fromMap.get(`${x},${y}`)||'#00000000'), tc=hexRgb(targetMap.get(`${x},${y}`)||'#00000000');
-      if(fromMap.has(`${x},${y}`)||targetMap.has(`${x},${y}`)) blended.push([x,y,rgbHex(lrp(fc[0],tc[0],e),lrp(fc[1],tc[1],e),lrp(fc[2],tc[2],e))]);
-    }
-    for(const[x,y,c]of blended){ctx.fillStyle=c;ctx.fillRect(x+1,y+1,1,1);}
-    if(t<1)animFrame=requestAnimationFrame(step); else{currentPx=target.map(p=>[...p]);drawPixels(currentPx);}
-  }
-  animFrame=requestAnimationFrame(step);
+  const img = document.getElementById('sticker-photo');
+  if (!img) return;
+  const src = STICKER_ASCII[k] || STICKER_ASCII.default;
+  if (img.getAttribute('src') === src) return;
+  img.style.opacity = '0.25';
+  setTimeout(() => { img.src = src; img.style.opacity = '1'; }, 90);
 }
 currentPx=buildOutfit('default'); drawPixels(currentPx); updatePeelPosition('default'); initStickerPhotoset();
 
