@@ -497,29 +497,27 @@ a.proj{text-decoration:none;color:inherit;}
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
-    padding: 16px 18px 12px !important;
+    padding: var(--pad-t, 16px) 18px var(--pad-b, 12px) !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
     justify-content: flex-start !important;
     gap: 0 !important;
     border-right: none !important;
-    border-bottom: 1.5px solid rgba(130, 95, 55, .32) !important;
+    border-bottom: 1.5px solid var(--header-border, rgba(130, 95, 55, .32)) !important;
     position: sticky !important;
     top: 0 !important;
     z-index: 500 !important;
     box-sizing: border-box !important;
-    background: #f7f3eb !important;
+    background: var(--header-bg, #f7f3eb) !important;
+    box-shadow: var(--header-shadow, none) !important;
     touch-action: none !important;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     will-change: padding, box-shadow, background-color, border-color !important;
-    transition: padding 0.38s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.38s ease,
-                background-color 0.38s ease,
-                border-color 0.38s ease !important;
+    transition: none !important;
   }
   /* When scrolled: the whole paper section gets thin smoothly */
   .left.is-compact {
@@ -531,13 +529,14 @@ a.proj{text-decoration:none;color:inherit;}
     height: auto !important;
     max-height: none !important;
     flex-direction: column !important;
-    padding: 7px 18px !important;
-    background: rgba(247, 243, 235, 0.96) !important;
+    padding: var(--pad-t, 7px) 18px var(--pad-b, 7px) !important;
+    background: var(--header-bg, rgba(247, 243, 235, 0.96)) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
-    border-bottom: 1.5px solid rgba(130, 95, 55, .42) !important;
-    box-shadow: 0 4px 18px rgba(40, 25, 15, .12) !important;
+    border-bottom: 1.5px solid var(--header-border, rgba(130, 95, 55, .42)) !important;
+    box-shadow: var(--header-shadow, 0 4px 18px rgba(40, 25, 15, .12)) !important;
     touch-action: auto !important;
+    transition: none !important;
   }
   .left.is-compact .ink-canvas { display: none !important; }
   #text-canvas { display: none !important; }
@@ -572,11 +571,11 @@ a.proj{text-decoration:none;color:inherit;}
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: font-size 0.38s cubic-bezier(0.16, 1, 0.3, 1),
-                letter-spacing 0.38s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    font-size: var(--name-size, clamp(20px, 5.5vw, 24px)) !important;
+    transition: none !important;
   }
   .left.is-compact .mobile-brand .mb-name {
-    font-size: 16px !important;
+    font-size: var(--name-size, 16px) !important;
     letter-spacing: -0.01em !important;
   }
 
@@ -605,7 +604,7 @@ a.proj{text-decoration:none;color:inherit;}
     transform: scale(1.08) !important;
   }
   .sticker-img {
-    width: clamp(72px, 19vw, 84px) !important;
+    width: var(--sticker-w, clamp(72px, 19vw, 84px)) !important;
     height: auto !important;
     display: block !important;
     -webkit-transform: translateZ(0);
@@ -613,11 +612,11 @@ a.proj{text-decoration:none;color:inherit;}
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     will-change: width, transform !important;
-    transition: width 0.38s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: none !important;
   }
   /* In thin compact header, sticker scales smaller */
   .left.is-compact .sticker-img {
-    width: 36px !important;
+    width: var(--sticker-w, 36px) !important;
     height: auto !important;
   }
   /* On mobile: disable synthetic eye overlay to reveal Rayhan's real photo eyes */
@@ -629,32 +628,31 @@ a.proj{text-decoration:none;color:inherit;}
   .paper-weather {
     width: 100% !important;
     max-width: 420px !important;
-    margin: 8px auto 0 !important;
+    margin: var(--wx-mt, 8px) auto 0 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    max-height: 280px !important;
-    opacity: 1 !important;
-    transform: translateY(0) scaleY(1) translateZ(0) !important;
+    max-height: var(--wx-max-h, 280px) !important;
+    opacity: var(--wx-opacity, 1) !important;
+    transform: translateY(var(--wx-ty, 0px)) scaleY(var(--wx-sy, 1)) translateZ(0) !important;
     transform-origin: top center !important;
     overflow: hidden !important;
     contain: paint !important;
+    pointer-events: var(--wx-pe, auto) !important;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     will-change: max-height, opacity, transform !important;
-    transition: max-height 0.42s cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
-                margin-top 0.42s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: none !important;
   }
   /* When paper section gets thin: the weather animation smoothly collapses and disappears */
   .left.is-compact .paper-weather {
     display: flex !important;
-    max-height: 0 !important;
-    opacity: 0 !important;
-    transform: translateY(-8px) scaleY(0.85) translateZ(0) !important;
-    margin-top: 0 !important;
-    pointer-events: none !important;
+    max-height: var(--wx-max-h, 0) !important;
+    opacity: var(--wx-opacity, 0) !important;
+    transform: translateY(var(--wx-ty, -8px)) scaleY(var(--wx-sy, 0.85)) translateZ(0) !important;
+    margin-top: var(--wx-mt, 0) !important;
+    pointer-events: var(--wx-pe, none) !important;
+    transition: none !important;
   }
   /* live ASCII weather sky: always prioritized and visible across all mobile dimensions */
   .paper-weather .wx-ascii {
@@ -2099,27 +2097,75 @@ document.addEventListener('touchcancel', () => {
   if (isDragging) endStickerDrag();
 });
 
-// Mobile sticky compact header controller (RAF-throttled, silky smooth hysteresis)
+// Mobile sticky scroll-driven shrinking header controller
 let mobileHeaderTicking = false;
+const MOBILE_COLLAPSE_RANGE = 140; // Pixels of vertical scroll to complete the shrink
+
 function updateMobileHeader() {
   if (window.innerWidth > 768) {
-    if (leftPanel && leftPanel.classList.contains('is-compact')) {
+    if (leftPanel) {
+      leftPanel.style.removeProperty('--pad-t');
+      leftPanel.style.removeProperty('--pad-b');
+      leftPanel.style.removeProperty('--sticker-w');
+      leftPanel.style.removeProperty('--name-size');
+      leftPanel.style.removeProperty('--wx-max-h');
+      leftPanel.style.removeProperty('--wx-opacity');
+      leftPanel.style.removeProperty('--wx-ty');
+      leftPanel.style.removeProperty('--wx-sy');
+      leftPanel.style.removeProperty('--wx-mt');
+      leftPanel.style.removeProperty('--wx-pe');
+      leftPanel.style.removeProperty('--header-bg');
+      leftPanel.style.removeProperty('--header-shadow');
+      leftPanel.style.removeProperty('--header-border');
       leftPanel.classList.remove('is-compact');
     }
     return;
   }
 
   const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-  const isCurrentlyCompact = leftPanel.classList.contains('is-compact');
+  const p = Math.min(Math.max(scrollY / MOBILE_COLLAPSE_RANGE, 0), 1);
 
-  if (scrollY > 45 && !isCurrentlyCompact) {
+  // Directly drive dimensions and appearance from scroll position (1:1 with user's scroll speed)
+  const padT = (16 - p * 9).toFixed(1) + 'px';
+  const padB = (12 - p * 5).toFixed(1) + 'px';
+  const stickerW = (76 - p * 40).toFixed(1) + 'px';
+  const nameSize = (22 - p * 6).toFixed(1) + 'px';
+  const wxMaxH = ((1 - p) * 230).toFixed(1) + 'px';
+  const wxOpacity = Math.max(0, 1 - p * 1.35).toFixed(2);
+  const wxTy = (-p * 8).toFixed(1) + 'px';
+  const wxSy = (1 - p * 0.12).toFixed(2);
+  const wxMt = (8 - p * 8).toFixed(1) + 'px';
+  const wxPe = p >= 0.85 ? 'none' : 'auto';
+
+  leftPanel.style.setProperty('--pad-t', padT);
+  leftPanel.style.setProperty('--pad-b', padB);
+  leftPanel.style.setProperty('--sticker-w', stickerW);
+  leftPanel.style.setProperty('--name-size', nameSize);
+  leftPanel.style.setProperty('--wx-max-h', wxMaxH);
+  leftPanel.style.setProperty('--wx-opacity', wxOpacity);
+  leftPanel.style.setProperty('--wx-ty', wxTy);
+  leftPanel.style.setProperty('--wx-sy', wxSy);
+  leftPanel.style.setProperty('--wx-mt', wxMt);
+  leftPanel.style.setProperty('--wx-pe', wxPe);
+
+  if (p > 0.05) {
+    leftPanel.style.setProperty('--header-bg', 'rgba(247, 243, 235, ' + (0.92 + p * 0.06).toFixed(2) + ')');
+    leftPanel.style.setProperty('--header-shadow', '0 4px 18px rgba(40, 25, 15, ' + (p * 0.12).toFixed(2) + ')');
+    leftPanel.style.setProperty('--header-border', 'rgba(130, 95, 55, ' + (0.32 + p * 0.10).toFixed(2) + ')');
+  } else {
+    leftPanel.style.setProperty('--header-bg', '#f7f3eb');
+    leftPanel.style.setProperty('--header-shadow', 'none');
+    leftPanel.style.setProperty('--header-border', 'rgba(130, 95, 55, .32)');
+  }
+
+  if (p >= 0.95) {
     leftPanel.classList.add('is-compact');
-  } else if (scrollY < 18 && isCurrentlyCompact) {
+  } else {
     leftPanel.classList.remove('is-compact');
   }
 }
 
-window.addEventListener('scroll', () => {
+function onScrollThrottled() {
   if (!mobileHeaderTicking) {
     requestAnimationFrame(() => {
       updateMobileHeader();
@@ -2127,12 +2173,16 @@ window.addEventListener('scroll', () => {
     });
     mobileHeaderTicking = true;
   }
-}, { passive: true });
+}
+
+window.addEventListener('scroll', onScrollThrottled, { passive: true });
+window.addEventListener('resize', updateMobileHeader);
+updateMobileHeader();
 
 const mobileBrand = document.querySelector('.mobile-brand');
 if (mobileBrand) {
   mobileBrand.addEventListener('click', () => {
-    if (window.innerWidth <= 768 && leftPanel && leftPanel.classList.contains('is-compact')) {
+    if (window.innerWidth <= 768 && (window.scrollY > 20 || (leftPanel && leftPanel.classList.contains('is-compact')))) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
@@ -2306,7 +2356,7 @@ if (mobileBrand) {
     return { x: Math.min(Math.max(e.clientX - r.left, 0), W - 1), y: Math.min(Math.max(e.clientY - r.top, 0), H - 1) };
   };
   paper.addEventListener('pointerdown', e => {
-    if (e.button !== 0 || e.target.closest('button') || e.target.closest('a') || e.target.closest('#sticker-scene') || paper.classList.contains('is-compact')) return;
+    if (e.button !== 0 || e.target.closest('button') || e.target.closest('a') || e.target.closest('#sticker-scene') || paper.classList.contains('is-compact') || (window.innerWidth <= 768 && window.scrollY > 20)) return;
     if (paper.setPointerCapture) {
       try { paper.setPointerCapture(e.pointerId); } catch(_) {}
     }
@@ -2334,11 +2384,11 @@ if (mobileBrand) {
   window.addEventListener('pointerup', stopDraw);
   window.addEventListener('pointercancel', stopDraw);
   paper.addEventListener('touchstart', e => {
-    if (e.target.closest('button') || e.target.closest('a') || e.target.closest('#sticker-scene') || paper.classList.contains('is-compact')) return;
+    if (e.target.closest('button') || e.target.closest('a') || e.target.closest('#sticker-scene') || paper.classList.contains('is-compact') || (window.innerWidth <= 768 && window.scrollY > 20)) return;
     e.preventDefault();
   }, { passive: false });
   paper.addEventListener('touchmove', e => {
-    if (drawing && !paper.classList.contains('is-compact')) {
+    if (drawing && !paper.classList.contains('is-compact') && !(window.innerWidth <= 768 && window.scrollY > 20)) {
       e.preventDefault();
     }
   }, { passive: false });
