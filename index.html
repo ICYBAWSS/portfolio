@@ -2362,22 +2362,45 @@ document.addEventListener('touchcancel', () => {
   const label = code => code === 0 ? 'clear' : code === 1 ? 'mainly clear' : code === 2 ? 'partly cloudy' : code === 3 ? 'overcast'
     : (code === 45 || code === 48) ? 'foggy' : (code >= 51 && code <= 57) ? 'drizzly'
     : ((code >= 71 && code <= 77) || code === 85 || code === 86) ? 'snowy' : code >= 95 ? 'stormy' : 'rainy';
-  const isNight = () => forceNight === null ? (new Date().getHours() >= 21 || new Date().getHours() < 6) : forceNight;
-  // The body is DRAWN, not dithered — a real disk with 8 rays (moon: a crescent) — and it is
-  // shown only when the sky is clear enough, hidden behind a thick cloud.
-  const SUN = ['  \\   /', '   \\ / ', '  ( O )', '   / \\ ', '  /   \\'];
+  const getNBHour = () => {
+    try {
+      const parts = new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/New_York' }).formatToParts(new Date());
+      const h = parts.find(p => p.type === 'hour');
+      return h ? parseInt(h.value, 10) : new Date().getHours();
+    } catch(e) {
+      return new Date().getHours();
+    }
+  };
+  let isDayLive = null;
+  const isNight = () => {
+    if (forceNight !== null) return forceNight;
+    if (live && isDayLive !== null) return isDayLive === 0;
+    const h = getNBHour();
+    return h >= 20 || h < 6;
+  };
+  // The body is DRAWN, not dithered — a big circular sun disk (moon: a crescent) — and it is
+  // shown only when the sky is clear enough, hidden behind overcast / thick clouds.
+  const SUN = [
+    '     .----.     ',
+    '   .-******-.   ',
+    '  /**********\\  ',
+    ' |************| ',
+    '  \\**********/  ',
+    '   \'-******-\'   ',
+    '     \'----\'     '
+  ];
   const MOON = ['   ____  ', '  / ___) ', ' | |     ', ' | |     ', '  \\ \\___ ', '   \\____)'];
   // c = cloud mass, s = sun/moon, r = rain, n = snow, f = fog, st = storm
   const weights = code => {
     if (code === 0) return { c: .25, s: 1,    r: 0,   n: 0,  f: 0, st: 0 };
     if (code === 1) return { c: .45, s: .9,   r: 0,   n: 0,  f: 0, st: 0 };
     if (code === 2) return { c: .75, s: .75,  r: 0,   n: 0,  f: 0, st: 0 };
-    if (code === 3) return { c: 1.0, s: .38,  r: 0,   n: 0,  f: 0, st: 0 };
+    if (code === 3) return { c: 1.0, s: .15,  r: 0,   n: 0,  f: 0, st: 0 };
     if (code === 45 || code === 48) return { c: .22, s: .15, r: 0, n: 0, f: 1, st: 0 };
-    if (code >= 51 && code <= 57) return { c: 1,  s: .18, r: .35, n: 0,  f: 0, st: 0 };
-    if ((code >= 71 && code <= 77) || code === 85 || code === 86) return { c: 1, s: .15, r: 0, n: .8, f: 0, st: 0 };
+    if (code >= 51 && code <= 57) return { c: 1,  s: .12, r: .35, n: 0,  f: 0, st: 0 };
+    if ((code >= 71 && code <= 77) || code === 85 || code === 86) return { c: 1, s: .10, r: 0, n: .8, f: 0, st: 0 };
     if (code >= 95) return { c: 1.15, s: 0, r: 1,   n: 0,  f: 0, st: 1 };
-    return { c: 1, s: .12, r: .85, n: 0, f: 0, st: 0 };                       // 61-67 rain, 80-82 showers
+    return { c: 1, s: .10, r: .85, n: 0, f: 0, st: 0 };                       // 61-67 rain, 80-82 showers
   };
   // drifting cloud tracks: x/y/radii in grid units, v = columns per second (rightward, wraps)
   const TRACKS = [
@@ -2404,7 +2427,6 @@ document.addEventListener('touchcancel', () => {
     }
     return k;
   };
-  const BODY_X = 38, BODY_Y = 1;                       // drawn sun/moon sits here
 
   let code = null, temp = null, live = true, forceNight = null, lastW = 0, lastT = 0;
   function draw(t){
@@ -2417,8 +2439,9 @@ document.addEventListener('touchcancel', () => {
     const w = weights(code === null ? 0 : code), night = isNight();
     const body = night ? MOON : SUN;
     const bw = body[0].length, bh = body.length;
-    const showBody = w.s > .25;                          // clear-ish sky: the sun is always drawn
-    const sax = (BODY_X + 3.5) / (W - 1), say = (BODY_Y + 2.0) / (H - 1);
+    const showBody = w.s > .25;                          // clear-ish sky: the sun/moon is drawn
+    const bodyX = night ? 35 : 29, bodyY = night ? 2 : 1;
+    const sax = (bodyX + (night ? 4 : 7.5)) / (W - 1), say = (bodyY + (night ? 2.5 : 3.0)) / (H - 1);
     let out = '', open = null;
     for (let y = 0; y < H; y++){
       const ay = y / (H - 1);
@@ -2427,30 +2450,32 @@ document.addEventListener('touchcancel', () => {
         let v = 0.04 + 0.10 * ay + 0.05 * hash(x * 1.9 + y * 3.7), kind = 'dim', ch = null;   // baseline: never blank, never a checkerboard
         const ck = cloudAt(ax, ay, t, w);             // cloud masses
 
-        // Sun rays and radial light field
+        // Sun rays radiating onto drifting clouds
         let sunLight = 0;
         if (!night && w.s > 0.05){
           const dx = (ax - sax) * 1.6, dy = (ay - say);
           const dSun = Math.hypot(dx, dy);
           const ang = Math.atan2(dy, dx);
-          const beam = Math.max(0, Math.cos(ang * 7 - t * 0.35)) * 0.55 + Math.max(0, Math.cos(ang * 11 + t * 0.2 + 1.3)) * 0.45;
-          const ray = Math.pow(beam, 1.8) * Math.max(0, 1 - dSun / 0.85);
-          const glow = Math.max(0, 1 - dSun / 0.45);
-          sunLight = w.s * (glow * 0.35 + ray * 0.65) * (0.8 + 0.2 * Math.sin(t * 1.4 + ang * 2));
+          const beam = Math.max(0, Math.cos(ang * 6 - t * 0.25)) * 0.6 + Math.max(0, Math.cos(ang * 10 + t * 0.15 + 1.2)) * 0.4;
+          const ray = Math.pow(beam, 1.8) * Math.max(0, 1 - dSun / 1.1);
+          const glow = Math.max(0, 1 - dSun / 0.6);
+          sunLight = w.s * (glow * 0.35 + ray * 0.65) * (0.8 + 0.2 * Math.sin(t * 1.2 + ang * 2));
         }
 
         if (ck > 0){
           v += ck * 1.6 * (0.85 + 0.3 * hash(x * 1.7 + y * 3.1));     // static grain: only the mass travels
           if (sunLight > 0){
-            v += ck * sunLight * 2.5;                                  // sun rays light up the cloud!
-            if (sunLight > 0.10 && ck > 0.05) kind = 'sun';           // golden sunlight highlights on cloud edges
+            v += ck * sunLight * 2.8;                                  // sun rays light up the cloud!
+            if (sunLight > 0.08 && ck > 0.04) kind = 'sun';           // golden sunlight highlights on cloud edges
             else if (ck > .08) kind = 'cloud';
           } else if (ck > .08) {
             kind = 'cloud';
           }
-        } else if (sunLight > 0.25 && !night){
-          v += sunLight * 0.25;
-          if (sunLight > 0.45) kind = 'sun';                          // warm ambient sunbeam in open sky
+        } else if (!night && w.s > 0.1){
+          // Clean open sky: subtle ambient warmth near the sun disk, without spoke ray lines in open sky
+          const dx0 = (ax - sax) * 1.6, dy0 = (ay - say);
+          const dSun0 = Math.hypot(dx0, dy0);
+          if (dSun0 < 0.28) v += (1 - dSun0 / 0.28) * 0.10 * w.s;
         }
         if (w.f > 0){                                // fog: soft banks + two thin wisps, clear paper between
           const bank = pn((x + t * 5) / 11, ay * 6);                        // drifts right, wide patches
@@ -2460,11 +2485,19 @@ document.addEventListener('touchcancel', () => {
         }
         let inBody = false;
         if (showBody){                                // drawn sun / crescent moon
-          const by2 = y - BODY_Y, bx2 = x - BODY_X;
+          const by2 = y - bodyY, bx2 = x - bodyX;
           if (by2 >= 0 && by2 < bh && bx2 >= 0 && bx2 < bw){
             const c2 = body[by2][bx2];
-            if (c2 !== ' '){ ch = c2; kind = night ? 'night' : 'sun'; }
-            else inBody = true;                       // its gaps keep a thinner dither, not blank paper
+            if (c2 !== ' '){
+              if (ck > 0.45){
+                kind = 'sun';                         // dense cloud passing directly across the sun is illuminated
+              } else {
+                ch = c2;
+                kind = night ? 'night' : 'sun';
+              }
+            } else {
+              inBody = true;                          // its gaps keep a thinner dither, not blank paper
+            }
           }
         }
         if (night && y < 8 && hash(x * 2.7 + y * 5.1) > .975){ v = .9; kind = 'night'; }
@@ -2493,16 +2526,27 @@ document.addEventListener('touchcancel', () => {
     tempEl.textContent = temp == null ? '--°F' : Math.round(temp) + '°F';
     condEl.textContent = code == null ? '—' : label(code);
   };
-  const tickClock = () => { clockEl.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); };
+  const tickClock = () => {
+    try {
+      clockEl.textContent = new Date().toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/New_York'
+      });
+    } catch(e) {
+      clockEl.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+  };
   setInterval(tickClock, 1000); tickClock();
   const t0 = performance.now();
   const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // the sky always moves — reduce-motion only slows the clock, never freezes it
   setInterval(() => draw((performance.now() - t0) / 1000), still ? 900 : 120);
   window.addEventListener('resize', () => draw(lastT));
-  const load = () => fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`)
+  const load = () => fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code,is_day&temperature_unit=fahrenheit&timezone=America%2FNew_York&forecast_days=1`)
     .then(r => r.json()).then(j => {
       temp = j.current.temperature_2m;
+      if (j.current && typeof j.current.is_day === 'number') {
+        isDayLive = j.current.is_day;
+      }
       if (live) code = j.current.weather_code;   // a forced scene wins over the fetch
       paintData(); draw(lastT);
     }).catch(() => { if (live) condEl.textContent = 'offline'; });
@@ -2525,7 +2569,7 @@ document.addEventListener('touchcancel', () => {
   window.wx = (c, night) => {
     if (c === undefined) return Object.keys(WX).map(k => 'wx(' + k + ')' + ' '.repeat(5 - k.length) + WX[k]).join('\n')
       + '\nor add ?wx=storm&night=1 to the URL (?wx=auto = live)';
-    if (c === 'live') { live = true; forceNight = null; code = null; temp = null; paintData(); load(); return 'live weather resumed'; }
+    if (c === 'live') { live = true; forceNight = null; isDayLive = null; code = null; temp = null; paintData(); load(); return 'live weather resumed'; }
     live = false; if (night !== undefined) forceNight = !!night;
     code = +c; paintData(); draw(lastT);
     return (WX[c] || 'WMO ' + c) + (forceNight === null ? '' : forceNight ? ' (night)' : ' (day)');
