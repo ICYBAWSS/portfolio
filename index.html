@@ -1920,7 +1920,7 @@ document.addEventListener('touchend', () => {
         const ax = x / W;
         let v = (1 - 0.82 * Math.pow(ay, 1.5)) * (1 - s.haze * 0.35);
         for (let i = 0; i < 3; i++) {
-          const cx = 0.15 + 0.32 * i + 0.06 * Math.sin(t * 0.04 + i) + 0.05 * hash(i + 5.1);
+          const cx = 0.15 + 0.32 * i + 0.10 * Math.sin(t * 0.30 + i) + 0.05 * hash(i + 5.1);
           const cy = 0.32 + 0.22 * hash(i + 61.2);
           const dx = (ax - cx) / (0.22 + 0.05 * i), dy = (ay - cy) / 0.15;
           const m = 1 - (dx * dx + dy * dy);
@@ -1928,9 +1928,9 @@ document.addEventListener('touchend', () => {
         }
         if (s.fog > 0) v = v * (1 - s.fog) + s.fog * (0.45 + 0.25 * hash(x * 1.3 + y * 2.1));
         if (s.sun > 0.03) {
-          const sx = 0.74, sy = 0.38, d = Math.hypot(ax - sx, ay - sy), dr = 0.13;
+          const sx = 0.74 + Math.sin(t * 0.12) * 0.02, sy = 0.38, d = Math.hypot(ax - sx, ay - sy), dr = 0.13;
           if (d < dr) v += s.sun * 1.3;
-          else if (d < dr * 1.7) v += s.sun * 0.35 * (1 - (d - dr) / (dr * 0.7));
+          else if (d < dr * 1.7) v += s.sun * (0.30 + 0.10 * Math.sin(t * 1.4)) * (1 - (d - dr) / (dr * 0.7));
         }
         if (s.rain > 0 || s.storm > 0) {
           const lane = Math.floor(x / 4);
