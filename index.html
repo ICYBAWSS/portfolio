@@ -2485,16 +2485,14 @@ if (mobileBrand) {
     const h = getNBHour();
     return h >= 20 || h < 6;
   };
-  // The body is DRAWN, not dithered — a big circular sun disk (moon: a crescent) — and it is
+  // The body is DRAWN, not dithered — a circular sun disk (moon: a crescent) — and it is
   // shown only when the sky is clear enough, hidden behind overcast / thick clouds.
   const SUN = [
-    '     .----.     ',
-    '   .-******-.   ',
-    '  /**********\\  ',
-    ' |************| ',
-    '  \\**********/  ',
-    '   \'-******-\'   ',
-    '     \'----\'     '
+    '  .----.  ',
+    ' /******\\ ',
+    '|********|',
+    ' \\******/ ',
+    '  \'----\'  '
   ];
   const MOON = ['   ____  ', '  / ___) ', ' | |     ', ' | |     ', '  \\ \\___ ', '   \\____)'];
   // c = cloud mass, s = sun/moon, r = rain, n = snow, f = fog, st = storm
@@ -2547,8 +2545,8 @@ if (mobileBrand) {
     const body = night ? MOON : SUN;
     const bw = body[0].length, bh = body.length;
     const showBody = w.s > .25;                          // clear-ish sky: the sun/moon is drawn
-    const bodyX = night ? 35 : 29, bodyY = night ? 2 : 1;
-    const sax = (bodyX + (night ? 4 : 7.5)) / (W - 1), say = (bodyY + (night ? 2.5 : 3.0)) / (H - 1);
+    const bodyX = night ? 34 : 33, bodyY = 2;
+    const sax = (bodyX + (night ? 4.0 : 4.5)) / (W - 1), say = (bodyY + (night ? 2.5 : 2.0)) / (H - 1);
     let out = '', open = null;
     for (let y = 0; y < H; y++){
       const ay = y / (H - 1);
@@ -2636,10 +2634,10 @@ if (mobileBrand) {
   const tickClock = () => {
     try {
       clockEl.textContent = new Date().toLocaleTimeString('en-US', {
-        hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/New_York'
-      });
+        hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York'
+      }).toLowerCase();
     } catch(e) {
-      clockEl.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+      clockEl.textContent = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
     }
   };
   setInterval(tickClock, 1000); tickClock();
