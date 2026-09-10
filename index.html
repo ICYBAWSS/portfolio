@@ -471,6 +471,9 @@ a.proj{text-decoration:none;color:inherit;}
 
 /* ── Mobile: natural vertical flow with full paper header, readable cards, and live ASCII weather ── */
 @media (max-width: 768px) {
+  html, body, .port, .left, .right {
+    overflow-anchor: none !important;
+  }
   html {
     overflow-y: auto !important;
     overflow-x: hidden !important;
@@ -508,6 +511,11 @@ a.proj{text-decoration:none;color:inherit;}
     box-sizing: border-box !important;
     background: #f7f3eb !important;
     touch-action: none !important;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: padding, box-shadow, background-color, border-color !important;
     transition: padding 0.38s cubic-bezier(0.16, 1, 0.3, 1),
                 box-shadow 0.38s ease,
                 background-color 0.38s ease,
@@ -600,6 +608,11 @@ a.proj{text-decoration:none;color:inherit;}
     width: clamp(72px, 19vw, 84px) !important;
     height: auto !important;
     display: block !important;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: width, transform !important;
     transition: width 0.38s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
   /* In thin compact header, sticker scales smaller */
@@ -622,9 +635,13 @@ a.proj{text-decoration:none;color:inherit;}
     align-items: center !important;
     max-height: 280px !important;
     opacity: 1 !important;
-    transform: translateY(0) scaleY(1) !important;
+    transform: translateY(0) scaleY(1) translateZ(0) !important;
     transform-origin: top center !important;
     overflow: hidden !important;
+    contain: paint !important;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: max-height, opacity, transform !important;
     transition: max-height 0.42s cubic-bezier(0.16, 1, 0.3, 1),
                 opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
                 transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
@@ -635,7 +652,7 @@ a.proj{text-decoration:none;color:inherit;}
     display: flex !important;
     max-height: 0 !important;
     opacity: 0 !important;
-    transform: translateY(-8px) scaleY(0.85) !important;
+    transform: translateY(-8px) scaleY(0.85) translateZ(0) !important;
     margin-top: 0 !important;
     pointer-events: none !important;
   }
@@ -2082,7 +2099,8 @@ document.addEventListener('touchcancel', () => {
   if (isDragging) endStickerDrag();
 });
 
-// Mobile sticky compact header controller
+// Mobile sticky compact header controller (RAF-throttled, silky smooth hysteresis)
+let mobileHeaderTicking = false;
 function updateMobileHeader() {
   if (window.innerWidth > 768) {
     if (leftPanel && leftPanel.classList.contains('is-compact')) {
@@ -2094,14 +2112,22 @@ function updateMobileHeader() {
   const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
   const isCurrentlyCompact = leftPanel.classList.contains('is-compact');
 
-  if (scrollY > 35 && !isCurrentlyCompact) {
+  if (scrollY > 45 && !isCurrentlyCompact) {
     leftPanel.classList.add('is-compact');
-  } else if (scrollY < 15 && isCurrentlyCompact) {
+  } else if (scrollY < 18 && isCurrentlyCompact) {
     leftPanel.classList.remove('is-compact');
   }
 }
 
-window.addEventListener('scroll', updateMobileHeader, { passive: true });
+window.addEventListener('scroll', () => {
+  if (!mobileHeaderTicking) {
+    requestAnimationFrame(() => {
+      updateMobileHeader();
+      mobileHeaderTicking = false;
+    });
+    mobileHeaderTicking = true;
+  }
+}, { passive: true });
 
 const mobileBrand = document.querySelector('.mobile-brand');
 if (mobileBrand) {
