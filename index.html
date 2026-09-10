@@ -233,6 +233,7 @@ canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;wi
 #sec-life{display:flex;flex-direction:column;justify-content:flex-start;}
 #sec-work{display:flex;flex-direction:column;justify-content:flex-start;}
 #sec-life,#sec-contact{display:flex;flex-direction:column;justify-content:flex-start;}
+.weather-bar{flex:0 0 auto;font-family:'Roboto Mono',monospace;font-size:11px;letter-spacing:.08em;color:rgba(232,226,217,.62);padding:.5rem clamp(1.2rem,2.5vw,2.4rem);border-bottom:1px solid rgba(232,226,217,.08);white-space:pre;user-select:none;}
 .sec-label{font-size:clamp(10px,1.1vh,12px);letter-spacing:.2em;text-transform:uppercase;color:rgba(232,226,217,.65);margin-bottom:clamp(0.6rem,1.5vh,1.2rem);display:flex;align-items:center;gap:12px;flex-shrink:0;cursor:pointer;user-select:none;transition:color .2s;}
 .sec-label:hover{color:#fff;}
 .sec-label::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.12);transition:background .2s;}
@@ -319,6 +320,8 @@ a.proj{text-decoration:none;color:inherit;}
 .proj:hover .proj-arrow{color:#6e4518;transform:translate(2px,-2px);}
 .proj-list.prose{display:block;max-width:600px;padding:.2rem 0;}
 .proj-list.prose .about-p{max-width:580px;}
+.hack-head{grid-column:1/-1;font-family:'Roboto Mono',monospace;font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,226,217,.55);margin-top:1.6rem;display:flex;align-items:center;gap:12px;}
+.hack-head::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.12);}
 
 .hobbies-grid{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);gap:clamp(10px,1.5vw,20px);flex:1;max-height:min(100%,clamp(340px,56vh,560px));margin:auto 0;width:100%;}
 .hcard{background:#131110;border:1px solid rgba(232,226,217,.06);padding:clamp(0.9rem,2vh,1.6rem) clamp(1rem,1.8vw,1.8rem);cursor:pointer;transition:background .2s,border-color .2s;border-radius:4px;width:100%;text-align:left;display:flex;flex-direction:column;justify-content:space-between;min-height:0;}
@@ -406,30 +409,11 @@ a.proj{text-decoration:none;color:inherit;}
 
 /* ── Vintage TV ── */
 .tv-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(330px,520px);gap:26px;align-items:start;}
-/* ── VHS cover boxes (the clip shelf) ── */
-.vhs-rack{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,138px));gap:18px;perspective:1000px;}
-.vhs{width:100%;aspect-ratio:140/212;padding:0;border:none;cursor:pointer;background:none;position:relative;
-  transition:transform .12s ease-out;filter:drop-shadow(0 20px 14px rgba(0,0,0,.5));}
-.vhs:nth-child(odd){transform:rotate(-.9deg);}
-.vhs:nth-child(even){transform:rotate(.9deg);}
-/* side wall of the sleeve, sticking out right */
-.vhs::after{content:'';position:absolute;top:1.5%;bottom:1.5%;right:-8px;width:9px;border-radius:0 4px 4px 0;
-  background:linear-gradient(90deg,#2b241a,#0c0a07);box-shadow:0 0 0 1px rgba(255,255,255,.05);}
-.vhs-cover{position:absolute;inset:0;border-radius:3px;overflow:hidden;
-  background:linear-gradient(160deg,#433a2e,#171310);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09),inset 0 0 0 1px rgba(0,0,0,.5),inset 1px 0 0 rgba(255,255,255,.12);}
-.vhs-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
-.vhs-cover::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:linear-gradient(105deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,0) 24%,rgba(0,0,0,0) 62%,rgba(0,0,0,.4) 100%),
-    linear-gradient(0deg,rgba(15,9,3,.5) 0%,transparent 32%);}
-.vhs-sleeve{position:absolute;left:0;right:0;bottom:0;z-index:2;height:31%;padding:10px 11px;
-  background:linear-gradient(180deg,#f3ead1,#d7c9a2);
-  box-shadow:0 -2px 4px rgba(0,0,0,.3) inset,0 -1px 0 rgba(255,255,255,.25);
-  display:flex;flex-direction:column;justify-content:center;gap:6px;}
-.vhs-sleeve i{display:block;height:5px;border-radius:2px;
-  background:repeating-linear-gradient(90deg,rgba(110,85,40,.55) 0 16px,transparent 16px 24px);}
-.vhs-sleeve i:first-child{height:8px;width:72%;border-radius:1px;
-  background:linear-gradient(90deg,rgba(110,85,40,.6),rgba(110,85,40,.25));}
+/* ── VHS tapes — ASCII (was CSS covers) ── */
+.vhs-rack{display:flex;flex-wrap:wrap;gap:18px;}
+.vhs{background:none;border:none;cursor:pointer;padding:0;text-align:left;}
+.vhs-pre{font-size:13px;line-height:1.2;color:#d8cfc0;}
+.vhs:hover .vhs-pre{color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.6);}
 .tv-empty{font-size:12px;color:rgba(232,226,217,.5);}
 
 /* cabinet */
@@ -523,6 +507,15 @@ a.proj{text-decoration:none;color:inherit;}
     grid-template-columns: 1fr;
     gap: 8px;
   }
+  .section { height: auto; min-height: calc(100% - var(--peek)); max-height: none; }
+  .sec-label { font-size: 13px; }
+  .about-p { font-size: 15px; line-height: 1.8; }
+  .hc-name { font-size: 17px; }
+  .hc-sub { font-size: 11px; }
+  .contact-intro { font-size: 16px; }
+  .cc-val { font-size: 15px; }
+  .nav-item { font-size: 13px; }
+  .work-tab { font-size: 12px; }
 }
 
 @media (max-height: 620px) {
@@ -537,7 +530,8 @@ a.proj{text-decoration:none;color:inherit;}
 /* ── ASCII re-skin for the iPod & TV widgets ── */
 .a-pre{font-family:'Roboto Mono',monospace;font-size:12px;line-height:1.2;margin:0;color:#d8cfc0;white-space:pre;user-select:none;pointer-events:none;}
 .tv-a,.ipod-device{position:relative;display:inline-block;}
-.tv-a .a-pre{font-size:clamp(14px,2vh,22px);}
+.tv-a{--tvfs:clamp(14px,2vh,22px);}
+.tv-a .a-pre{font-size:var(--tvfs);}
 .a-video{position:absolute;background:#000;object-fit:cover;display:block;font-family:'Roboto Mono',monospace;font-size:12px;}
 .a-glyph{position:absolute;transform:translate(-50%,-50%);min-width:2.4ch;text-align:center;background:none;border:none;padding:0;line-height:1;font-family:'Roboto Mono',monospace;font-size:12px;color:#e6dcc9;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
 .a-glyph:hover{color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.85);}
@@ -577,7 +571,7 @@ a.proj{text-decoration:none;color:inherit;}
 .ipod-device .a-glyph.ag-center:hover{background:#fff;color:#000;border-color:#000;}
 
 
-.tv-ctl-shelf{position:absolute;display:flex;align-items:center;justify-content:space-around;font-size:22px;line-height:1;pointer-events:none;}
+.tv-ctl-shelf{position:absolute;display:flex;align-items:center;justify-content:space-around;font-size:var(--tvfs);line-height:1;pointer-events:none;}
 .tv-ctl-shelf .a-ctl,.tv-ctl-shelf .a-led,.tv-ctl-shelf .a-voltxt{pointer-events:auto;}
 </style>
 
@@ -593,6 +587,7 @@ a.proj{text-decoration:none;color:inherit;}
   </div>
 
   <div class="right" id="right">
+    <div class="weather-bar" id="weather-bar"></div>
     <div class="section" id="sec-life">
       <div class="sec-label">things i do</div>
       <div class="hobbies-grid" id="hgrid">
@@ -628,7 +623,7 @@ a.proj{text-decoration:none;color:inherit;}
     <div class="section" id="sec-contact">
       <div class="sec-label">contact</div>
       <div class="contact-wrap">
-        <div class="contact-intro">Always down to connect — whether it's building projects, sharing music, or chatting tech.</div>
+        <div class="contact-intro">Talk to me!</div>
         <div class="contact-grid">
           <a class="contact-card" href="mailto:rayhan@email.com" target="_blank" rel="noopener">
             <div class="cc-label">Email</div>
@@ -924,6 +919,20 @@ const FALLBACK_PROJECTS = [
   { name: 'wikipedia_graph', description: 'An interactive web visualization and route-finding engine for the entire English Wikipedia link graph.', url: 'https://github.com/ICYBAWSS/wikipedia_graph', language: 'HTML', tags: ['HTML', 'Python', 'JavaScript'], image: 'assets/projects/wikipedia_graph.png' },
   { name: 'FlipFocus', description: 'Super simple focus app, place phone face down to focus then set break timers with suggested length based on how long you focused for.', url: 'https://github.com/ICYBAWSS/FlipFocus', language: 'Swift', tags: ['Swift'], image: 'assets/projects/FlipFocus.png', fy: 70 }
 ];
+const FALLBACK_HACKATHONS = [
+  { name: 'FairFlow', description: 'Fair Money. Real People. Honest Flow.', url: 'https://devpost.com/software/symbio-g2craj', language: null, tags: [], image: 'assets/projects/fairflow.png' },
+  { name: 'Forget Me Not', description: 'AI platform letting dementia patients relive memories.', url: 'https://devpost.com/software/forget-me-not-pqkj7y', language: null, tags: [], image: 'assets/projects/forget-me-not.png' }
+];
+async function loadHackathons(){
+  try {
+    const r = await fetch('https://raw.githubusercontent.com/ICYBAWSS/portfolio/main/hackathons.json', { cache: 'no-cache' });
+    if (!r.ok) throw new Error('hackathons fetch ' + r.status);
+    return await r.json();
+  } catch(e){
+    console.warn('hackathons.json fetch failed — using fallback', e);
+    return FALLBACK_HACKATHONS;
+  }
+}
 async function loadProjects(){
   try {
     const r = await fetch('https://raw.githubusercontent.com/ICYBAWSS/portfolio/main/pinned.json', { cache: 'no-cache' });
@@ -1074,10 +1083,10 @@ const ART = [
     <div class="ipod-device">
       <pre class="a-pre" id="ipod-art"></pre>
       <button class="a-glyph ag-menu" data-a="menu" aria-label="menu" style="left:20ch;top:23.4em">MENU</button>
-      <button class="a-glyph" data-a="prev" aria-label="previous track" style="left:11.5ch;top:27.6em"><svg viewBox="0 0 24 24"><path d="M10 4 L2 12 L10 20 Z"/><path d="M22 4 L14 12 L22 20 Z"/></svg></button>
-      <button class="a-glyph ag-center" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></svg></button>
-      <button class="a-glyph" data-a="next" aria-label="next track" style="left:28.5ch;top:27.6em"><svg viewBox="0 0 24 24"><path d="M2 4 L10 12 L2 20 Z"/><path d="M14 4 L22 12 L14 20 Z"/></svg></button>
-      <button class="a-glyph" data-a="play" aria-label="play or pause" style="left:20ch;top:31.8em"><svg viewBox="0 0 24 24"><path d="M5 4 L19 12 L5 20 Z"/></svg></button>
+      <button class="a-glyph" data-a="prev" aria-label="previous track" style="left:11.5ch;top:27.6em">◄◄</button>
+      <button class="a-glyph ag-center" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em">●</button>
+      <button class="a-glyph" data-a="next" aria-label="next track" style="left:28.5ch;top:27.6em">►►</button>
+      <button class="a-glyph" data-a="play" aria-label="play or pause" style="left:20ch;top:31.8em">▶</button>
       ${tracks.slice(0, 3).map((t,k)=>'<button class="a-rowzone" data-i="' + k + '" aria-label="play ' + t.title + '" style="top:' + ([4,6,8][k] * 1.2) + 'em;height:1.2em"></button>').join('\n      ')}
     </div>`;
   const art = container.querySelector('#ipod-art');
@@ -1198,6 +1207,18 @@ const ART = [
   audio.addEventListener('play', () => { if (tvVideo) tvVideo.pause(); });
   draw();
 }
+const tapeArt = (n, v) => {
+  const title = (v.src.split('/').pop() || '').replace(/\.[^.]+$/, '').slice(0, 12).padEnd(12, ' ');
+  return [
+    '+------------+',
+    `| ${String(n).padStart(2, '0')}         |`,
+    `| ${title}|`,
+    '| ############ |',
+    '| ############ |',
+    '| o o     o o  |',
+    '+------------+'
+  ].join('\n');
+};
 function initTv(container, videos){
   const ART = [
     `o`,
@@ -1225,14 +1246,10 @@ function initTv(container, videos){
   container.innerHTML = `
     <div class="tv-layout">
       <div class="vhs-rack">${videos.map((v,n)=>`
-        <button class="vhs" data-i="${n}">
-          <span class="vhs-cover"><img alt="" src="${v.thumb}">
-            <span class="vhs-sleeve"><i></i><i></i></span>
-          </span>
-        </button>`).join('')}</div>
+        <button class="vhs" data-i="${n}"><pre class="a-pre vhs-pre">${tapeArt(n+1, v)}</pre></button>`).join('')}</div>
       <div class="tv-side">
         <div class="tv-a">
-          <pre class="a-pre" id="tv-art" style="font-size:22px">${ART.join('\n')}</pre>
+          <pre class="a-pre" id="tv-art">${ART.join('\n')}</pre>
           <video id="tv-main" class="a-video" muted loop playsinline preload="none"></video>
         <div class="tv-ctl-shelf" style="left:11.5ch;top:19.2em;width:11ch">
           <button class="a-ctl" data-a="rw" aria-label="rewind">◄◄</button>
@@ -1255,7 +1272,7 @@ function initTv(container, videos){
   main.addEventListener('play', () => { if (ipodAudio) ipodAudio.pause(); });
   const led = container.querySelector('#a-led'), chTxt = container.querySelector('#a-ch'), volTxt = container.querySelector('#a-voltxt');
   // screen hole = texture rows 8..14 (idx 7..20 of each line): 14ch x 7 rows; video hidden till it plays
-  main.style.cssText = 'left:7ch;top:9.6em;width:14ch;height:8.4em;font-size:22px;opacity:0';
+  main.style.cssText = 'left:7ch;top:9.6em;width:14ch;height:8.4em;font-size:var(--tvfs);opacity:0';
   let idx = 0;
   const setVol = v => { main.volume = Math.max(0, Math.min(1, v)); volTxt.textContent = '▮'.repeat(Math.round(main.volume*6)); };
   const playVideo = n => { idx = (n + videos.length) % videos.length; const v = videos[idx]; main.src = v.src; main.muted = false; main.loop = true; main.play().catch(()=>{}); chTxt.textContent = (idx+1) + '/' + videos.length; };
@@ -1290,6 +1307,20 @@ function initTv(container, videos){
   syncPlay();
 }
 
+const projCardHTML = (p, k) => `
+  <a class="proj" href="${p.url}" target="_blank" rel="noopener">
+    <div class="proj-card${p.image ? ' has-bg' : ''}" data-img="${p.image || ''}">
+      ${p.image ? `<div class="proj-bg" style="background-image:url('${p.image}')" data-fy="${p.fy || ''}"></div><div class="proj-scrim"></div>` : ''}
+      <div class="proj-main">
+        <div class="proj-num">${String(k + 1).padStart(2, '0')}</div>
+        <div class="proj-title">${p.name}</div>
+        <div class="proj-desc">${p.description || ''}</div>
+        <div class="proj-tags">${(p.tags || (p.language ? [p.language] : [])).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      </div>
+      <div class="proj-arrow">↗</div>
+    </div>
+  </a>`;
+
 function updateDynamicContent(hobby) {
   const data = contentData[hobby] || contentData.dev;
   if (ipodAudio) ipodAudio.pause();
@@ -1307,22 +1338,13 @@ function updateDynamicContent(hobby) {
   if (data.workType === 'list') {
     projList.className = 'proj-list';
     const stamp = ++projStamp;
-    loadProjects().then(items => {
+    Promise.all([loadProjects(), loadHackathons()]).then(([projects, hacks]) => {
       if (stamp !== projStamp) return;               // a newer tab-switch superseded us
-      projList.innerHTML = items.map((p, k) => `
-        <a class="proj" href="${p.url}" target="_blank" rel="noopener">
-          <div class="proj-card${p.image ? ' has-bg' : ''}" data-img="${p.image || ''}">
-            ${p.image ? `<div class="proj-bg" style="background-image:url('${p.image}')" data-fy="${p.fy || ''}"></div><div class="proj-scrim"></div>` : ''}
-            <div class="proj-main">
-              <div class="proj-num">${String(k + 1).padStart(2, '0')}</div>
-              <div class="proj-title">${p.name}</div>
-              <div class="proj-desc">${p.description || ''}</div>
-              <div class="proj-tags">${(p.tags || (p.language ? [p.language] : [])).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-            </div>
-            <div class="proj-arrow">↗</div>
-          </div>
-        </a>
-      `).join('');
+      const main = projects.map(projCardHTML).join('');
+      const hack = hacks.length
+        ? `<div class="hack-head">hackathon wins</div>` + hacks.map(projCardHTML).join('')
+        : '';
+      projList.innerHTML = main + hack;
       document.querySelectorAll('.proj-bg[data-fy]').forEach(el => { if (el.dataset.fy) el.style.backgroundPosition = 'center ' + el.dataset.fy + '%'; });
       bindTilt();
       applyCardTextColor();
@@ -1895,6 +1917,28 @@ document.addEventListener('touchend', () => {
   });
   fitBoard();
   boot();
+})();
+
+// Weather header — Open-Meteo (free, no key). Fixed coords; clock runs in browser.
+(function(){
+  const bar = document.getElementById('weather-bar'); if (!bar) return;
+  const PLACE = 'New Brunswick, US', LAT = 40.4862, LON = -74.4518;
+  // WMO weather_code upper-bound → [label, ascii glyph] (first >= code wins)
+  const WX = [[0,'clear','\\ /'],[1,'clear','\\ /'],[2,'partly','\\ /'],[3,'overcast','( )'],
+    [45,'fog','~~~'],[48,'fog','~~~'],[55,'drizzle','\\ /'],[57,'drizzle','\\ /'],
+    [67,'rain','/ /'],[77,'snow','* *'],[82,'rain','/ /'],[86,'snow','* *'],[99,'storm','\\ /']];
+  const labelFor = c => { for (const w of WX) if (c <= w[0]) return w.slice(1); return ['cloudy','( )']; };
+  let temp = null, label = 'weather', glyph = '';
+  const now = () => new Date().toLocaleTimeString('en-US', { hour12:false, hour:'2-digit', minute:'2-digit' });
+  const render = () => { bar.textContent = `${PLACE}   ${now()}   ${temp == null ? '--°' : Math.round(temp) + '°'}   ${glyph} ${label}`; };
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto`)
+    .then(r => r.json()).then(j => {
+      temp = j.current.temperature_2m;
+      [label, glyph] = labelFor(j.current.weather_code);
+      render();
+    }).catch(() => render());
+  setInterval(render, 60000);
+  render();
 })();
 
 updateStickerPos(stickerX, stickerY);

@@ -1,0 +1,18 @@
+[
+  {
+    "name": "FairFlow",
+    "description": "Fair Money. Real People. Honest Flow.",
+    "url": "https://devpost.com/software/symbio-g2craj",
+    "language": null,
+    "tags": [],
+    "image": "assets/projects/fairflow.png"
+  },
+  {
+    "name": "Forget Me Not",
+    "description": "Forget Me Not is an AI platform letting dementia patients relive memories through personalized virtual experiences while giving caregivers insights into engagement.",
+    "url": "https://devpost.com/software/forget-me-not-pqkj7y",
+    "language": null,
+    "tags": [],
+    "image": "assets/projects/forget-me-not.png"
+  }
+]
