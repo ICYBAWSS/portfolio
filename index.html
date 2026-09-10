@@ -484,59 +484,117 @@ a.proj{text-decoration:none;color:inherit;}
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
-    padding: 28px 18px 22px !important;
+    padding: 24px 18px 20px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    gap: 16px !important;
+    gap: 14px !important;
     border-right: none !important;
     border-bottom: 2px solid rgba(130, 95, 55, .35) !important;
     position: relative !important;
-    z-index: 10 !important;
+    z-index: 500 !important;
+    box-sizing: border-box !important;
+    transition: padding 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.25s ease,
+                background-color 0.25s ease !important;
   }
+  /* When scrolled: the whole paper section gets thin */
+  .left.is-compact {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 52px !important;
+    max-height: 52px !important;
+    padding: 6px 18px !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 12px !important;
+    background: #f7f3eb !important;
+    border-bottom: 1.5px solid rgba(130, 95, 55, .42) !important;
+    box-shadow: 0 4px 18px rgba(40, 25, 15, .15) !important;
+    z-index: 1000 !important;
+  }
+  .left.is-compact .ink-canvas { display: none !important; }
   #text-canvas { display: none !important; }
+
   .mobile-brand {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     text-align: center !important;
+    cursor: pointer !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
   .mobile-brand .mb-name {
     font-family: 'Roboto Mono', monospace;
     font-weight: 700;
-    font-size: clamp(22px, 6.5vw, 28px);
+    font-size: clamp(20px, 6vw, 26px);
     color: #241a0c;
     letter-spacing: -0.02em;
+    text-transform: lowercase;
+    transition: font-size 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
-  /* On mobile: sticker floats as a dynamic companion, visible anywhere, fully draggable */
-  .sticker-scene {
-    position: fixed !important;
-    z-index: 99999 !important;
+  .left.is-compact .mobile-brand {
+    align-items: flex-start !important;
+    text-align: left !important;
     margin: 0 !important;
-    touch-action: none !important;
+  }
+  .left.is-compact .mobile-brand .mb-name {
+    font-size: 16px !important;
+    letter-spacing: -0.01em !important;
+    line-height: 1 !important;
+  }
+
+  /* Sticker on mobile: docked inside paper section, scales smaller when compact */
+  .sticker-scene {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    z-index: 10 !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    touch-action: manipulation !important;
     user-select: none !important;
     -webkit-user-select: none !important;
-    cursor: grab !important;
-    max-width: 140px !important;
-    display: inline-block !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    transition: transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
   }
-  .sticker-scene.dragging {
-    cursor: grabbing !important;
-    z-index: 100000 !important;
-    transform: scale(1.06) !important;
+  .sticker-scene:active,
+  .sticker-scene.touch-press {
+    transform: scale(0.90) !important;
+  }
+  .sticker-scene.touch-pop {
+    transform: scale(1.08) !important;
   }
   .sticker-img {
-    width: clamp(95px, 25vw, 125px) !important;
+    width: clamp(90px, 24vw, 115px) !important;
+    height: auto !important;
+    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  /* In thin compact header, sticker scales smaller */
+  .left.is-compact .sticker-scene {
+    order: 2 !important;
+    margin: 0 !important;
+  }
+  .left.is-compact .sticker-img {
+    width: 38px !important;
     height: auto !important;
   }
+
   .paper-weather {
-    margin-top: 8px !important;
+    margin-top: 4px !important;
     width: 100% !important;
     max-width: 420px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
+    transition: opacity 0.2s ease !important;
   }
   /* live ASCII weather sky: always prioritized and visible across all mobile dimensions */
   .paper-weather .wx-ascii {
@@ -563,6 +621,11 @@ a.proj{text-decoration:none;color:inherit;}
   .paper-weather .wx-cond { font-size: 11px !important; }
   .paper-weather .wx-place { font-size: 11px !important; font-weight: 600 !important; }
   .paper-weather .wx-clock { font-size: 11px !important; }
+
+  /* When paper section gets thin: the weather animation and widget disappear */
+  .left.is-compact .paper-weather {
+    display: none !important;
+  }
 
   /* Natural vertical scrolling for sections */
   .right {
@@ -719,10 +782,10 @@ a.proj{text-decoration:none;color:inherit;}
 
 <div class="port">
 
-  <div class="left">
+  <div class="left" id="left">
     <canvas id="text-canvas" style="position:absolute;top:0;left:0;pointer-events:none;width:100%;height:100%;"></canvas>
     <div class="mobile-brand">
-      <div class="mb-name">Rayhan Mohamed</div>
+      <div class="mb-name">rayhan mohamed</div>
     </div>
     <div class="sticker-scene" id="sticker-scene">
       <div class="sticker-wrap" id="sticker-wrap">
@@ -751,6 +814,7 @@ a.proj{text-decoration:none;color:inherit;}
       </div>
     </div>
   </div>
+  <div class="paper-spacer" id="paper-spacer" style="display:none;width:100%;"></div>
 
   <div class="right" id="right">
     <div class="section" id="sec-work">
@@ -1711,21 +1775,18 @@ let dragMovedDist = 0;
 
 function updateStickerPos(x, y) {
   if (window.innerWidth <= 768) {
-    if (!hasMovedSticker) {
-      const defX = Math.max(10, window.innerWidth - (stickerScene.offsetWidth || 115) - 14);
-      const defY = 14;
-      stickerX = defX;
-      stickerY = defY;
-    } else {
-      const maxX = Math.max(0, window.innerWidth - (stickerScene.offsetWidth || 115));
-      const maxY = Math.max(0, window.innerHeight - (stickerScene.offsetHeight || 140));
-      stickerX = Math.max(0, Math.min(stickerX, maxX));
-      stickerY = Math.max(0, Math.min(stickerY, maxY));
+    if (stickerScene.parentElement !== leftPanel) {
+      const brand = leftPanel.querySelector('.mobile-brand');
+      if (brand && brand.nextSibling) {
+        leftPanel.insertBefore(stickerScene, brand.nextSibling);
+      } else {
+        leftPanel.appendChild(stickerScene);
+      }
     }
-    stickerScene.style.position = 'fixed';
-    stickerScene.style.left = stickerX + 'px';
-    stickerScene.style.top = stickerY + 'px';
-    stickerScene.style.zIndex = '99999';
+    stickerScene.style.position = '';
+    stickerScene.style.left = '';
+    stickerScene.style.top = '';
+    stickerScene.style.zIndex = '';
     return;
   }
 
@@ -1766,6 +1827,7 @@ function updateStickerPos(x, y) {
 }
 
 function startStickerDrag(clientX, clientY) {
+  if (window.innerWidth <= 768) return; // on mobile: sticker is docked in paper header
   isDragging = true;
   dragStartX = clientX;
   dragStartY = clientY;
@@ -1778,29 +1840,19 @@ function startStickerDrag(clientX, clientY) {
   dragOffX = clientX - curRect.left;
   dragOffY = clientY - curRect.top;
 
-  if (window.innerWidth <= 768) {
-    if (stickerScene.parentElement !== document.body) {
-      document.body.appendChild(stickerScene);
-    }
-    stickerScene.style.position = 'fixed';
-    stickerScene.style.left = curRect.left + 'px';
-    stickerScene.style.top = curRect.top + 'px';
-    stickerScene.style.zIndex = '100000';
-  } else {
-    const portEl = document.querySelector('.port') || document.body;
-    if (stickerScene.parentElement !== portEl) {
-      const portRect = portEl.getBoundingClientRect();
-      portEl.appendChild(stickerScene);
-      stickerScene.style.position = 'absolute';
-      stickerScene.style.left = (curRect.left - portRect.left) + 'px';
-      stickerScene.style.top = (curRect.top - portRect.top) + 'px';
-    }
-    stickerScene.style.zIndex = '99999';
+  const portEl = document.querySelector('.port') || document.body;
+  if (stickerScene.parentElement !== portEl) {
+    const portRect = portEl.getBoundingClientRect();
+    portEl.appendChild(stickerScene);
+    stickerScene.style.position = 'absolute';
+    stickerScene.style.left = (curRect.left - portRect.left) + 'px';
+    stickerScene.style.top = (curRect.top - portRect.top) + 'px';
   }
+  stickerScene.style.zIndex = '99999';
 }
 
 function moveStickerDrag(clientX, clientY) {
-  if (!isDragging) return;
+  if (!isDragging || window.innerWidth <= 768) return;
   dragMovedDist += Math.hypot(clientX - lastDragClientX, clientY - lastDragClientY);
   lastDragClientX = clientX;
   lastDragClientY = clientY;
@@ -1809,20 +1861,6 @@ function moveStickerDrag(clientX, clientY) {
     hasMovedSticker = true;
     stickerWrap.classList.add('is-moved');
     stickerScene.classList.add('is-moved');
-  }
-
-  if (window.innerWidth <= 768) {
-    const rawX = clientX - dragOffX;
-    const rawY = clientY - dragOffY;
-    const maxX = Math.max(0, window.innerWidth - stickerScene.offsetWidth);
-    const maxY = Math.max(0, window.innerHeight - stickerScene.offsetHeight);
-    stickerX = Math.max(0, Math.min(rawX, maxX));
-    stickerY = Math.max(0, Math.min(rawY, maxY));
-    stickerScene.style.position = 'fixed';
-    stickerScene.style.left = stickerX + 'px';
-    stickerScene.style.top = stickerY + 'px';
-    if (typeof triggerEyeUpdate === 'function') triggerEyeUpdate(clientX, clientY);
-    return;
   }
 
   const portEl = document.querySelector('.port') || document.body;
@@ -1843,14 +1881,6 @@ function endStickerDrag() {
   if (!isDragging) return;
   isDragging = false;
   stickerScene.classList.remove('dragging');
-
-  if (window.innerWidth <= 768) {
-    stickerScene.style.position = 'fixed';
-    stickerScene.style.left = stickerX + 'px';
-    stickerScene.style.top = stickerY + 'px';
-    stickerScene.style.zIndex = '99999';
-    return;
-  }
 
   const portEl = document.querySelector('.port') || document.body;
   const rightEl = document.getElementById('right');
@@ -1904,6 +1934,7 @@ function endStickerDrag() {
 let pointerDragging = false;
 
 stickerScene.addEventListener('pointerdown', e => {
+  if (window.innerWidth <= 768) return;
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   pointerDragging = true;
   try { stickerScene.setPointerCapture(e.pointerId); } catch(_) {}
@@ -1912,14 +1943,14 @@ stickerScene.addEventListener('pointerdown', e => {
 });
 
 stickerScene.addEventListener('mousedown', e => {
-  if (pointerDragging) return;
+  if (window.innerWidth <= 768 || pointerDragging) return;
   if (e.button !== 0) return;
   startStickerDrag(e.clientX, e.clientY);
   e.preventDefault();
 });
 
 stickerScene.addEventListener('pointermove', e => {
-  if (!isDragging) return;
+  if (!isDragging || window.innerWidth <= 768) return;
   moveStickerDrag(e.clientX, e.clientY);
   e.preventDefault();
 });
@@ -1936,7 +1967,7 @@ stickerScene.addEventListener('pointercancel', onPointerUp);
 
 // Global fallback listeners for mouse
 document.addEventListener('mousemove', e => {
-  if (isDragging && !pointerDragging) moveStickerDrag(e.clientX, e.clientY);
+  if (isDragging && !pointerDragging && window.innerWidth > 768) moveStickerDrag(e.clientX, e.clientY);
 });
 document.addEventListener('mouseup', () => {
   if (isDragging && !pointerDragging) endStickerDrag();
@@ -1945,27 +1976,103 @@ window.addEventListener('blur', () => {
   if (isDragging) endStickerDrag();
 });
 
-// Touch fallback listeners
+// Mobile touch listeners with instant visual tactile feedback (spring press & pop)
 stickerScene.addEventListener('touchstart', e => {
+  if (window.innerWidth <= 768) {
+    stickerScene.classList.add('touch-press');
+    const eyes = document.querySelectorAll('.sticker-eye');
+    eyes.forEach(el => el.classList.add('blinking'));
+    if (e.touches && e.touches[0]) {
+      triggerEyeUpdate(e.touches[0].clientX, e.touches[0].clientY);
+    }
+    return;
+  }
   if (e.touches.length !== 1) return;
   const t = e.touches[0];
   startStickerDrag(t.clientX, t.clientY);
   e.preventDefault();
-}, { passive: false });
+}, { passive: true });
 
 document.addEventListener('touchmove', e => {
-  if (!isDragging || e.touches.length !== 1) return;
+  if (!isDragging || e.touches.length !== 1 || window.innerWidth <= 768) return;
   const t = e.touches[0];
   moveStickerDrag(t.clientX, t.clientY);
   e.preventDefault();
 }, { passive: false });
 
 document.addEventListener('touchend', () => {
+  if (window.innerWidth <= 768) {
+    if (stickerScene.classList.contains('touch-press')) {
+      stickerScene.classList.remove('touch-press');
+      stickerScene.classList.add('touch-pop');
+      setTimeout(() => {
+        stickerScene.classList.remove('touch-pop');
+        const eyes = document.querySelectorAll('.sticker-eye');
+        eyes.forEach(el => el.classList.remove('blinking'));
+      }, 160);
+    }
+  }
   if (isDragging) endStickerDrag();
 });
+
 document.addEventListener('touchcancel', () => {
+  if (window.innerWidth <= 768) {
+    stickerScene.classList.remove('touch-press', 'touch-pop');
+    const eyes = document.querySelectorAll('.sticker-eye');
+    eyes.forEach(el => el.classList.remove('blinking'));
+  }
   if (isDragging) endStickerDrag();
 });
+
+// Mobile sticky compact header controller
+const paperSpacer = document.getElementById('paper-spacer');
+let lastExpandedHeight = 360;
+
+function updateMobileHeader() {
+  if (window.innerWidth > 768) {
+    if (leftPanel && leftPanel.classList.contains('is-compact')) {
+      leftPanel.classList.remove('is-compact');
+    }
+    if (paperSpacer) {
+      paperSpacer.style.height = '0px';
+      paperSpacer.style.display = 'none';
+    }
+    return;
+  }
+
+  const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+  const isCurrentlyCompact = leftPanel.classList.contains('is-compact');
+
+  if (!isCurrentlyCompact) {
+    const h = leftPanel.offsetHeight;
+    if (h > 100) lastExpandedHeight = h;
+  }
+
+  if (scrollY > 35 && !isCurrentlyCompact) {
+    leftPanel.classList.add('is-compact');
+    if (paperSpacer) {
+      paperSpacer.style.height = lastExpandedHeight + 'px';
+      paperSpacer.style.display = 'block';
+    }
+  } else if (scrollY < 15 && isCurrentlyCompact) {
+    leftPanel.classList.remove('is-compact');
+    if (paperSpacer) {
+      paperSpacer.style.height = '0px';
+      paperSpacer.style.display = 'none';
+    }
+  }
+}
+
+window.addEventListener('scroll', updateMobileHeader, { passive: true });
+
+const mobileBrand = document.querySelector('.mobile-brand');
+if (mobileBrand) {
+  mobileBrand.addEventListener('click', () => {
+    if (window.innerWidth <= 768 && leftPanel && leftPanel.classList.contains('is-compact')) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+}
 
 // ── wet-ink, InkField-style: spring-damper brush (thickness = base − speed, size drains,
 //    bristle "fly branches" + spray dots, fly-white gaps) onto a force-field diffusion grid
@@ -2579,8 +2686,8 @@ document.addEventListener('touchcancel', () => {
 updateStickerPos(stickerX, stickerY);
 bindTilt();
 setHobby('dev');   // render pinned projects on load (not just after a tab click)
-window.addEventListener('load', () => { updateStickerPos(stickerX, stickerY); renderText(); });
-window.addEventListener('resize', () => { updateStickerPos(stickerX, stickerY); renderText(); });
+window.addEventListener('load', () => { updateStickerPos(stickerX, stickerY); renderText(); updateMobileHeader(); });
+window.addEventListener('resize', () => { updateStickerPos(stickerX, stickerY); renderText(); updateMobileHeader(); });
 window.addEventListener('fonts-ready', renderText);
 </script>
 <script type="module">document.fonts.ready.then(() => window.dispatchEvent(new Event('fonts-ready')));
