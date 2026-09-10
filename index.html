@@ -52,199 +52,171 @@ html,body{background:#1c1410;}
 }
 
 .sticker-media{display:block;position:relative;z-index:1;}
-.sticker-art{font-family:'Roboto Mono',monospace;font-size:9px;line-height:1.2;white-space:pre;margin:0;color:#2a1f14;user-select:none;pointer-events:none;}
-.sticker-wrap.is-ascii .peel-container{display:none;}
-canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;width:149px;height:184px;
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% var(--peel-y2, 148px),
-    var(--peel-x2, 110px) var(--peel-y2, 148px),
-    var(--peel-x1, 80px) var(--peel-y1, 178px),
-    0 var(--peel-y1, 178px),
-    0 100%
-  );
+.sticker-img{
+  display:block;
+  width:clamp(190px,21vw,260px);
+  height:auto;
+  user-select:none;
+  pointer-events:none;
+  transition:opacity .15s ease;
 }
+.sticker-scene:hover .sticker-wrap{
+  filter:
+    drop-shadow(1.5px 0 0 #fff)
+    drop-shadow(-1.5px 0 0 #fff)
+    drop-shadow(0 1.5px 0 #fff)
+    drop-shadow(0 -1.5px 0 #fff)
+    drop-shadow(0 4px 2px rgba(0,0,0,0.22))
+    drop-shadow(0 8px 16px rgba(0,0,0,0.16));
+}
+.peel-container, canvas#px{display:none !important;}
 
-/* ── When any photo/photoset replaces the canvas sticker ─────────────── */
-.sticker-wrap:has(img),
-.sticker-wrap.is-photo{
-  --peel-size: 32px;
-  width: 200px;
-  height: 300px;
-  border-radius: 4px;
-}
-.sticker-wrap:has(img) .sticker-media,
-.sticker-wrap.is-photo .sticker-media,
-.sticker-photo{
-  width: 200px;
-  height: 300px;
-  object-fit: cover;
-  border-radius: 4px;
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% calc(100% - var(--peel-size, 32px)),
-    calc(100% - var(--peel-size, 32px)) 100%,
-    0 100%
-  );
-  transition: opacity 0.2s ease;
-}
-.sticker-wrap:has(img) .peel-container,
-.sticker-wrap.is-photo .peel-container{
-  left: calc(100% - var(--peel-size, 32px));
-  top: 100%;
-  width: calc(var(--peel-size, 32px) * 1.414);
-  height: 17px;
-  transform-origin: 0 0;
-  transform: rotate(-45deg);
-}
-
-/* ── When sticker corner stops peeling once it gets moved ─────────────── */
-.sticker-wrap.is-moved canvas#px.sticker-media,
-.sticker-wrap.is-moved .sticker-photo,
-.sticker-wrap.is-moved .sticker-media {
-  clip-path: none !important;
-}
-.sticker-wrap.is-moved .peel-container {
-  display: none !important;
-}
-.sticker-wrap.is-moved .peel-flap-wrap {
-  animation: none !important;
-}
-
-/* ── 3D Sticker Peel (Shadows Removed) ───────────────────────────────── */
-.peel-container {
+/* ── Eyes Tracking Cursor ── */
+.sticker-eyes {
   position: absolute;
-  left: var(--peel-x1, 80px);
-  top: var(--peel-y1, 178px);
-  width: var(--peel-w, 42px);
-  height: 17px;
-  transform-origin: 0 0;
-  transform: rotate(-45deg);
-  transform-style: preserve-3d;
+  top: 0; left: 0; width: 100%; height: 100%;
   pointer-events: none;
-  z-index: 10;
-  transition: left 0.25s ease, top 0.25s ease;
-}
-
-/* Curled Flap with 3D folding physics & fluttering breath */
-.peel-flap-wrap {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  transform-origin: 50% 0%;
-  transform-style: preserve-3d;
-  animation: peelFlutter 3.4s ease-in-out infinite;
   z-index: 2;
-  transition: transform 0.2s ease-out;
 }
-
-.peel-flap {
-  width: 100%;
-  height: 100%;
-  border-radius: 0 0 16px 12px;
-  /* Premium satin vinyl backing: warm eggshell / paper grain */
-  background: linear-gradient(
-    180deg,
-    #ffffff 0%,
-    #faf8f4 12%,
-    #f2ecdf 42%,
-    #e5dbca 75%,
-    #d1c3ad 100%
-  );
-  /* Crisp die-cut white vinyl border along the outer edges */
-  border-bottom: 1.2px solid rgba(255, 255, 255, 0.95);
-  border-right: 1.2px solid rgba(255, 255, 255, 0.9);
-  border-left: 1px solid rgba(255, 255, 255, 0.7);
-  box-sizing: border-box;
-  /* Tactile inner edge bevel only — no outer drop shadows for the peel */
-  box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
-    inset 0 -1px 2px rgba(160, 140, 110, 0.2);
-  position: relative;
+.sticker-eye {
+  position: absolute;
   overflow: hidden;
+  background: radial-gradient(ellipse at 50% 55%, #eae3da 0%, #d8cfc3 60%, #b2a394 100%);
+  box-shadow: inset 0 2px 2.5px rgba(20, 10, 5, 0.8), inset 0 -1px 1px rgba(255, 255, 255, 0.35);
+  transition: transform 0.08s ease-out;
+  transform-origin: center center;
 }
-
-/* Cylindrical specular highlight along the roll crest */
-.peel-flap::before {
+.sticker-eye.eye-left {
+  left: 46.875%;
+  top: 23.785%;
+  width: 3.977%;
+  height: 2.778%;
+  border-radius: 40% 60% 48% 52% / 55% 65% 35% 45%;
+  transform: rotate(-2.5deg);
+  border-top: 1px solid rgba(25, 12, 6, 0.9);
+}
+.sticker-eye.eye-right {
+  left: 55.114%;
+  top: 23.785%;
+  width: 4.972%;
+  height: 2.778%;
+  border-radius: 60% 40% 52% 48% / 65% 55% 45% 35%;
+  transform: rotate(2.5deg);
+  border-top: 1px solid rgba(25, 12, 6, 0.9);
+}
+.sticker-eye.blinking {
+  transform: scaleY(0.08) !important;
+  transition: transform 0.06s ease-in-out !important;
+}
+.sticker-eye.eye-left::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 5.5px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.98) 0%,
-    rgba(255, 255, 255, 0.7) 25%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  right: 0; top: 25%; width: 22%; height: 50%;
+  background: radial-gradient(circle, rgba(195, 105, 95, 0.5) 0%, transparent 80%);
+  border-radius: 50%;
   pointer-events: none;
+  z-index: 3;
 }
-
-/* Subtle vinyl texture sheen / ambient reflection */
-.peel-flap::after {
+.sticker-eye.eye-right::after {
   content: '';
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.35) 0%,
-    transparent 45%,
-    rgba(130, 100, 60, 0.08) 100%
-  );
+  left: 0; top: 25%; width: 18%; height: 50%;
+  background: radial-gradient(circle, rgba(195, 105, 95, 0.5) 0%, transparent 80%);
+  border-radius: 50%;
   pointer-events: none;
+  z-index: 3;
 }
 
-/* Interactive responses on hover and dragging */
-.sticker-scene:hover .peel-flap-wrap {
-  animation-play-state: paused;
-  transform: rotateX(-132deg) translateZ(3.5px) translateY(-1px) rotateZ(-1.5deg);
+.sticker-pupil {
+  position: absolute;
+  top: 50%;
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 45% 40%, #2c1a10 0%, #150a04 55%, #050201 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 1px rgba(0,0,0,0.9);
+  will-change: transform;
 }
-.sticker-scene.dragging .peel-flap-wrap {
-  animation-play-state: paused;
-  transform: rotateX(-122deg) translateZ(5px) translateY(-1.5px) rotateZ(-3.5deg);
+.eye-left .sticker-pupil {
+  left: 46.4%;
+  width: 46%;
+}
+.eye-right .sticker-pupil {
+  left: 51.4%;
+  width: 37%;
+}
+.sticker-pupil::before {
+  content: '';
+  position: absolute;
+  top: 18%; left: 24%;
+  width: 26%; height: 26%;
+  background: #ffffff;
+  border-radius: 50%;
+  opacity: 0.95;
+  box-shadow: 0 0 1.5px #fff;
+}
+.sticker-pupil::after {
+  content: '';
+  position: absolute;
+  bottom: 20%; right: 26%;
+  width: 16%; height: 16%;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
 }
 
-@keyframes peelFlutter {
-  0%, 100% {
-    transform: rotateX(-146deg) translateZ(1px);
-  }
-  35% {
-    transform: rotateX(-133deg) translateZ(3px) translateY(-0.8px) rotateZ(-1.2deg);
-  }
-  70% {
-    transform: rotateX(-143deg) translateZ(1.6px) translateY(-0.2px) rotateZ(0.6deg);
-  }
+.glasses-glare {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+.glare-left {
+  position: absolute;
+  left: 45.8%; top: 22.8%; width: 5.2%; height: 4.0%;
+  background: linear-gradient(135deg, rgba(80, 220, 160, 0.22) 0%, transparent 60%);
+  border-radius: 40%;
+  mix-blend-mode: screen;
+}
+.glare-right {
+  position: absolute;
+  left: 54.8%; top: 22.8%; width: 5.8%; height: 4.0%;
+  background: linear-gradient(135deg, rgba(80, 220, 160, 0.22) 0%, transparent 60%);
+  border-radius: 40%;
+  mix-blend-mode: screen;
 }
 
-.left-nav{margin-top:auto;display:flex;flex-direction:column;gap:.1rem;position:relative;z-index:10;padding:.8rem 0 .2rem;border-top:.5px solid rgba(60,45,30,.16);}
-.nav-item{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(60,45,30,.4);cursor:pointer;transition:color .18s;display:flex;align-items:center;gap:9px;background:none;border:none;padding:6px 0;text-align:left;font-family:'Roboto Mono',monospace;font-weight:500;min-height:28px;}
-.nav-item::before{content:'';display:inline-block;width:14px;height:1px;background:currentColor;transition:width .2s;}
-.nav-item:hover,.nav-item.active{color:rgba(60,45,30,.85);}
-.nav-item.active::before{width:24px;}
+/* ── Live ASCII sky, stamped straight on the paper (no card, nothing to set by hand) ── */
+.mobile-brand{display:none;}
+.paper-weather{margin-top:auto;position:relative;z-index:10;font-family:'Roboto Mono',monospace;color:#2a1f14;user-select:none;}
+.wx-ascii{font-size:10px;line-height:1.15;white-space:pre;margin:0;overflow:hidden;color:rgba(60,45,30,.2);}
+.wx-ascii .wxc-sun{color:#b45309;}
+.wx-ascii .wxc-cloud{color:#4b5563;}
+.wx-ascii .wxc-fog{color:rgba(71,85,105,.6);}
+.wx-ascii .wxc-rain{color:#0369a1;}
+.wx-ascii .wxc-snow{color:#0ea5e9;}
+.wx-ascii .wxc-storm{color:#6d28d9;}
+.wx-ascii .wxc-night{color:#312e81;}
+.wx-line{display:flex;align-items:baseline;gap:7px;margin-top:6px;padding-top:5px;border-top:.5px solid rgba(60,45,30,.2);font-size:10px;letter-spacing:.04em;color:rgba(60,45,30,.72);}
+.wx-place{font-weight:500;color:rgba(60,45,30,.9);}
+.wx-temp{font-weight:700;font-size:12px;color:#1a1208;}
+.wx-clock{margin-left:auto;color:rgba(60,45,30,.55);}
 
-:root{--peek:clamp(105px,14vh,155px);}
+:root{--peek:clamp(48px,6vh,60px);}
 
 .right{flex:1;overflow-y:auto;height:100%;display:flex;flex-direction:column;scroll-behavior:smooth;scrollbar-width:none;scroll-snap-type:y mandatory;}
 .right::-webkit-scrollbar{display:none;}
 
+/* Each section peeks the next section header by var(--peek) to indicate scrollability.
+   The final section fills 100% so no empty space appears below it. */
 .section{flex:0 0 calc(100% - var(--peek));height:calc(100% - var(--peek));min-height:calc(100% - var(--peek));max-height:calc(100% - var(--peek));padding:clamp(0.9rem,2.2vh,1.8rem) clamp(1.2rem,2.5vw,2.4rem);border-bottom:1px solid rgba(232,226,217,.1);scroll-snap-align:start;scroll-snap-stop:normal;display:flex;flex-direction:column;overflow:hidden;position:relative;}
-#sec-life{display:flex;flex-direction:column;justify-content:flex-start;}
 #sec-work{display:flex;flex-direction:column;justify-content:flex-start;}
-#sec-life,#sec-contact{display:flex;flex-direction:column;justify-content:flex-start;}
-.weather-card{flex-shrink:0;font-family:'Roboto Mono',monospace;color:rgba(232,226,217,.62);margin-bottom:1rem;}
-.weather-card .wx-copy{font-size:11px;letter-spacing:.06em;color:rgba(232,226,217,.55);margin-bottom:.4rem;}
-.weather-card .wx-art{font-size:12px;line-height:1.15;color:#d8cfc0;white-space:pre;margin:0;user-select:none;overflow:hidden;}
 .sec-label{font-family:'Roboto Mono',monospace;font-weight:700;font-size:clamp(10px,1.1vh,12px);letter-spacing:.2em;text-transform:uppercase;color:rgba(232,226,217,.65);margin-bottom:clamp(0.6rem,1.5vh,1.2rem);display:flex;align-items:center;gap:12px;flex-shrink:0;cursor:pointer;user-select:none;transition:color .2s;}
 .sec-label:hover{color:#fff;}
 .sec-label::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.12);transition:background .2s;}
 .sec-label:hover::after{background:rgba(232,226,217,.25);}
 .work-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:clamp(0.5rem,1.4vh,1.2rem);flex-shrink:0;}
-.work-tab{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(232,226,217,.55);background:none;border:.5px solid rgba(196,168,130,.28);padding:5px 12px;border-radius:999px;cursor:pointer;font-family:'Roboto Mono',monospace;font-weight:500;transition:all .2s;}
+.work-tab{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(232,226,217,.55);background:none;border:.5px solid rgba(196,168,130,.28);padding:7px 14px;border-radius:999px;cursor:pointer;font-family:'Roboto Mono',monospace;font-weight:500;transition:all .2s;}
+.work-tab .tab-icon{width:13px;height:13px;flex:0 0 13px;}
 .work-tab:hover{color:#e8e2d9;border-color:rgba(196,168,130,.55);}
 .work-tab.active{color:#1a1308;background:#c9a87c;border-color:#c9a87c;}
 
@@ -328,13 +300,6 @@ a.proj{text-decoration:none;color:inherit;}
 .hack-head{grid-column:1/-1;font-family:'Roboto Mono',monospace;font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,226,217,.55);margin-top:1.6rem;display:flex;align-items:center;gap:12px;}
 .hack-head::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.12);}
 
-.hobbies-grid{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);gap:clamp(10px,1.5vw,20px);flex:1;max-height:min(100%,clamp(340px,56vh,560px));margin:auto 0;width:100%;}
-.hcard{background:#131110;border:1px solid rgba(232,226,217,.06);padding:clamp(0.9rem,2vh,1.6rem) clamp(1rem,1.8vw,1.8rem);cursor:pointer;transition:background .2s,border-color .2s;border-radius:4px;width:100%;text-align:left;display:flex;flex-direction:column;justify-content:space-between;min-height:0;}
-.hcard:hover{background:#191512;border-color:rgba(196,168,130,.25);}
-.hcard.active{background:#1a1612;border-color:rgba(196,168,130,.55);box-shadow:0 0 0 1px rgba(196,168,130,.3) inset;}
-.hc-icon{width:clamp(22px,2vw + 0.6vh,34px);height:clamp(22px,2vw + 0.6vh,34px);margin-bottom:clamp(3px,0.8vh,8px);flex-shrink:0;}
-.hc-name{font-family:'Roboto Mono',monospace;font-weight:700;font-size:clamp(15px,1.2vw + 0.4vh,21px);color:#e8e2d9;margin-bottom:2px;}
-.hc-sub{font-size:clamp(9px,1vw,10px);color:rgba(232,226,217,.35);line-height:1.4;}
 
 .about-p{font-size:12.5px;color:rgba(232,226,217,.62);line-height:2;margin-bottom:1.1rem;max-width:470px;}
 .about-p strong{color:#e8e2d9;font-weight:500;}
@@ -385,7 +350,7 @@ a.proj{text-decoration:none;color:inherit;}
 .board-hint{font-size:10px;color:rgba(232,226,217,.45);}
 
 /* ── work section racks (block containers for ipod / tv) ── */
-.work-rack{display:flex;align-items:center;justify-content:center;width:100%;flex:1;min-height:0;max-width:780px;}
+.work-rack{display:flex;align-items:center;justify-content:center;width:100%;flex:1;min-height:0;max-width:min(1100px,100%);}
 
 /* ── Virtual iPod ── */
 .ipod{display:flex;gap:1.3rem;align-items:stretch;max-width:760px;
@@ -493,53 +458,68 @@ a.proj{text-decoration:none;color:inherit;}
   .ipod-list { width: 100%; }
 }
 
-@media (max-width: 640px) {
+/* ── Mobile: the paper column becomes a fixed top header (brand · weather · live sticker) ── */
+@media (max-width: 768px) {
+  .port { flex-direction: column; }
   .left {
-    width: clamp(112px, 30vw, 170px);
-    flex: 0 0 clamp(112px, 30vw, 170px);
-    padding: 0.8rem 0.6rem;
+    width: 100% !important;
+    flex: 0 0 96px !important;
+    height: 96px !important;
+    max-height: 96px !important;
+    padding: 6px 120px 6px 14px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-right: none !important;
+    border-bottom: 1.5px solid rgba(130, 95, 55, .3) !important;
+    z-index: 1000 !important;
   }
-  .sticker-scene{transform:scale(.64);transform-origin:top left;}
-  .section {
-    padding: 0.8rem 1rem;
-  }
-  .hobbies-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(4, 1fr);
-    gap: 6px;
-  }
-  .hcard {
-    padding: 0.4rem 0.6rem;
-  }
-  .proj-list {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-  .sec-label { font-size: 13px; }
-  .about-p { font-size: 15px; line-height: 1.8; }
-  .hc-name { font-size: 17px; }
-  .hc-sub { font-size: 11px; }
+  #text-canvas { display: none !important; }
+  .mobile-brand { display: flex; flex-direction: column; gap: 2px; }
+  .mobile-brand .mb-name { font-family: 'Roboto Mono', monospace; font-weight: 700; font-size: 15px; color: #241a0c; }
+  .mobile-brand .mb-tag { font-family: 'Valley Sans', sans-serif; font-size: 10.5px; color: rgba(58, 42, 22, .78); }
+  /* sticker stays pinned in the header — still swaps outfit on tab taps */
+  .sticker-scene { left: auto !important; top: 4px !important; right: 6px !important; transform: scale(.4); transform-origin: top right; z-index: 10 !important; }
+  .paper-weather { margin-top: 0 !important; }
+  .paper-weather .wx-ascii { display: none !important; }   /* 96px header has no room for 10 rows */
+  .paper-weather .wx-line { margin-top: 0 !important; padding-top: 0 !important; border-top: none !important; gap: 2px 6px !important; flex-wrap: wrap !important; }
+  .paper-weather .wx-temp { font-size: 14px !important; }
+  .paper-weather .wx-cond { font-size: 9.5px !important; }
+
+  .section { padding: 1rem 1.1rem 1.6rem !important; }
+  .sec-label { font-size: 13px !important; }
+  .work-tabs { gap: 6px !important; }
+  .work-tab { font-size: 11px !important; padding: 7px 12px !important; }
+  .proj-list { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .proj-title { font-size: 19px !important; }
+  .proj-desc { font-size: 14px !important; line-height: 1.5 !important; }
+  .contact-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .contact-card { padding: 16px 18px !important; }
+  .cc-val { font-size: 15px !important; }
   .contact-intro { font-size: 16px; }
-  .cc-val { font-size: 15px; }
-  .nav-item { font-size: 13px; }
-  .work-tab { font-size: 12px; }
+  .about-p { font-size: 15px; line-height: 1.8; }
 }
 
-@media (max-height: 620px) {
-  :root { --peek: clamp(70px, 12vh, 90px); }
+@media (max-width: 620px) {
   .section { padding: 0.5rem 0.9rem; }
   .sec-label { margin-bottom: 0.4rem; }
   .work-tabs { margin-bottom: 0.4rem; }
-  .hobbies-grid { gap: 6px; }
-  .hcard { padding: 0.5rem 0.8rem; }
-  .hc-icon { margin-bottom: 2px; }
 }
 /* ── ASCII re-skin for the iPod & TV widgets ── */
 .a-pre{font-family:'Roboto Mono',monospace;font-size:12px;line-height:1.2;margin:0;color:#d8cfc0;white-space:pre;user-select:none;pointer-events:none;}
 .tv-a,.ipod-device{position:relative;display:inline-block;}
-.tv-a{--tvfs:clamp(14px,2vh,22px);}
+.tv-a{--tvfs:clamp(12px,1.7vw,20px);}
 .tv-a .a-pre{font-size:var(--tvfs);}
-.a-video{position:absolute;background:#000;object-fit:cover;display:block;font-family:'Roboto Mono',monospace;font-size:12px;}
+/* TV glyph controls: carved out of the art (blank cells under each one) and positioned in
+   ch / 1.2em character cells, exactly like the iPod wheel — no pixel-offset controls. */
+.tv-video{position:absolute;left:7ch;top:9.6em;width:14ch;height:8.4em;font-family:'Roboto Mono',monospace;font-size:var(--tvfs);background:#000;object-fit:cover;border-radius:2px;opacity:0;transition:opacity .3s;cursor:pointer;}
+.tv-glyph{position:absolute;font-family:'Roboto Mono',monospace;font-size:var(--tvfs);line-height:1.2;padding:0;margin:0;border:none;background:none;color:#cfc4ae;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;user-select:none;transition:color .12s,transform .08s;}
+.tv-glyph:hover{color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.9);}
+.tv-glyph:active{transform:scale(.92);color:#c9a87c;}
+.tv-led-indicator{position:absolute;left:6ch;top:20.4em;width:1ch;font-family:'Roboto Mono',monospace;font-size:var(--tvfs);line-height:1.2;color:#5a2e10;pointer-events:none;user-select:none;}
+.tv-led-indicator.on{color:#ffb02e;text-shadow:0 0 8px rgba(255,176,46,.95);}
+.tv-vol-bar{position:absolute;left:16ch;top:20.4em;width:4ch;font-family:'Roboto Mono',monospace;font-size:var(--tvfs);line-height:1.2;color:#c9a87c;pointer-events:none;user-select:none;}
 .a-glyph{position:absolute;transform:translate(-50%,-50%);min-width:2.4ch;text-align:center;background:none;border:none;padding:0;line-height:1;font-family:'Roboto Mono',monospace;font-size:12px;color:#e6dcc9;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
 .a-glyph:hover{color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.85);}
 .a-glyph:active{color:#c9a87c;}
@@ -548,13 +528,6 @@ a.proj{text-decoration:none;color:inherit;}
 .ipod-a{display:flex;gap:1.8rem;align-items:center;flex-wrap:wrap;}
 .ipod-a .ipod-list{flex:1;min-width:200px;}
 .tv-side{display:flex;flex-direction:column;align-items:center;gap:12px;}
-.a-ctlbar{display:flex;align-items:center;gap:10px;}
-.a-ctl{background:none;border:none;padding:4px 7px;color:#cfc4ae;font-family:'Roboto Mono',monospace;font-size:12px;line-height:1;cursor:pointer;border-radius:3px;}
-.a-ctl:hover{background:#cfc4ae;color:#13110e;}
-.a-ctl:active{transform:translateY(1px);}
-.a-led{color:#6e3a12;font-size:11px;line-height:1;}
-.a-led.on{color:#ffb02e;text-shadow:0 0 9px rgba(255,176,46,.95);}
-.a-vol,.a-voltxt{color:#cfc4ae;font-size:11px;}
 @media (max-width:900px){
   .ipod-a{flex-direction:column;align-items:center;}
   .ipod-a .ipod-list{width:100%;max-width:360px;}
@@ -574,51 +547,47 @@ a.proj{text-decoration:none;color:inherit;}
 .ipod-device .a-glyph.ag-center:hover{color:#fff7e9;text-shadow:0 0 8px rgba(201,168,124,.9);}
 
 
-.tv-ctl-shelf{position:absolute;display:flex;align-items:center;justify-content:space-around;font-size:var(--tvfs);line-height:1;pointer-events:none;}
-.tv-ctl-shelf .a-ctl,.tv-ctl-shelf .a-led,.tv-ctl-shelf .a-voltxt{pointer-events:auto;}
 </style>
 
 <div class="port">
 
   <div class="left">
     <canvas id="text-canvas" style="position:absolute;top:0;left:0;pointer-events:none;width:100%;height:100%;"></canvas>
-    <nav class="left-nav">
-      <button class="nav-item active" data-key="life">Things I do</button>
-      <button class="nav-item" data-key="work">work</button>
-      <button class="nav-item" data-key="contact">contact</button>
-    </nav>
+    <div class="mobile-brand">
+      <div class="mb-name">Rayhan Mohamed</div>
+      <div class="mb-tag">CS &amp; Stats · DJ · music · VFX</div>
+    </div>
+    <div class="paper-weather" id="paper-weather">
+      <pre class="wx-ascii" id="wx-ascii"></pre>
+      <div class="wx-line">
+        <span class="wx-place">New Brunswick, NJ</span>
+        <span class="wx-temp" id="wx-temp">--°F</span>
+        <span class="wx-cond" id="wx-cond">—</span>
+        <span class="wx-clock" id="wx-clock">--:--</span>
+      </div>
+    </div>
   </div>
 
   <div class="right" id="right">
-    <div class="section" id="sec-life">
-      <div class="sec-label">things i do</div>
-      <div class="weather-card" id="weather-card"></div>
-      <div class="hobbies-grid" id="hgrid">
-        <button class="hcard active" data-hobby="dev">
-          <svg class="hc-icon" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="11" rx="1.5" stroke="#c4a882" stroke-width="1"/><path d="M6 9 L8 11 L6 13" stroke="#c4a882" stroke-width="1.2" stroke-linecap="round"/><line x1="10" y1="13" x2="14" y2="13" stroke="#c4a882" stroke-width="1.2" stroke-linecap="round"/><rect x="7" y="15" width="6" height="1.5" rx=".5" fill="rgba(196,168,130,.4)"/></svg>
-          <div class="hc-name">Developer</div>
-        </button>
-        <button class="hcard" data-hobby="dj">
-          <svg class="hc-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#c4a882" stroke-width="1"/><circle cx="10" cy="10" r="2.5" fill="#c4a882"/><circle cx="10" cy="10" r="1" fill="#0f0e0c"/><line x1="10" y1="3" x2="10" y2="6" stroke="#c4a882" stroke-width="1.5"/></svg>
-          <div class="hc-name">DJ</div>
-        </button>
-        <button class="hcard" data-hobby="producer">
-          <svg class="hc-icon" viewBox="0 0 20 20" fill="none"><rect x="2" y="12" width="2" height="5" rx=".5" fill="#c4a882"/><rect x="5.5" y="9" width="2" height="8" rx=".5" fill="#c4a882"/><rect x="9" y="6" width="2" height="11" rx=".5" fill="#c4a882"/><rect x="12.5" y="10" width="2" height="7" rx=".5" fill="#c4a882"/><rect x="16" y="7" width="2" height="10" rx=".5" fill="#c4a882"/><line x1="2" y1="4" x2="18" y2="4" stroke="rgba(196,168,130,.3)" stroke-width=".5"/></svg>
-          <div class="hc-name">Music Producer</div>
-        </button>
-        <button class="hcard" data-hobby="vfx">
-          <svg class="hc-icon" viewBox="0 0 20 20" fill="none"><polygon points="10,2 12.5,7 18,7.5 14,11.5 15.5,17 10,14 4.5,17 6,11.5 2,7.5 7.5,7" stroke="#c4a882" stroke-width="1" fill="none"/><circle cx="10" cy="10" r="2" fill="rgba(196,168,130,.4)"/></svg>
-          <div class="hc-name">VFX</div>
-        </button>
-      </div>
-    </div>
     <div class="section" id="sec-work">
       <div class="sec-label" id="work-label">Stuff I've built</div>
       <div class="work-tabs" id="work-tabs">
-        <button class="work-tab active" data-hobby="dev">Code</button>
-        <button class="work-tab" data-hobby="dj">Radio</button>
-        <button class="work-tab" data-hobby="producer">Music</button>
-        <button class="work-tab" data-hobby="vfx">VFX</button>
+        <button class="work-tab active" data-hobby="dev">
+          <svg class="tab-icon" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 9 L8 11 L6 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="10" y1="13" x2="14" y2="13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          <span>Developer</span>
+        </button>
+        <button class="work-tab" data-hobby="dj">
+          <svg class="tab-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="10" r="2.5" fill="currentColor"/><line x1="10" y1="3" x2="10" y2="6" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span>DJ</span>
+        </button>
+        <button class="work-tab" data-hobby="producer">
+          <svg class="tab-icon" viewBox="0 0 20 20" fill="none"><rect x="2" y="12" width="2" height="5" rx=".5" fill="currentColor"/><rect x="5.5" y="9" width="2" height="8" rx=".5" fill="currentColor"/><rect x="9" y="6" width="2" height="11" rx=".5" fill="currentColor"/><rect x="12.5" y="10" width="2" height="7" rx=".5" fill="currentColor"/><rect x="16" y="7" width="2" height="10" rx=".5" fill="currentColor"/></svg>
+          <span>Producer</span>
+        </button>
+        <button class="work-tab" data-hobby="vfx">
+          <svg class="tab-icon" viewBox="0 0 20 20" fill="none"><polygon points="10,2 12.5,7 18,7.5 14,11.5 15.5,17 10,14 4.5,17 6,11.5 2,7.5 7.5,7" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="2" fill="currentColor"/></svg>
+          <span>VFX</span>
+        </button>
       </div>
       <div class="proj-list" id="proj-list"></div>
     </div>
@@ -668,18 +637,25 @@ a.proj{text-decoration:none;color:inherit;}
 
   <div class="sticker-scene" id="sticker-scene">
     <div class="sticker-wrap" id="sticker-wrap">
-      <canvas id="px" class="sticker-media" width="34" height="42"></canvas>
-      <div class="peel-container" id="peel-container">
-        <div class="peel-flap-wrap">
-          <div class="peel-flap"></div>
+      <img id="sticker-art" class="sticker-img" alt="Rayhan" draggable="false" src="assets/stickers/default.png">
+      <div class="sticker-eyes" id="sticker-eyes">
+        <div class="sticker-eye eye-left" data-eye="left">
+          <div class="sticker-pupil"></div>
         </div>
+        <div class="sticker-eye eye-right" data-eye="right">
+          <div class="sticker-pupil"></div>
+        </div>
+      </div>
+      <div class="glasses-glare">
+        <div class="glare-left"></div>
+        <div class="glare-right"></div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const CV = document.getElementById('px'), ctx = CV.getContext('2d');
+const CV = document.getElementById('px'), ctx = CV ? CV.getContext('2d') : null;
 const stickerScene = document.getElementById('sticker-scene'), stickerWrap = document.getElementById('sticker-wrap'), leftPanel = document.querySelector('.left'), textCanvas = document.getElementById('text-canvas');
 let foilNormX=0, foilNormY=0, foilAlpha=0, foilTargetAlpha=0, lastPixels=null, currentPx=null, animFrame=null, isDragging=false, dragOffX=0, dragOffY=0, stickerX=160, stickerY=12; // top-right of the paper column (clamped at init)
 
@@ -786,6 +762,7 @@ function buildOutfit(key){
   return p;
 }
 function drawPixels(pixels){
+  if (!ctx) return;
   lastPixels=pixels; ctx.clearRect(0,0,34,42); const filled=new Set(pixels.map(([x,y])=>`${x},${y}`));
   ctx.fillStyle='#ffffff'; for(const[x,y] of pixels) for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++) if(!filled.has(`${x+dx},${y+dy}`)) ctx.fillRect(x+dx+1,y+dy+1,1,1);
   ctx.fillStyle='#0f0d0b'; for(const[x,y] of pixels) for(const[dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]) if(!filled.has(`${x+dx},${y+dy}`)) ctx.fillRect(x+dx+1,y+dy+1,1,1);
@@ -801,47 +778,121 @@ function drawPixels(pixels){
 // ── Sticker Photoset — drop image paths here to replace the pixel art sticker with any photo/photoset ──
 // ASCII-art sticker (per hobby) — replaces the pixel avatar.
 // ASCII-art sticker (per hobby) — text in a <pre>, crisp at any size.
-const STICKER_ASCII_ART = {"default": "                .\"I;I;,;,:I^                \n              .,ll;:::;I;IlI,.              \n             \"i:^:,l;lI^,,`',::`            \n             l;\"\";;}1?~-l^,\"`^\":            \n            `;\"`;-]}1[-+~_<I,'',.           \n            I;..l()}f(v]}}-]!'.^^           \n            ^:^l1rzUc\\Q\\[un/_,,'`           \n             ',{\\\\(?{{[+<+-?__l.            \n               :!{[[\\()}]-++:^'             \n                 I[-]_i!<_~:                \n                 I)?i:^`,li~>               \n                ux)/|[~><+-[x{              \n              \"/M*Y\\||){[[-<CdI             \n         !]|vm#W#hpOcj|)){/maOpZc1~;        \n      ^fb8%8&&W*abdkkqOYU0OZQLqo*#MMdv+     \n     )h8B8W&88%%888&W8Mdhqwpkaao#MWW8W*C,   \n   ^J&%**&8888&88888&8o*WoMM#*###MMMWd*WZ,  \n  ^m&###*MW#o*MWW&&&&&o#MoMMMWM#***MkaMw#U  \n  jMk#Moo**h*W&&&W&8&*daka*MMMMM#oa*dkwd*d: \n  pWaWW*hhko###MWM&M#ohoa**oM#*#ZdqamwkoMh_ \n \"M%*#Wohka*oo#MM&***o***#&h*oahmZOd0hh*&a| \n +W&Mo*hkhao#MW#W#daaaoahoohodbqbLOZObhW&bc \n (&WWaoaha#W&&MMMdpaahahkkkhoqZwqLOQwoMWWq0'\n x&M8oo*bbakkoMMkmkohhhkkkkkadOqp0Q0bo*W*mq;\n QMM8#ahpddho*MowpoooohkkbhhhhZmdOQZho#8dwk<\n!bko*hbbmqooaakmOpkhkbpqqqpdbbZQwOUOka**Qwb1", "dev": "                     ':I;;;;;I'             \n                   .:;;::;:,:,,\"`           \n                   :I^,i}_<i,\"`^,'          \n                  .;``-]{1[__<I.`^          \n                  ';`itnujz[f/]\"`^          \n                   .;1/|1(1+?[-<\"           \n                     ^<]}1?-_~^.            \n                      \"{+I\",!<l             \n                     ]Y(|[+<_~/(            \n                 ^l]n*MQx/){[{Qp\\_,.        \n              ,jq*M&&#kbbmJcYOwQk*odL\\,     \n,li<+_?[{)|/frXLCJzd%888&%*akdkao#WW8*a{    \n-(\\///tfjrxxnnnxxxfZ8W&8&&oW*WWMM#*#oh*h?   \n+}1))((|//tfffjjjrtZ%WW&&*kha*MMM*aoddw*L   \n~[{11))){(\\//////t|0WMWW#ooo#**#*qmdkbo8q.  \n>]}{{11{?1|||||||\\1Q&#Mkoooo*oakddLwkokhaCj\"\ni?[{{{11(((((((()(}O8MddohhkkkapmqQpmZJubMtv\n~[1)))1))((((())11]Q&apohahkkhabZpmwQJvUoU!X\n-1}}}}{1)))))))))){nO0UvJkdppbbbOZdqOLOhhUv>", "dj": "                     _fcXULLLUr_'           \n                   1QX(~I:;!<}jQmj,         \n                 .Xw]'`\"lIl\"^' ^]Zk}        \n                 th~ ,I>)[__l;:^ `0*}       \n                 \\n[<`?[[1{_-+>:;>]X[       \n                 jQob_\\ncfU/)j/iz&wX        \n                 uZwbu\\t())-+{}]Zkkp^       \n                 .I})~][}|1[?+~l(\\_^        \n                      ^[_~l;i~l             \n                 `,^ ^-){~;,Ii?1^..         \n            \"I+]\\xcu\"Upj\\|{]?]<cr           \n       `:<{|txxnnn])J8*qXr\\)11ckwJj-l`      \n  ':<]/fff\\fr1\\\\ff\\((LakhbmUJQmO0k*#MhC{    \n<{//f/\\1[j](t(j/1{<_/tU&8&Whadbaoo#MW&W*O,  \n>1[??]{|/1/\\)1~-i<~<-ffna%*#M#WMM#*##Mk*oO' \n \"?{11(]{?+?<_-+]--?~+txjp*ohoMMMMMooakbq*[ \n  !+?<__~]-[}]{[_[+_-~+|t-fho*oM#MdpbbmdoMx \n  .<~?-[[}1])[]1?][_>~i:[<-Xa&ooohp0mmqh#&U \n   i?[]}{]\\{{({}]]!]+?\\|//)<]ahapqdQOOpa&#O,\n   `+{}]|1)|)-)({r/t/1-i:^,i[whawZp0QOa#&kw<\n    !-{[](/\\vxnj(]<I,:!]tYZbakhadOdZQqa*&wd[\n    ^_?\\tuut{_!:,,!{jcZo#*kdqpbbd0mOJqh#aQbt", "producer": "                     ;(nccUCCJc);           \n                   ;cCf-!::I!_)vZJ+         \n                  <dv:.^Iii;,`  luac.       \n                 .wC 'Ii])-_~II\". |*z       \n                 .rjj<I)[(|1-[_iI(}r?       \n                 ,Zd&Q[ncurc]jj-t8*dI       \n                 'jUOO(\\}{1[~_?+cqwJ;       \n                   ';:,]]){?--~^;i,         \n                       ~[i:^,!>I            \n                      xt()?>>+_|(           \n                   ^<vWkv/|1}]-ck];         \n               >nOb#8MappOYxjnLdLpowJx?^    \n  .'`^\",:I!i<+fpbdpmM&WMMMWkppmwbk*WW&&k/   \n_1|\\/fjrxnuuvccunnnjk%88888oMoMM#####Ma*#u  \n-1(|||\\//tfjjjrxxxxjb8W&&&#o#oMMWMM***koqo- \n_}1)))(|\\//ttffffff/d8WWWWakho*#MMobkhqqhMx \n+[{1111)[}\\\\\\\\\\//\\/|qWMW**o**M#o*odOmqmh*&U \n<]}{{{11[}((||||(||1dWMhkaaahoaakpdO0OwhWMO,\n<?[{{111(()((())))){p8owhohhkkkadZpOQ0k#&aw<\n+[11))))))))())))11}qMdkobhkkkhhhZpmQwa*&qp[\n?1{{}[}{11))))))))1{cQCznUbdppdbbOZmJmh*oQbt", "vfx": "           .  ..^..\"\",,;I^^``'.             \n         ..'```\",~ll!;;Il!!i>;`.``^'  .     \n       ...\"i<il>+_i,,l!I,\"^:~~:i>~+~<+~l_,  \n        .:+/ZQr1/i^:>}[+<I,`'_u)-<~(}?<>:   \n     .'^;![Ua8Wwt^.<//tf[)]: ir?1f\\[!^;II!i\"\n    .`I]Uakdo#WMk)I)rj//?|)~!([{}{{]{{}?_!:'\n   '^,i(Q#B@@B8WWWL/{](]-+<I_?\\(?~{?_<:.    \n   !rwho*&%8&WWM#WB%t-i:I>+]][[(-1t_>:'     \n   `l1Jh8@$@B8*dmZOkx)[~<~]Y1]]{|{|?i:^'.   \n   ^:!)hB$$$$BWomJ0#dcf({{ndUr\\/[i_~l,`.    \n ..\"i{+toWoOzmM88%%*hab0JQwZkWM*qu_<i;^'.   \n   ',_/[~~>}q&&8%888%8%#*aa**#W&W&p-^.'..   \n   .`\"l_)/\\*%**W*#W&&&Wo**WMMM**hhhpQ[`     \n      ',~/bM##ahoMWWWW*ha**MMhdhqp#bZJ?\"    \n      .'^ib&*#hh**MW#oo**Mooap0wwh&b<,\"'    \n       .\"|#&oah*MWMMdhahhhakwpQ0q*Wd]       \n       .`1#8#obkh*WbdoahkkhhZpOOhM#p/ .     \n        .jo#obqkaokZkahdddbkZm00h#dqn       "};
+// Sticker art per hobby — normalized transparent PNGs at exact 1:1 scale and centering.
+const STICKER_IMG = {
+  default:  'assets/stickers/default.png',
+  dev:      'assets/stickers/developer.png',
+  dj:       'assets/stickers/dj.png',
+  producer: 'assets/stickers/producer.png',
+  vfx:      'assets/stickers/vfx.png'
+};
 
-function initStickerAscii(){
-  const wrap = document.getElementById('sticker-wrap');
-  const canvas = document.getElementById('px');
-  if (!wrap) return;
-  if (canvas) canvas.style.display = 'none';
-  wrap.classList.add('is-ascii');
-  let pre = document.getElementById('sticker-art');
-  if (!pre) {
-    pre = document.createElement('pre');
-    pre.id = 'sticker-art';
-    pre.className = 'sticker-art';
-    wrap.appendChild(pre);
-  }
-  pre.textContent = STICKER_ASCII_ART.default;
+// Preload all sticker images for instant zero-latency seamless swaps
+Object.values(STICKER_IMG).forEach(src => { const i = new Image(); i.src = src; });
+
+function initSticker(){
+  const img = document.getElementById('sticker-art');
+  if (img) img.src = STICKER_IMG.default;
+  if (stickerScene) stickerScene.style.clipPath = '';
 }
 
-function updatePeelPosition(key){
-  if(!stickerWrap) return;
-  if(stickerWrap.classList.contains('is-photo') || stickerWrap.querySelector('img')) return;
-  if(key==='skate'){
-    stickerWrap.style.setProperty('--peel-x1', '103px');
-    stickerWrap.style.setProperty('--peel-y1', '178px');
-    stickerWrap.style.setProperty('--peel-x2', '133px');
-    stickerWrap.style.setProperty('--peel-y2', '148px');
-  } else {
-    stickerWrap.style.setProperty('--peel-x1', '80px');
-    stickerWrap.style.setProperty('--peel-y1', '178px');
-    stickerWrap.style.setProperty('--peel-x2', '110px');
-    stickerWrap.style.setProperty('--peel-y2', '148px');
-  }
-}
 function switchOutfit(k){
-  const pre = document.getElementById('sticker-art');
-  if (!pre) return;
-  const txt = STICKER_ASCII_ART[k] || STICKER_ASCII_ART.default;
-  if (pre.textContent === txt) return;
-  pre.textContent = txt;
+  const img = document.getElementById('sticker-art');
+  if (!img) return;
+  const url = STICKER_IMG[k] || STICKER_IMG.default;
+  if (img.getAttribute('src') === url) return;
+  img.src = url;
+  if (stickerScene) stickerScene.style.clipPath = '';
 }
-currentPx=buildOutfit('default'); drawPixels(currentPx); updatePeelPosition('default'); initStickerAscii();
+initSticker();
+
+// ── Sticker Eyes Tracking Cursor (Trigonometry + Smooth Animation) ──
+let targetCursorX = window.innerWidth * 0.55, targetCursorY = window.innerHeight * 0.35;
+let currentLookX = targetCursorX, currentLookY = targetCursorY;
+let eyeAnimRunning = false;
+
+function updateStickerEyes(cursorX, cursorY) {
+  const eyes = document.querySelectorAll('.sticker-eye');
+  if (!eyes.length) return;
+  eyes.forEach(eye => {
+    const pupil = eye.querySelector('.sticker-pupil');
+    if (!pupil) return;
+    const er = eye.getBoundingClientRect();
+    if (!er.width || !er.height) return;
+    const ex = er.left + er.width / 2;
+    const ey = er.top + er.height / 2;
+    const dx = cursorX - ex;
+    const dy = cursorY - ey;
+    const angle = Math.atan2(dy, dx);
+    const dist = Math.hypot(dx, dy);
+
+    // Maximum distance the pupil can travel inside the eye opening (in px)
+    const maxDistX = er.width * 0.25;
+    const maxDistY = er.height * 0.18;
+
+    // Smooth distance factor: asymptotes smoothly up to max range
+    const factor = Math.min(1, dist / 240);
+    const moveX = Math.cos(angle) * maxDistX * factor;
+    const moveY = Math.sin(angle) * maxDistY * factor;
+
+    pupil.style.transform = `translate(calc(-50% + ${moveX.toFixed(2)}px), calc(-50% + ${moveY.toFixed(2)}px))`;
+  });
+}
+
+function loopEyes() {
+  currentLookX += (targetCursorX - currentLookX) * 0.25;
+  currentLookY += (targetCursorY - currentLookY) * 0.25;
+  updateStickerEyes(currentLookX, currentLookY);
+  if (Math.hypot(targetCursorX - currentLookX, targetCursorY - currentLookY) > 0.3) {
+    requestAnimationFrame(loopEyes);
+  } else {
+    eyeAnimRunning = false;
+  }
+}
+
+function triggerEyeUpdate(x, y) {
+  targetCursorX = x;
+  targetCursorY = y;
+  if (!eyeAnimRunning) {
+    eyeAnimRunning = true;
+    requestAnimationFrame(loopEyes);
+  }
+}
+
+window.addEventListener('mousemove', e => {
+  triggerEyeUpdate(e.clientX, e.clientY);
+}, { passive: true });
+
+window.addEventListener('touchmove', e => {
+  if (e.touches && e.touches.length) triggerEyeUpdate(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: true });
+
+// Natural periodic blinking
+function blinkEyes() {
+  const eyes = document.querySelectorAll('.sticker-eye');
+  eyes.forEach(el => el.classList.add('blinking'));
+  setTimeout(() => {
+    eyes.forEach(el => el.classList.remove('blinking'));
+  }, 120);
+  const nextBlink = 3000 + Math.random() * 5000;
+  setTimeout(blinkEyes, nextBlink);
+}
+setTimeout(blinkEyes, 2500);
+
+// Click/tap sticker to wink/blink
+if (stickerScene) {
+  stickerScene.addEventListener('click', () => {
+    if (isDragging) return;
+    const eyes = document.querySelectorAll('.sticker-eye');
+    eyes.forEach(el => el.classList.add('blinking'));
+    setTimeout(() => eyes.forEach(el => el.classList.remove('blinking')), 150);
+  });
+}
+
+// Initial resting gaze towards content
+window.addEventListener('load', () => {
+  triggerEyeUpdate(window.innerWidth * 0.65, window.innerHeight * 0.35);
+});
 
 const hobbyMap={dev:'dev',dj:'dj',producer:'producer',vfx:'vfx',
   // old preserved mappings
@@ -1171,75 +1222,74 @@ const ART = [
   audio.addEventListener('play', () => { if (tvVideo) tvVideo.pause(); });
   draw();
 }
-const tapeArt = (n, v) => {
-  const title = (v.src.split('/').pop() || '').replace(/\.[^.]+$/, '');
+const tapeArt = (n) => {
   const W = 22;
   const bar = '+' + '-'.repeat(W - 2) + '+';
   const blank = '|' + ' '.repeat(W - 2) + '|';
-  const inner = (String(n).padStart(2, '0') + ' ' + title).slice(0, W - 2).padEnd(W - 2, ' ');
+  const inner = String(n).padStart(2, '0').padEnd(W - 2, ' ');
   return [bar, blank, blank, blank, blank, blank, '|' + inner + '|', bar].join('\n');
 };
 function initTv(container, videos){
+  // Screen hole = art rows 8..14, cols 7..20 (video drops in there). Rows 16/17 are carved
+  // blank: transport, dial and volume glyphs render into those cells — same trick as the
+  // iPod wheel, so the controls sit in character cells instead of pixel offsets.
   const ART = [
-    `o`,
-    `          o    |`,
-    `           \   |`,
-    `            \  |`,
-    `             \.|-.`,
-    `             (\|  )`,
-    `    .==================.`,
-    `    | .--------------. |`,
-    `    | |--.__.--.__.--| |`,
-    `    | |--.__.--.__.--| |`,
-    `    | |--.__.--.__.--| |`,
-    `    | |--.__.--.__.--| |`,
-    `    | |--.__.--.__.--| |`,
-    `    | |--.__.--.__.--| |`,
-    `    | |--.__.--.__.--| |`,
-    `    | '--------------'o|`,
-    `    | LI LI            |`,
-    `    |                  |`,
-    `    '=================='`
+    'o',
+    '          o    |',
+    '           \\   |',
+    '            \\  |',
+    '             \\.|-.',
+    '             (\\|  )',
+    '    .==================.',
+    '    | .--------------. |',
+    '    | |--.__.--.__.--| |',
+    '    | |--.__.--.__.--| |',
+    '    | |--.__.--.__.--| |',
+    '    | |--.__.--.__.--| |',
+    '    | |--.__.--.__.--| |',
+    '    | |--.__.--.__.--| |',
+    '    | |--.__.--.__.--| |',
+    "    | '--------------' |",
+    '    |                  |',
+    '    |                  |',
+    "    '=================='"
   ];
   if (!videos.length){ container.className='work-rack'; container.innerHTML='<p class="tv-empty">No clips yet — add files to <code>MEDIA.videos</code>.</p>'; return; }
   container.className='work-rack';
   container.innerHTML = `
     <div class="tv-layout">
       <div class="vhs-rack">${videos.map((v,n)=>`
-        <button class="vhs" data-i="${n}"><span class="vhs-wrap"><pre class="a-pre vhs-pre">${tapeArt(n+1, v)}</pre><img class="vhs-thumb" alt="" src="${v.thumb}"></span></button>`).join('')}</div>
+        <button class="vhs" data-i="${n}"><span class="vhs-wrap"><pre class="a-pre vhs-pre">${tapeArt(n+1)}</pre><img class="vhs-thumb" alt="" src="${v.thumb}"></span></button>`).join('')}</div>
       <div class="tv-side">
         <div class="tv-a">
           <pre class="a-pre" id="tv-art">${ART.join('\n')}</pre>
-          <video id="tv-main" class="a-video" muted loop playsinline preload="none"></video>
-        <div class="tv-ctl-shelf" style="left:11.5ch;top:19.2em;width:11ch">
-          <button class="a-ctl" data-a="rw" aria-label="rewind">◄◄</button>
-          <button class="a-ctl" data-a="toggle" aria-label="play or pause">▶</button>
-          <button class="a-ctl" data-a="ff" aria-label="fast forward">►►</button>
+          <video id="tv-main" class="tv-video" muted loop playsinline preload="none"></video>
+          <button class="tv-glyph" data-a="rw" aria-label="rewind" style="left:6ch;top:19.2em;width:4ch">[<<]</button>
+          <button class="tv-glyph" data-a="toggle" aria-label="play or pause" style="left:11ch;top:19.2em;width:3ch">[>]</button>
+          <button class="tv-glyph" data-a="ff" aria-label="fast forward" style="left:15ch;top:19.2em;width:4ch">[>>]</button>
+          <button class="tv-glyph" data-a="ch" aria-label="next channel" style="left:21ch;top:19.2em;width:1ch">O</button>
+          <span class="tv-led-indicator" id="a-led">*</span>
+          <span class="tv-glyph" id="a-ch" style="left:8ch;top:20.4em;width:3ch;pointer-events:none">CH1</span>
+          <button class="tv-glyph" data-a="vd" aria-label="volume down" style="left:13ch;top:20.4em;width:3ch">[-]</button>
+          <span class="tv-vol-bar" id="a-voltxt"></span>
+          <button class="tv-glyph" data-a="vu" aria-label="volume up" style="left:20ch;top:20.4em;width:3ch">[+]</button>
         </div>
-        <div class="tv-ctl-shelf" style="left:5.5ch;top:20.4em;width:17ch">
-          <span class="a-led" id="a-led">●</span>
-          <button class="a-ctl" data-a="ch" aria-label="next channel">CH <span id="a-ch"></span></button>
-          <button class="a-ctl" data-a="vd" aria-label="volume down">−</button>
-          <span class="a-voltxt" id="a-voltxt"></span>
-          <button class="a-ctl" data-a="vu" aria-label="volume up">+</button>
-        </div>
-        </div>
-
       </div>
     </div>`;
   const main = container.querySelector('#tv-main');
   tvVideo = main;
   main.addEventListener('play', () => { if (ipodAudio) ipodAudio.pause(); });
   const led = container.querySelector('#a-led'), chTxt = container.querySelector('#a-ch'), volTxt = container.querySelector('#a-voltxt');
-  // screen hole = texture rows 8..14 (idx 7..20 of each line): 14ch x 7 rows; video hidden till it plays
-  main.style.cssText = 'left:7ch;top:9.6em;width:14ch;height:8.4em;font-size:var(--tvfs);opacity:0';
-  let idx = 0;
-  const setVol = v => { main.volume = Math.max(0, Math.min(1, v)); volTxt.textContent = '▮'.repeat(Math.round(main.volume*6)); };
-  const playVideo = n => { idx = (n + videos.length) % videos.length; const v = videos[idx]; main.src = v.src; main.muted = false; main.loop = true; main.play().catch(()=>{}); chTxt.textContent = (idx+1) + '/' + videos.length; };
   const toggleBtn = container.querySelector('[data-a="toggle"]');
-  const syncPlay = () => { toggleBtn.textContent = main.paused ? '▶' : '❚❚'; toggleBtn.setAttribute('aria-label', main.paused ? 'play' : 'pause'); };
+  let idx = 0;
+  const setVol = v => {
+    main.volume = Math.max(0, Math.min(1, v));
+    volTxt.textContent = '='.repeat(Math.round(main.volume * 4)).padEnd(4, '-');
+  };
+  const playVideo = n => { idx = (n + videos.length) % videos.length; const v = videos[idx]; main.src = v.src; main.muted = false; main.loop = true; main.play().catch(()=>{}); chTxt.textContent = 'CH' + (idx+1); };
+  const syncPlay = () => { toggleBtn.textContent = main.paused ? '[>]' : '[||]'; toggleBtn.setAttribute('aria-label', main.paused ? 'play' : 'pause'); };
   const togglePlay = () => { if (!main.getAttribute('src')) playVideo(0); else if (main.paused) main.play().catch(()=>{}); else main.pause(); };
-  setVol(0.8); chTxt.textContent = '1/' + videos.length;
+  setVol(0.8); chTxt.textContent = 'CH1';
   container.querySelectorAll('.vhs').forEach(t=>t.addEventListener('click',()=>playVideo(+t.dataset.i)));
   container.querySelectorAll('.vhs').forEach(tape=>{
     tape.addEventListener('mousemove',e=>{
@@ -1250,6 +1300,12 @@ function initTv(container, videos){
     tape.addEventListener('mouseleave',()=>{ tape.style.transform=''; });
   });
   container.querySelector('[data-a="ch"]').addEventListener('click',()=>playVideo(idx+1));
+  container.querySelector('[data-a="vd"]').addEventListener('click',()=>setVol(main.volume-0.15));
+  container.querySelector('[data-a="vu"]').addEventListener('click',()=>setVol(main.volume+0.15));
+  main.addEventListener('playing',()=>{ main.style.opacity = 1; led.classList.add('on'); syncPlay(); });
+  main.addEventListener('pause',()=>{ led.classList.remove('on'); syncPlay(); });
+  main.addEventListener('click', togglePlay);
+  toggleBtn.addEventListener('click', togglePlay);
   let scanT = null;
   container.querySelectorAll('[data-a="rw"],[data-a="ff"]').forEach(b=>{
     const dir = b.dataset.a === 'ff' ? 1 : -1;
@@ -1258,12 +1314,6 @@ function initTv(container, videos){
     b.addEventListener('pointerdown', e => { b.setPointerCapture(e.pointerId); scan(); });
     ['pointerup','pointerleave','pointercancel'].forEach(ev => b.addEventListener(ev, stop));
   });
-  toggleBtn.addEventListener('click', togglePlay);
-  main.addEventListener('click', togglePlay);
-  container.querySelector('[data-a="vd"]').addEventListener('click',()=>setVol(main.volume-0.1));
-  container.querySelector('[data-a="vu"]').addEventListener('click',()=>setVol(main.volume+0.1));
-  main.addEventListener('playing',()=>{ main.style.opacity = 1; led.classList.add('on'); syncPlay(); });
-  main.addEventListener('pause',()=>{ led.classList.remove('on'); syncPlay(); });
   syncPlay();
 }
 
@@ -1324,30 +1374,21 @@ function updateDynamicContent(hobby) {
 let activeHobby='dev';
 const setHobby=h=>{
   activeHobby=h;
-  document.querySelectorAll('.hcard').forEach(c=>c.classList.toggle('active',c.dataset.hobby===h));
   document.querySelectorAll('.work-tab').forEach(t=>t.classList.toggle('active',t.dataset.hobby===h));
   switchOutfit(hobbyMap[h]||'default');
   updateDynamicContent(h);
 };
-document.querySelectorAll('.hcard').forEach(card=>{
-  const h=card.dataset.hobby;
-  card.addEventListener('mouseenter',()=>switchOutfit(hobbyMap[h]||'default'));
-  card.addEventListener('mouseleave',()=>switchOutfit(hobbyMap[activeHobby]||'default'));
-  card.addEventListener('click',()=>setHobby(h));
-});
 document.querySelectorAll('.work-tab').forEach(t=>t.addEventListener('click',()=>setHobby(t.dataset.hobby)));
 
-const right=document.getElementById('right'), navItems=document.querySelectorAll('.nav-item');
-function jumpTo(k){ const el=document.getElementById('sec-'+k); if(!el) return; right.scrollTo({top: el.offsetTop - right.offsetTop, behavior:'smooth'}); }
-navItems.forEach(n=>n.addEventListener('click',()=>jumpTo(n.dataset.key)));
+// no nav list any more — the section labels are the jump targets; clicking a peeking section jumps to it
+const right=document.getElementById('right');
 document.querySelectorAll('.section').forEach(sec=>{
   const lbl=sec.querySelector('.sec-label');
-  if(lbl) lbl.addEventListener('click',()=>right.scrollTo({top: sec.offsetTop - right.offsetTop, behavior:'smooth'}));
-});
-right.addEventListener('scroll',()=>{
-  const mid=right.scrollTop+right.clientHeight/2; let cur='life';
-  ['life','work','contact'].forEach(k=>{ const el=document.getElementById('sec-'+k); if(el&&el.offsetTop-right.offsetTop<=mid) cur=k; });
-  navItems.forEach(n=>n.classList.toggle('active',n.dataset.key===cur));
+  if(lbl) lbl.addEventListener('click',e=>{ e.stopPropagation(); right.scrollTo({top: sec.offsetTop - right.offsetTop, behavior:'smooth'}); });
+  sec.addEventListener('click',()=>{
+    const r=sec.getBoundingClientRect(), pr=right.getBoundingClientRect();
+    if(r.top > pr.top + 80) right.scrollTo({top: sec.offsetTop - right.offsetTop, behavior:'smooth'});
+  });
 });
 
 stickerScene.addEventListener('mousemove',function(e){
@@ -1388,7 +1429,8 @@ function renderText() {
     }
     return w - x0 - 10;
   };
-  const maxBottom = h - 45;
+  const wEl = document.getElementById('paper-weather');
+  const maxBottom = h - 45 - (wEl ? wEl.offsetHeight + 8 : 0);
   const place = (t, yRef, lh) => {                // sink rows until the line fits, then draw
     while (tc.measureText(t).width > rowW(yRef, lh) && yRef < maxBottom - lh) yRef += lh;
     tc.fillText(t, x0, yRef + lh * 0.78);
@@ -1430,10 +1472,10 @@ function updateStickerPos(x, y) {
   const maxY = Math.max(0, portH - stickerScene.offsetHeight);
 
   if (!hasMovedSticker) {
-    const navEl = document.querySelector('.left-nav');
-    const navH = navEl ? (navEl.offsetHeight + 14) : 80;
+    const wEl = document.getElementById('paper-weather');
+    const reserve = wEl ? (wEl.offsetHeight + 14) : 80;
     const initMaxX = Math.max(4, leftPanel.offsetWidth - stickerScene.offsetWidth - 10);
-    const initMaxY = Math.max(4, leftPanel.offsetHeight - stickerScene.offsetHeight - navH);
+    const initMaxY = Math.max(4, leftPanel.offsetHeight - stickerScene.offsetHeight - reserve);
     x = initMaxX;
     y = Math.min(12, initMaxY);
   }
@@ -1443,9 +1485,11 @@ function updateStickerPos(x, y) {
   stickerScene.style.left = stickerX + 'px';
   stickerScene.style.top = stickerY + 'px';
   renderText();
+  if (typeof triggerEyeUpdate === 'function') triggerEyeUpdate(targetCursorX, targetCursorY);
 }
 
 stickerScene.addEventListener('mousedown', e => {
+  if (window.innerWidth <= 768) return;   // pinned in the mobile header
   isDragging = true;
   dragStartX = e.clientX;
   dragStartY = e.clientY;
@@ -1478,7 +1522,7 @@ window.addEventListener('blur', () => {
 });
 
 stickerScene.addEventListener('touchstart', e => {
-  if (e.touches.length !== 1) return;
+  if (e.touches.length !== 1 || window.innerWidth <= 768) return;
   isDragging = true;
   const t = e.touches[0];
   dragStartX = t.clientX;
@@ -1872,92 +1916,189 @@ document.addEventListener('touchend', () => {
   boot();
 })();
 
-// Weather — ASCII dithered sky (inspired by chrcit.com). Open-Meteo, no key.
+// Weather — live ASCII sky on the paper, 48x16 cells of DITHERED field (not outlines): the whole
+// block is inked so it reads as a picture, not glyphs on blank paper. Cloud masses drift one way
+// and wrap (infinite scroll); rain/snow fall; sun or moon sits in the corner with a rotating
+// corona. The scene comes from the live WMO code — nothing here is user-set. Open-Meteo, no key.
 (function(){
-  const host = document.getElementById('weather-card'); if (!host) return;
-  const PLACE = 'New Brunswick, US', LAT = 40.4862, LON = -74.4518;
-  const H = 7;
+  const host = document.getElementById('paper-weather'); if (!host) return;
+  const LAT = 40.4862, LON = -74.4518, W = 48, H = 16;
   const RAMP = ' .:-=+*#%@';
-  const scene = code => {
-    const s = { haze:.1, clouds:.35, sun:.5, rain:0, snow:0, fog:0, storm:0 };
-    if (code === 0) Object.assign(s, {haze:.05, clouds:.06, sun:1});
-    else if (code === 1) Object.assign(s, {haze:.07, clouds:.26, sun:.88});
-    else if (code === 2) Object.assign(s, {haze:.1, clouds:.58, sun:.62});
-    else if (code === 3) Object.assign(s, {haze:.16, clouds:.96, sun:.1});
-    else if (code === 45 || code === 48) Object.assign(s, {haze:.22, clouds:.12, sun:.08, fog:.9});
-    else if (code >= 51 && code <= 57) Object.assign(s, {haze:.13, clouds:.78, sun:.14, rain:.35});
-    else if ((code >= 71 && code <= 77) || code === 85 || code === 86) Object.assign(s, {haze:.14, clouds:.86, sun:.16, snow:1});
-    else if (code >= 95) Object.assign(s, {haze:.24, clouds:1, sun:0, rain:1, storm:1});
-    else Object.assign(s, {haze:.17, clouds:.9, sun:.08, rain:.75});
-    return s;
-  };
+  const BAYER = [0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5].map(v => v / 16 - .5);   // ordered dither
+  const art = host.querySelector('#wx-ascii'), tempEl = host.querySelector('#wx-temp');
+  const condEl = host.querySelector('#wx-cond'), clockEl = host.querySelector('#wx-clock');
+  const hash = n => { const x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); };
+  const clamp = v => v < 0 ? 0 : v > 1 ? 1 : v;
   const label = code => code === 0 ? 'clear' : code === 1 ? 'mainly clear' : code === 2 ? 'partly cloudy' : code === 3 ? 'overcast'
     : (code === 45 || code === 48) ? 'foggy' : (code >= 51 && code <= 57) ? 'drizzly'
     : ((code >= 71 && code <= 77) || code === 85 || code === 86) ? 'snowy' : code >= 95 ? 'stormy' : 'rainy';
-  const hash = n => { const x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); };
-  const clamp = v => v < 0 ? 0 : v > 1 ? 1 : v;
+  const isNight = () => forceNight === null ? (new Date().getHours() >= 21 || new Date().getHours() < 6) : forceNight;
+  // The body is DRAWN, not dithered — a real disk with 8 rays (moon: a crescent) — and it is
+  // shown only when the sky is clear enough, hidden behind a thick cloud.
+  const SUN = ['  \\   /', '   \\ / ', '  ( O )', '   / \\ ', '  /   \\'];
+  const MOON = ['   ____  ', '  / ___) ', ' | |     ', ' | |     ', '  \\ \\___ ', '   \\____)'];
+  // c = cloud mass, s = sun/moon, r = rain, n = snow, f = fog, st = storm
+  const weights = code => {
+    if (code === 0) return { c: .25, s: 1,    r: 0,   n: 0,  f: 0, st: 0 };
+    if (code === 1) return { c: .45, s: .9,   r: 0,   n: 0,  f: 0, st: 0 };
+    if (code === 2) return { c: .75, s: .75,  r: 0,   n: 0,  f: 0, st: 0 };
+    if (code === 3) return { c: 1.0, s: .38,  r: 0,   n: 0,  f: 0, st: 0 };
+    if (code === 45 || code === 48) return { c: .22, s: .15, r: 0, n: 0, f: 1, st: 0 };
+    if (code >= 51 && code <= 57) return { c: 1,  s: .18, r: .35, n: 0,  f: 0, st: 0 };
+    if ((code >= 71 && code <= 77) || code === 85 || code === 86) return { c: 1, s: .15, r: 0, n: .8, f: 0, st: 0 };
+    if (code >= 95) return { c: 1.15, s: 0, r: 1,   n: 0,  f: 0, st: 1 };
+    return { c: 1, s: .12, r: .85, n: 0, f: 0, st: 0 };                       // 61-67 rain, 80-82 showers
+  };
+  // drifting cloud tracks: x/y/radii in grid units, v = columns per second (rightward, wraps)
+  const TRACKS = [
+    { x: .05, y: .52, rx: .21, ry: .12, v: 1.6 },
+    { x: .52, y: .62, rx: .17, ry: .10, v: 2.2 },
+    { x: .82, y: .46, rx: .14, ry: .09, v: 1.2 },
+    { x: .30, y: .78, rx: .25, ry: .14, v: 1.0 }
+  ];
 
-  host.innerHTML = '<div class="wx-copy"></div><pre class="wx-art"></pre>';
-  const copy = host.querySelector('.wx-copy'), art = host.querySelector('.wx-art');
+  const pn = (px, py) => {                            // smooth 2D value noise (bilinear over cell hashes)
+    const x0 = Math.floor(px), y0 = Math.floor(py), fx = px - x0, fy = py - y0;
+    const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+    const a = hash(x0 * 12.9 + y0 * 78.2), b = hash((x0 + 1) * 12.9 + y0 * 78.2);
+    const c = hash(x0 * 12.9 + (y0 + 1) * 78.2), d = hash((x0 + 1) * 12.9 + (y0 + 1) * 78.2);
+    return (a * (1 - sx) + b * sx) * (1 - sy) + (c * (1 - sx) + d * sx) * sy;
+  };
+  const cloudAt = (ax, ay, t, w) => {                 // cloud mass over one cell
+    let k = 0;
+    for (let i = 0; i < TRACKS.length; i++){
+      const b = TRACKS[i], cx = (b.x + t * b.v / W) % 1.25;
+      const dx = (ax - cx) / b.rx, dy = (ay - b.y) / b.ry;
+      const d = dx * dx + dy * dy;
+      if (d < 1) k += (1 - d) * (1 - d) * w.c;
+    }
+    return k;
+  };
+  const BODY_X = 38, BODY_Y = 1;                       // drawn sun/moon sits here
 
-  let code = 0, tempMax = null;   // default clear — renders immediately, before fetch
-  const night = () => { const h = new Date().getHours(); return h >= 21 || h < 6; };
-
-  function draw(t) {
-    const s = scene(code), isNight = night();
-    const W = Math.max(30, Math.min(80, Math.floor((host.clientWidth - 4) / 7.2)));
-    let out = '';
-    for (let y = 0; y < H; y++) {
+  let code = null, temp = null, live = true, forceNight = null, lastW = 0, lastT = 0;
+  function draw(t){
+    lastT = t;
+    if (art.clientWidth !== lastW) {                  // 48 cols of mono ≈ 0.6em each
+      lastW = art.clientWidth;
+      art.style.fontSize = Math.max(5, (lastW - 4) / W / 0.6).toFixed(2) + 'px';
+    }
+    const w = weights(code === null ? 0 : code), night = isNight();
+    const body = night ? MOON : SUN;
+    const bw = body[0].length, bh = body.length;
+    const showBody = w.s > .25;                          // clear-ish sky: the sun is always drawn
+    const sax = (BODY_X + 3.5) / (W - 1), say = (BODY_Y + 2.0) / (H - 1);
+    let out = '', open = null;
+    for (let y = 0; y < H; y++){
       const ay = y / (H - 1);
-      for (let x = 0; x < W; x++) {
-        const ax = x / W;
-        let v = (1 - 0.82 * Math.pow(ay, 1.5)) * (1 - s.haze * 0.35);
-        for (let i = 0; i < 3; i++) {
-          const cx = 0.15 + 0.32 * i + 0.10 * Math.sin(t * 0.30 + i) + 0.05 * hash(i + 5.1);
-          const cy = 0.32 + 0.22 * hash(i + 61.2);
-          const dx = (ax - cx) / (0.22 + 0.05 * i), dy = (ay - cy) / 0.15;
-          const m = 1 - (dx * dx + dy * dy);
-          if (m > 0) v -= m * m * s.clouds * 0.55;
+      for (let x = 0; x < W; x++){
+        const ax = x / (W - 1);
+        let v = 0.04 + 0.10 * ay + 0.05 * hash(x * 1.9 + y * 3.7), kind = 'dim', ch = null;   // baseline: never blank, never a checkerboard
+        const ck = cloudAt(ax, ay, t, w);             // cloud masses
+
+        // Sun rays and radial light field
+        let sunLight = 0;
+        if (!night && w.s > 0.05){
+          const dx = (ax - sax) * 1.6, dy = (ay - say);
+          const dSun = Math.hypot(dx, dy);
+          const ang = Math.atan2(dy, dx);
+          const beam = Math.max(0, Math.cos(ang * 7 - t * 0.35)) * 0.55 + Math.max(0, Math.cos(ang * 11 + t * 0.2 + 1.3)) * 0.45;
+          const ray = Math.pow(beam, 1.8) * Math.max(0, 1 - dSun / 0.85);
+          const glow = Math.max(0, 1 - dSun / 0.45);
+          sunLight = w.s * (glow * 0.35 + ray * 0.65) * (0.8 + 0.2 * Math.sin(t * 1.4 + ang * 2));
         }
-        if (s.fog > 0) v = v * (1 - s.fog) + s.fog * (0.45 + 0.25 * hash(x * 1.3 + y * 2.1));
-        if (s.sun > 0.03) {
-          const sx = 0.74 + Math.sin(t * 0.12) * 0.02, sy = 0.38, d = Math.hypot(ax - sx, ay - sy), dr = 0.13;
-          if (d < dr) v += s.sun * 1.3;
-          else if (d < dr * 1.7) v += s.sun * (0.30 + 0.10 * Math.sin(t * 1.4)) * (1 - (d - dr) / (dr * 0.7));
+
+        if (ck > 0){
+          v += ck * 1.6 * (0.85 + 0.3 * hash(x * 1.7 + y * 3.1));     // static grain: only the mass travels
+          if (sunLight > 0){
+            v += ck * sunLight * 2.5;                                  // sun rays light up the cloud!
+            if (sunLight > 0.10 && ck > 0.05) kind = 'sun';           // golden sunlight highlights on cloud edges
+            else if (ck > .08) kind = 'cloud';
+          } else if (ck > .08) {
+            kind = 'cloud';
+          }
+        } else if (sunLight > 0.25 && !night){
+          v += sunLight * 0.25;
+          if (sunLight > 0.45) kind = 'sun';                          // warm ambient sunbeam in open sky
         }
-        if (s.rain > 0 || s.storm > 0) {
-          const lane = Math.floor(x / 4);
-          const head = ((t * 4 + lane * 9.7) % (H + 5)) - 2.5;
-          if (Math.abs(y - head) < 1.3) v += 0.55 * (s.rain + s.storm * 0.8);
+        if (w.f > 0){                                // fog: soft banks + two thin wisps, clear paper between
+          const bank = pn((x + t * 5) / 11, ay * 6);                        // drifts right, wide patches
+          const wisp = Math.max(0, Math.sin(ay * 9.4 - 1.1) - .72) / .28;   // two thin bands
+          const fv = bank * .7 + wisp * .35 + (ay - .4) * .12;              // fog pools low
+          if (fv > .5){ v = .20 + .26 * Math.min(1, (fv - .5) / .45); kind = 'fog'; }   // stays light ink, paler than cloud
         }
-        if (s.snow > 0) {
-          const col = Math.floor(x / 12);
-          const yy = ((t * 0.8 + hash(col * 31.7 + 3.3) * 40) % (H + 3)) - 1.5;
-          if (Math.abs(y - yy) < 0.9) v += 0.6;
+        let inBody = false;
+        if (showBody){                                // drawn sun / crescent moon
+          const by2 = y - BODY_Y, bx2 = x - BODY_X;
+          if (by2 >= 0 && by2 < bh && bx2 >= 0 && bx2 < bw){
+            const c2 = body[by2][bx2];
+            if (c2 !== ' '){ ch = c2; kind = night ? 'night' : 'sun'; }
+            else inBody = true;                       // its gaps keep a thinner dither, not blank paper
+          }
         }
-        if (isNight) v = 1 - v;
-        out += RAMP[Math.max(0, Math.min(9, Math.round(clamp(v) * 9)))];
+        if (night && y < 8 && hash(x * 2.7 + y * 5.1) > .975){ v = .9; kind = 'night'; }
+        if (w.r > 0 && y > 8 && hash(x * 5.5) > 1 - w.r * .9){       // rain columns, falling
+          if ((((y - (hash(x * 5.5) * H + t * 26)) % H) + H) % H < 3){ v = 1; kind = 'rain'; }
+        }
+        if (w.n > 0 && y > 7 && hash(x * 7.3) > 1 - w.n * .35){      // snow, falling slower
+          if ((((y - (hash(x * 3.1) * H + t * 5)) % H) + H) % H < 1){ v = .7; kind = 'snow'; }
+        }
+        if (w.st > 0 && y > 7 && Math.sin(t * .9) > .55){            // bolt flashes in bursts
+          if (Math.abs(x - (22 + 4 * Math.sin(y * .7))) < 1){ v = 1; kind = 'storm'; }
+        }
+        if (ch === null){
+          if (inBody) v *= .45;                       // thinner sky inside the sun, still dithered
+          v = clamp(v + BAYER[(y % 4) * 4 + (x % 4)] * .1 + (hash(x * 9.1 + y * 4.7) - .5) * .1);   // dither, de-gridded with noise
+          ch = RAMP[Math.max(0, Math.min(9, Math.round(v * 9)))];
+        }
+        if (kind !== open){ if (open !== null) out += '</span>'; out += '<span class="wxc-' + kind + '">'; open = kind; }
+        out += ch;
       }
       out += '\n';
     }
-    art.textContent = out;
+    art.innerHTML = out + '</span>';
   }
-  const refresh = () => {
-    copy.textContent = tempMax == null
-      ? `The weather today in ${PLACE} is ${label(code)}.`
-      : `The weather today in ${PLACE} is ${label(code)} with temperatures peaking at ${Math.round(tempMax)}°F.`;
+  const paintData = () => {
+    tempEl.textContent = temp == null ? '--°F' : Math.round(temp) + '°F';
+    condEl.textContent = code == null ? '—' : label(code);
   };
-  const load = () => fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&daily=temperature_2m_max&timezone=auto&forecast_days=1`)
+  const tickClock = () => { clockEl.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }); };
+  setInterval(tickClock, 1000); tickClock();
+  const t0 = performance.now();
+  const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // the sky always moves — reduce-motion only slows the clock, never freezes it
+  setInterval(() => draw((performance.now() - t0) / 1000), still ? 900 : 120);
+  window.addEventListener('resize', () => draw(lastT));
+  const load = () => fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`)
     .then(r => r.json()).then(j => {
-      code = j.current.weather_code;
-      tempMax = j.daily && j.daily.temperature_2m_max ? j.daily.temperature_2m_max[0] : j.current.temperature_2m;
-      refresh();
-    }).catch(() => {});
+      temp = j.current.temperature_2m;
+      if (live) code = j.current.weather_code;   // a forced scene wins over the fetch
+      paintData(); draw(lastT);
+    }).catch(() => { if (live) condEl.textContent = 'offline'; });
+
+  // testing without devtools: ?wx=storm  ·  ?wx=61  ·  ?wx=storm&night=1  ·  ?wx=auto for live
+  const BYNAME = { clear: 0, mainly: 1, partly: 2, overcast: 3, fog: 45, drizzle: 53, rain: 61,
+                   snow: 71, showers: 80, snowshowers: 86, storm: 95 };
+  const q = new URLSearchParams(location.search);
+  const qw = q.get('wx'), qn = q.get('night');
+  if (qw && qw !== 'auto') {
+    live = false;
+    code = BYNAME[qw.toLowerCase()] != null ? BYNAME[qw.toLowerCase()] : (+qw || 0);
+    forceNight = qn === null ? null : (qn === '1' || qn === 'true');
+  }
   load();
-  refresh();
-  let t0 = performance.now();
-  const tick = now => { draw((now - t0) / 1000); requestAnimationFrame(tick); };
-  requestAnimationFrame(tick);
+
+  // console: wx() lists the scenes · wx(61) forces one · wx(61, true) forces night · wx('live') resumes
+  const WX = { 0: 'clear', 1: 'mainly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 53: 'drizzle', 61: 'rain',
+               71: 'snow', 80: 'showers', 86: 'snow showers', 95: 'storm' };
+  window.wx = (c, night) => {
+    if (c === undefined) return Object.keys(WX).map(k => 'wx(' + k + ')' + ' '.repeat(5 - k.length) + WX[k]).join('\n')
+      + '\nor add ?wx=storm&night=1 to the URL (?wx=auto = live)';
+    if (c === 'live') { live = true; forceNight = null; code = null; temp = null; paintData(); load(); return 'live weather resumed'; }
+    live = false; if (night !== undefined) forceNight = !!night;
+    code = +c; paintData(); draw(lastT);
+    return (WX[c] || 'WMO ' + c) + (forceNight === null ? '' : forceNight ? ' (night)' : ' (day)');
+  };
 })();
 
 updateStickerPos(stickerX, stickerY);
