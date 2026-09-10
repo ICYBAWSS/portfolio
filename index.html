@@ -20,8 +20,9 @@ html,body{background:#1c1410;}
 .sticker-scene{
   position:absolute;
   z-index:99999;
-  width:200px;
-  height:300px;
+  width:auto;
+  height:auto;
+  max-width:280px;
   cursor: grab;
   top:12px;
   left:160px;
@@ -51,6 +52,8 @@ html,body{background:#1c1410;}
 }
 
 .sticker-media{display:block;position:relative;z-index:1;}
+.sticker-art{font-family:'Roboto Mono',monospace;font-size:9px;line-height:1.2;white-space:pre;margin:0;color:#2a1f14;user-select:none;pointer-events:none;}
+.sticker-wrap.is-ascii .peel-container{display:none;}
 canvas#px.sticker-media{image-rendering:pixelated;image-rendering:crisp-edges;width:149px;height:184px;
   clip-path: polygon(
     0 0,
@@ -797,51 +800,23 @@ function drawPixels(pixels){
 }
 // ── Sticker Photoset — drop image paths here to replace the pixel art sticker with any photo/photoset ──
 // ASCII-art sticker (per hobby) — replaces the pixel avatar.
-const STICKER_ASCII = {
-  default:  'assets/stickers/default-ascii.png',
-  dev:      'assets/stickers/developer-ascii.png',
-  dj:       'assets/stickers/dj-ascii.png',
-  producer: 'assets/stickers/producer-ascii.png',
-  vfx:      'assets/stickers/vfx-ascii.png',
-};
-const STICKER_PHOTOSET = [STICKER_ASCII.default];
+// ASCII-art sticker (per hobby) — text in a <pre>, crisp at any size.
+const STICKER_ASCII_ART = {"default": "                .\"I;I;,;,:I^                \n              .,ll;:::;I;IlI,.              \n             \"i:^:,l;lI^,,`',::`            \n             l;\"\";;}1?~-l^,\"`^\":            \n            `;\"`;-]}1[-+~_<I,'',.           \n            I;..l()}f(v]}}-]!'.^^           \n            ^:^l1rzUc\\Q\\[un/_,,'`           \n             ',{\\\\(?{{[+<+-?__l.            \n               :!{[[\\()}]-++:^'             \n                 I[-]_i!<_~:                \n                 I)?i:^`,li~>               \n                ux)/|[~><+-[x{              \n              \"/M*Y\\||){[[-<CdI             \n         !]|vm#W#hpOcj|)){/maOpZc1~;        \n      ^fb8%8&&W*abdkkqOYU0OZQLqo*#MMdv+     \n     )h8B8W&88%%888&W8Mdhqwpkaao#MWW8W*C,   \n   ^J&%**&8888&88888&8o*WoMM#*###MMMWd*WZ,  \n  ^m&###*MW#o*MWW&&&&&o#MoMMMWM#***MkaMw#U  \n  jMk#Moo**h*W&&&W&8&*daka*MMMMM#oa*dkwd*d: \n  pWaWW*hhko###MWM&M#ohoa**oM#*#ZdqamwkoMh_ \n \"M%*#Wohka*oo#MM&***o***#&h*oahmZOd0hh*&a| \n +W&Mo*hkhao#MW#W#daaaoahoohodbqbLOZObhW&bc \n (&WWaoaha#W&&MMMdpaahahkkkhoqZwqLOQwoMWWq0'\n x&M8oo*bbakkoMMkmkohhhkkkkkadOqp0Q0bo*W*mq;\n QMM8#ahpddho*MowpoooohkkbhhhhZmdOQZho#8dwk<\n!bko*hbbmqooaakmOpkhkbpqqqpdbbZQwOUOka**Qwb1", "dev": "                     ':I;;;;;I'             \n                   .:;;::;:,:,,\"`           \n                   :I^,i}_<i,\"`^,'          \n                  .;``-]{1[__<I.`^          \n                  ';`itnujz[f/]\"`^          \n                   .;1/|1(1+?[-<\"           \n                     ^<]}1?-_~^.            \n                      \"{+I\",!<l             \n                     ]Y(|[+<_~/(            \n                 ^l]n*MQx/){[{Qp\\_,.        \n              ,jq*M&&#kbbmJcYOwQk*odL\\,     \n,li<+_?[{)|/frXLCJzd%888&%*akdkao#WW8*a{    \n-(\\///tfjrxxnnnxxxfZ8W&8&&oW*WWMM#*#oh*h?   \n+}1))((|//tfffjjjrtZ%WW&&*kha*MMM*aoddw*L   \n~[{11))){(\\//////t|0WMWW#ooo#**#*qmdkbo8q.  \n>]}{{11{?1|||||||\\1Q&#Mkoooo*oakddLwkokhaCj\"\ni?[{{{11(((((((()(}O8MddohhkkkapmqQpmZJubMtv\n~[1)))1))((((())11]Q&apohahkkhabZpmwQJvUoU!X\n-1}}}}{1)))))))))){nO0UvJkdppbbbOZdqOLOhhUv>", "dj": "                     _fcXULLLUr_'           \n                   1QX(~I:;!<}jQmj,         \n                 .Xw]'`\"lIl\"^' ^]Zk}        \n                 th~ ,I>)[__l;:^ `0*}       \n                 \\n[<`?[[1{_-+>:;>]X[       \n                 jQob_\\ncfU/)j/iz&wX        \n                 uZwbu\\t())-+{}]Zkkp^       \n                 .I})~][}|1[?+~l(\\_^        \n                      ^[_~l;i~l             \n                 `,^ ^-){~;,Ii?1^..         \n            \"I+]\\xcu\"Upj\\|{]?]<cr           \n       `:<{|txxnnn])J8*qXr\\)11ckwJj-l`      \n  ':<]/fff\\fr1\\\\ff\\((LakhbmUJQmO0k*#MhC{    \n<{//f/\\1[j](t(j/1{<_/tU&8&Whadbaoo#MW&W*O,  \n>1[??]{|/1/\\)1~-i<~<-ffna%*#M#WMM#*##Mk*oO' \n \"?{11(]{?+?<_-+]--?~+txjp*ohoMMMMMooakbq*[ \n  !+?<__~]-[}]{[_[+_-~+|t-fho*oM#MdpbbmdoMx \n  .<~?-[[}1])[]1?][_>~i:[<-Xa&ooohp0mmqh#&U \n   i?[]}{]\\{{({}]]!]+?\\|//)<]ahapqdQOOpa&#O,\n   `+{}]|1)|)-)({r/t/1-i:^,i[whawZp0QOa#&kw<\n    !-{[](/\\vxnj(]<I,:!]tYZbakhadOdZQqa*&wd[\n    ^_?\\tuut{_!:,,!{jcZo#*kdqpbbd0mOJqh#aQbt", "producer": "                     ;(nccUCCJc);           \n                   ;cCf-!::I!_)vZJ+         \n                  <dv:.^Iii;,`  luac.       \n                 .wC 'Ii])-_~II\". |*z       \n                 .rjj<I)[(|1-[_iI(}r?       \n                 ,Zd&Q[ncurc]jj-t8*dI       \n                 'jUOO(\\}{1[~_?+cqwJ;       \n                   ';:,]]){?--~^;i,         \n                       ~[i:^,!>I            \n                      xt()?>>+_|(           \n                   ^<vWkv/|1}]-ck];         \n               >nOb#8MappOYxjnLdLpowJx?^    \n  .'`^\",:I!i<+fpbdpmM&WMMMWkppmwbk*WW&&k/   \n_1|\\/fjrxnuuvccunnnjk%88888oMoMM#####Ma*#u  \n-1(|||\\//tfjjjrxxxxjb8W&&&#o#oMMWMM***koqo- \n_}1)))(|\\//ttffffff/d8WWWWakho*#MMobkhqqhMx \n+[{1111)[}\\\\\\\\\\//\\/|qWMW**o**M#o*odOmqmh*&U \n<]}{{{11[}((||||(||1dWMhkaaahoaakpdO0OwhWMO,\n<?[{{111(()((())))){p8owhohhkkkadZpOQ0k#&aw<\n+[11))))))))())))11}qMdkobhkkkhhhZpmQwa*&qp[\n?1{{}[}{11))))))))1{cQCznUbdppdbbOZmJmh*oQbt", "vfx": "           .  ..^..\"\",,;I^^``'.             \n         ..'```\",~ll!;;Il!!i>;`.``^'  .     \n       ...\"i<il>+_i,,l!I,\"^:~~:i>~+~<+~l_,  \n        .:+/ZQr1/i^:>}[+<I,`'_u)-<~(}?<>:   \n     .'^;![Ua8Wwt^.<//tf[)]: ir?1f\\[!^;II!i\"\n    .`I]Uakdo#WMk)I)rj//?|)~!([{}{{]{{}?_!:'\n   '^,i(Q#B@@B8WWWL/{](]-+<I_?\\(?~{?_<:.    \n   !rwho*&%8&WWM#WB%t-i:I>+]][[(-1t_>:'     \n   `l1Jh8@$@B8*dmZOkx)[~<~]Y1]]{|{|?i:^'.   \n   ^:!)hB$$$$BWomJ0#dcf({{ndUr\\/[i_~l,`.    \n ..\"i{+toWoOzmM88%%*hab0JQwZkWM*qu_<i;^'.   \n   ',_/[~~>}q&&8%888%8%#*aa**#W&W&p-^.'..   \n   .`\"l_)/\\*%**W*#W&&&Wo**WMMM**hhhpQ[`     \n      ',~/bM##ahoMWWWW*ha**MMhdhqp#bZJ?\"    \n      .'^ib&*#hh**MW#oo**Mooap0wwh&b<,\"'    \n       .\"|#&oah*MWMMdhahhhakwpQ0q*Wd]       \n       .`1#8#obkh*WbdoahkkhhZpOOhM#p/ .     \n        .jo#obqkaokZkahdddbkZm00h#dqn       "};
 
-let stickerPhotoIdx = 0;
-function initStickerPhotoset() {
-  if (!STICKER_PHOTOSET || !STICKER_PHOTOSET.length) return;
+function initStickerAscii(){
   const wrap = document.getElementById('sticker-wrap');
   const canvas = document.getElementById('px');
   if (!wrap) return;
-
-  wrap.classList.add('is-photo');
   if (canvas) canvas.style.display = 'none';
-
-  let img = document.getElementById('sticker-photo');
-  if (!img) {
-    img = document.createElement('img');
-    img.id = 'sticker-photo';
-    img.className = 'sticker-media';
-    img.alt = 'Sticker Photo';
-    wrap.insertBefore(img, wrap.firstChild);
+  wrap.classList.add('is-ascii');
+  let pre = document.getElementById('sticker-art');
+  if (!pre) {
+    pre = document.createElement('pre');
+    pre.id = 'sticker-art';
+    pre.className = 'sticker-art';
+    wrap.appendChild(pre);
   }
-
-  const renderPhoto = () => {
-    img.src = STICKER_PHOTOSET[stickerPhotoIdx % STICKER_PHOTOSET.length];
-  };
-  renderPhoto();
-
-  if (STICKER_PHOTOSET.length > 1) {
-    stickerScene.title = 'Click to view next photo';
-    stickerScene.addEventListener('click', () => {
-      if (isDragging) return;
-      stickerPhotoIdx = (stickerPhotoIdx + 1) % STICKER_PHOTOSET.length;
-      img.style.opacity = '0.35';
-      setTimeout(() => {
-        renderPhoto();
-        img.style.opacity = '1';
-      }, 120);
-    });
-  }
+  pre.textContent = STICKER_ASCII_ART.default;
 }
 
 function updatePeelPosition(key){
@@ -860,14 +835,13 @@ function updatePeelPosition(key){
   }
 }
 function switchOutfit(k){
-  const img = document.getElementById('sticker-photo');
-  if (!img) return;
-  const src = STICKER_ASCII[k] || STICKER_ASCII.default;
-  if (img.getAttribute('src') === src) return;
-  img.style.opacity = '0.25';
-  setTimeout(() => { img.src = src; img.style.opacity = '1'; }, 90);
+  const pre = document.getElementById('sticker-art');
+  if (!pre) return;
+  const txt = STICKER_ASCII_ART[k] || STICKER_ASCII_ART.default;
+  if (pre.textContent === txt) return;
+  pre.textContent = txt;
 }
-currentPx=buildOutfit('default'); drawPixels(currentPx); updatePeelPosition('default'); initStickerPhotoset();
+currentPx=buildOutfit('default'); drawPixels(currentPx); updatePeelPosition('default'); initStickerAscii();
 
 const hobbyMap={dev:'dev',dj:'dj',producer:'producer',vfx:'vfx',
   // old preserved mappings
