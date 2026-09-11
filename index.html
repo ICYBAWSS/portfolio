@@ -418,12 +418,7 @@ a.proj{text-decoration:none;color:inherit;}
 .board-note::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;z-index:3;
   background:#dc2626;box-shadow:0 1px 2px rgba(0,0,0,.35);}
 .board-note:hover{filter:brightness(1.1) drop-shadow(0 0 3px rgba(255,255,255,.5));}
-.board-ghost{position:fixed;width:56px;height:38px;z-index:9999;pointer-events:none;background:#f4ecd8;
-  box-shadow:0 6px 14px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.3) inset;}
-.board-ghost img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
-.board-ghost::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;z-index:3;
-  background:#dc2626;box-shadow:0 1px 2px rgba(0,0,0,.35);}
-.board-pad.grabbable{cursor:grab;}
+.board-cork.ready-to-pin{cursor:pointer;}
 .board-public{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(232,226,217,.35);text-align:center;margin:8px 0 0;flex-shrink:0;}
 .board-pad-wrap{display:flex;flex-direction:column;gap:9px;align-items:center;margin-top:1rem;flex-shrink:0;}
 .board-pad{width:min(480px,100%);height:auto;background:#efe6d0;border-radius:3px;cursor:crosshair;touch-action:none;
@@ -2518,7 +2513,7 @@ if (mobileBrand) {
   setup();
 })();
 
-// ── Bulletin board: real cork, free placement. Draw → drag the doodle onto the board
+// ── Bulletin board: real cork, free placement. Draw → tap the cork board to pin doodle
 //    (release anywhere, overlap allowed). Shared via Firebase Firestore (anonymous auth;
 //    rules allow delete only for the author). Pins are public by design.
 (function(){
@@ -2610,17 +2605,14 @@ if (mobileBrand) {
       })
       .catch(() => { clearTimeout(t); hint.textContent = 'board offline — needs internet'; });
   }
-  // ── draw pad: draw naturally; tap the cork board (or drag) to place doodle ──
+  // ── draw pad: draw naturally; tap the cork board to place doodle ──
   const pt = e => { const r = pad.getBoundingClientRect();
     return [ (e.clientX - r.left) * pad.width / r.width, (e.clientY - r.top) * pad.height / r.height ]; };
   const blank = () => { pctx.clearRect(0, 0, pad.width, pad.height); };
   const hasDoodle = () => { const d = pctx.getImageData(0, 0, pad.width, pad.height).data;
     for (let i = 3; i < d.length; i += 16) if (d[i] > 10) return true; return false; };
-  let drawing = false, dragging = false, liftTimer = null, downPt = null, strokeMoved = false;
-  const ghost = document.createElement('div'); ghost.className = 'board-ghost';
-  ghost.style.display = 'none'; document.body.appendChild(ghost);
-  const ghostImg = document.createElement('img'); ghost.appendChild(ghostImg);
-  const cancelLift = () => { if (liftTimer) { clearTimeout(liftTimer); liftTimer = null; } };
+  let drawing = false;
+
   const placeDoodle = e => {
     const cr = cork.getBoundingClientRect();
     const x = (e.clientX - cr.left) / cr.width * 100, y = (e.clientY - cr.top) / cr.height * 100;
@@ -2631,14 +2623,15 @@ if (mobileBrand) {
         x: Math.max(6, Math.min(94, x)), y: Math.max(14, Math.min(86, y)),
         uid: myUid, ts: window.firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
-        blank(); pad.classList.remove('grabbable');
+        blank();
+        cork.classList.remove('ready-to-pin');
         hint.textContent = 'pinned!';
         setTimeout(() => { if (hint.textContent === 'pinned!') hint.textContent = 'draw a doodle below, then tap the board to pin it'; }, 3000);
       }).catch(() => hint.textContent = 'pin failed — try again');
     } else if (!fs || !myUid) {
       hint.textContent = 'still connecting — try again in a second';
     } else {
-      hint.textContent = 'tap or release ON the board to pin it';
+      hint.textContent = 'tap ON the cork board to pin it';
     }
   };
 
@@ -2654,49 +2647,35 @@ if (mobileBrand) {
 
   pad.addEventListener('pointerdown', e => {
     pad.setPointerCapture(e.pointerId);
-    downPt = { x: e.clientX, y: e.clientY };
-    if (hasDoodle()) {                       // could be a new stroke OR a press-and-hold lift
-      liftTimer = setTimeout(() => {         // held still → peel the doodle up
-        liftTimer = null; dragging = true;
-        ghostImg.src = pad.toDataURL('image/png');
-        ghost.style.display = 'block';
-        ghost.style.left = (e.clientX - 28) + 'px'; ghost.style.top = (e.clientY - 26) + 'px';
-        hint.textContent = 'release over the board to pin it (or just tap the board)';
-      }, 250);
-    } else {                                 // empty pad — draw right away
-      drawing = true; strokeMoved = false; pctx.beginPath(); pctx.moveTo(...pt(e));
-    }
+    drawing = true;
+    const [x, y] = pt(e);
+    pctx.beginPath();
+    pctx.arc(x, y, 1.5, 0, Math.PI * 2);
+    pctx.fillStyle = '#2a1f14';
+    pctx.fill();
+    pctx.beginPath();
+    pctx.moveTo(x, y);
   });
   pad.addEventListener('pointermove', e => {
-    if (drawing) {
-      pctx.lineWidth = 3; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.strokeStyle = '#2a1f14';
-      pctx.lineTo(...pt(e)); pctx.stroke(); strokeMoved = true;
-    } else if (dragging) {
-      ghost.style.left = (e.clientX - 28) + 'px'; ghost.style.top = (e.clientY - 26) + 'px';
-    } else if (liftTimer && downPt && Math.hypot(e.clientX - downPt.x, e.clientY - downPt.y) > 6) {
-      cancelLift();                          // moving = drawing, not lifting
-      drawing = true; strokeMoved = false; pctx.beginPath();
-      const p = pt(e); pctx.moveTo(p[0], p[1]);
-      hint.textContent = 'keep drawing, then tap the board to pin it';
-    }
+    if (!drawing) return;
+    pctx.lineWidth = 3; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.strokeStyle = '#2a1f14';
+    pctx.lineTo(...pt(e)); pctx.stroke();
   });
-  pad.addEventListener('pointerup', e => {
+  pad.addEventListener('pointerup', () => {
     if (drawing) {
       drawing = false;
-      if (strokeMoved) hint.textContent = 'now tap anywhere on the board to pin your doodle!';
-    } else if (dragging) {
-      dragging = false; ghost.style.display = 'none'; placeDoodle(e);
-    } else {
-      cancelLift();                          // plain tap on an existing doodle — nothing
+      if (hasDoodle()) {
+        hint.textContent = 'now tap anywhere on the board to pin your doodle!';
+        cork.classList.add('ready-to-pin');
+      }
     }
-    pad.classList.toggle('grabbable', hasDoodle());
   });
-  ['pointercancel'].forEach(ev => pad.addEventListener(ev, () => {
-    drawing = false; dragging = false; cancelLift(); ghost.style.display = 'none';
-    pad.classList.toggle('grabbable', hasDoodle());
-  }));
+  pad.addEventListener('pointercancel', () => {
+    drawing = false;
+    cork.classList.toggle('ready-to-pin', hasDoodle());
+  });
   clearBtn.addEventListener('click', () => {
-    blank(); pad.classList.remove('grabbable');
+    blank(); cork.classList.remove('ready-to-pin');
     hint.textContent = 'draw a doodle below, then tap the board to pin it';
   });
   fitBoard();
