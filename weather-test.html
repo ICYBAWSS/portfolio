@@ -533,21 +533,15 @@ function renderFrame(el, code, night, t, specificPhase) {
   const showBody = w.s > .25;
   const bodyX = night ? 34 : 33, bodyY = 2;
   const sax = (bodyX + 4.5) / (W - 1), say = (bodyY + 2.0) / (H - 1);
-  // Frequent multi-stroke lightning engine: strikes every ~2.2s with rapid double-flicker
+  // Balanced lightning engine: strikes every ~4.8s with a crisp ~200ms double-pulse flash
   let boltActive = false, boltBaseX = 24, boltSeed = 0;
   if (w.st > 0) {
-    const p = 2.2, cyc = Math.floor(t / p), tau = t % p;
-    const isPri = (tau >= 0.02 && tau <= 0.11) || (tau >= 0.16 && tau <= 0.35);
-    const hasSec = hash(cyc * 13.7 + 1.1) > 0.35;
-    const isSec = hasSec && ((tau >= 0.82 && tau <= 0.91) || (tau >= 0.95 && tau <= 1.12));
+    const p = 4.8, cyc = Math.floor(t / p), tau = t % p;
+    const isPri = (tau >= 0.02 && tau <= 0.09) || (tau >= 0.12 && tau <= 0.22);
     if (isPri) {
       boltActive = true;
       boltSeed = hash(cyc * 7.9);
-      boltBaseX = Math.floor(11 + boltSeed * 26);
-    } else if (isSec) {
-      boltActive = true;
-      boltSeed = hash(cyc * 19.3);
-      boltBaseX = Math.floor(10 + boltSeed * 28);
+      boltBaseX = Math.floor(12 + boltSeed * 24);
     }
   }
   let out = '', open = null;
@@ -578,7 +572,7 @@ function renderFrame(el, code, night, t, specificPhase) {
           if (sunLight > 0.08 && ck > 0.04) kind = 'sun';
           else if (ck > .08) kind = w.st > 0 ? 'storm' : 'cloud';
         } else if (ck > .08) {
-          if (boltActive && hash(x * 2.3 + y * 3.7) > 0.45) {
+          if (boltActive && Math.abs(x - boltBaseX) < 4 && y < 6) {
             kind = 'bolt';
           } else {
             kind = night ? 'night-cloud' : (w.st > 0 ? 'storm' : (w.r > 0 ? 'cloud-dense' : 'cloud'));
@@ -640,11 +634,9 @@ function renderFrame(el, code, night, t, specificPhase) {
       if (boltActive && y > 6){
         const boltX = boltBaseX + Math.round(Math.sin(y * 1.5 + boltSeed * 5) * 3);
         const isTrunk = x === boltX;
-        const isBranch = y > 10 && x === (boltX + Math.round((y - 10) * 1.1));
+        const isBranch = y > 11 && x === (boltX + (y - 11));
         if (isTrunk || isBranch){
           v = 1; kind = 'bolt'; ch = (y % 2 === 0 ? '/' : '\\');
-        } else if (Math.abs(x - boltX) <= 1){
-          v = Math.min(1, v + 0.35); kind = 'bolt';
         }
       }
       if (ch === null){
