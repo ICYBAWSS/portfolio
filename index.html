@@ -76,35 +76,27 @@ html,body{background:#1c1410;}
 }
 canvas#px{display:none !important;}
 
-/* ── Dog-Ear Corner Fold (Peeled Hint) ── */
+/* ── Dog-Ear Corner Fold (Peeled 3D Vinyl Hint) ── */
+.sticker-wrap:not(.picked-up):not(.is-moved) .sticker-img {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 26px 100%, 0 calc(100% - 24px), 0 0);
+}
+.sticker-wrap.picked-up .sticker-img,
+.sticker-wrap.is-moved .sticker-img {
+  clip-path: none !important;
+}
 .sticker-dogear {
   position: absolute;
-  right: 38px;
-  bottom: 0px;
-  width: 25px;
-  height: 25px;
+  left: 2px;
+  bottom: -1px;
+  width: 34px;
+  height: 34px;
   pointer-events: none;
-  z-index: 10;
-  transform-origin: bottom right;
-  transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 20;
+  transform-origin: bottom left;
+  transition: opacity 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .sticker-scene:hover .sticker-dogear {
-  transform: scale(1.1) translate(-1px, -1px);
-}
-.dogear-flap {
-  position: absolute;
-  inset: 0;
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-  background: linear-gradient(135deg, #ffffff 0%, #faf5ec 35%, #e3d8c8 75%, #cbbba6 100%);
-  filter: drop-shadow(-2.5px -2.5px 3.5px rgba(0,0,0,0.35));
-  border-top-left-radius: 2px;
-}
-.dogear-flap::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 42%, rgba(255,255,255,0.85) 48%, rgba(0,0,0,0.18) 52%, transparent 60%);
-  pointer-events: none;
+  transform: scale(1.08) translate(1px, -1px);
 }
 .sticker-dogear.dismissed,
 .sticker-wrap.is-moved .sticker-dogear,
@@ -112,9 +104,10 @@ canvas#px{display:none !important;}
 .sticker-scene.is-moved .sticker-dogear,
 .sticker-scene.dragging .sticker-dogear {
   opacity: 0 !important;
-  transform: scale(0.4) translate(8px, 8px) !important;
+  transform: scale(0.3) translate(-8px, 8px) !important;
   pointer-events: none !important;
 }
+
 
 /* ── Eyes Tracking Cursor ── */
 .sticker-eyes {
@@ -673,11 +666,16 @@ a.proj{text-decoration:none;color:inherit;}
     width: 36px !important;
     height: auto !important;
   }
-  /* On mobile: disable synthetic eye overlay to reveal Rayhan's real photo eyes */
+  /* On mobile: disable synthetic eye overlay and dog-ear fold on compact avatar */
   .sticker-eyes,
-  .glasses-glare {
+  .glasses-glare,
+  .sticker-dogear {
     display: none !important;
   }
+  .sticker-img {
+    clip-path: none !important;
+  }
+
 
   .paper-weather {
     width: 100% !important;
@@ -909,9 +907,33 @@ a.proj{text-decoration:none;color:inherit;}
             <div class="glare-left"></div>
             <div class="glare-right"></div>
           </div>
-          <div class="sticker-dogear" id="sticker-dogear" aria-hidden="true">
-            <div class="dogear-flap"></div>
-          </div>
+          <svg class="sticker-dogear" id="sticker-dogear" viewBox="0 0 34 34" fill="none" aria-hidden="true">
+            <defs>
+              <filter id="flapShadow" x="-20%" y="-20%" width="160%" height="160%">
+                <feDropShadow dx="2" dy="-2" stdDeviation="3" flood-color="rgba(15, 8, 4, 0.55)"/>
+              </filter>
+              <linearGradient id="vinylBacking" x1="0" y1="34" x2="34" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#ded1bd"/>
+                <stop offset="30%" stop-color="#ede2d1"/>
+                <stop offset="65%" stop-color="#faf6ef"/>
+                <stop offset="90%" stop-color="#ffffff"/>
+                <stop offset="100%" stop-color="#ffffff"/>
+              </linearGradient>
+              <linearGradient id="ridgeShine" x1="0" y1="34" x2="34" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0.2" stop-color="rgba(255,255,255,0)"/>
+                <stop offset="0.35" stop-color="rgba(255,255,255,0.95)"/>
+                <stop offset="0.48" stop-color="rgba(255,255,255,0.3)"/>
+                <stop offset="0.6" stop-color="rgba(0,0,0,0.12)"/>
+                <stop offset="0.8" stop-color="rgba(0,0,0,0)"/>
+              </linearGradient>
+            </defs>
+            <g filter="url(#flapShadow)">
+              <path d="M 0,6 C 4,4 12,3 24,8 C 30,11 32,18 32,24 C 32,29 30,32 26,34 C 24,34 20,33 16,30 C 10,24 4,16 0,6 Z"
+                    fill="url(#vinylBacking)" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M 0,6 C 4,4 12,3 24,8 C 30,11 32,18 32,24 C 32,29 30,32 26,34 C 24,34 20,33 16,30 C 10,24 4,16 0,6 Z"
+                    fill="url(#ridgeShine)"/>
+            </g>
+          </svg>
         </div>
       </div>
     </div>
