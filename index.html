@@ -492,31 +492,33 @@ a.proj{text-decoration:none;color:inherit;}
     overflow: visible !important;
   }
   .left {
+    --p: 0;
     width: 100% !important;
     flex: 0 0 auto !important;
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
-    padding: var(--pad-t, 16px) 18px var(--pad-b, 12px) !important;
+    padding: calc(16px - var(--p, 0) * 9px) 18px calc(12px - var(--p, 0) * 5px) !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
     justify-content: flex-start !important;
     gap: 0 !important;
     border-right: none !important;
-    border-bottom: 1.5px solid var(--header-border, rgba(130, 95, 55, .32)) !important;
+    border-bottom: 1.5px solid rgba(130, 95, 55, calc(0.32 + var(--p, 0) * 0.10)) !important;
     position: sticky !important;
     top: 0 !important;
     z-index: 500 !important;
     box-sizing: border-box !important;
-    background: var(--header-bg, #f7f3eb) !important;
-    box-shadow: var(--header-shadow, none) !important;
-    touch-action: none !important;
+    background: rgba(247, 243, 235, 0.96) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    box-shadow: 0 4px 18px rgba(40, 25, 15, calc(var(--p, 0) * 0.12)) !important;
+    touch-action: pan-y !important;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    will-change: padding, box-shadow, background-color, border-color !important;
     transition: none !important;
   }
   /* When scrolled: the whole paper section gets thin smoothly */
@@ -529,13 +531,13 @@ a.proj{text-decoration:none;color:inherit;}
     height: auto !important;
     max-height: none !important;
     flex-direction: column !important;
-    padding: var(--pad-t, 7px) 18px var(--pad-b, 7px) !important;
-    background: var(--header-bg, rgba(247, 243, 235, 0.96)) !important;
+    padding: 7px 18px !important;
+    background: rgba(247, 243, 235, 0.96) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
-    border-bottom: 1.5px solid var(--header-border, rgba(130, 95, 55, .42)) !important;
-    box-shadow: var(--header-shadow, 0 4px 18px rgba(40, 25, 15, .12)) !important;
-    touch-action: auto !important;
+    border-bottom: 1.5px solid rgba(130, 95, 55, .42) !important;
+    box-shadow: 0 4px 18px rgba(40, 25, 15, .12) !important;
+    touch-action: pan-y !important;
     transition: none !important;
   }
   .left.is-compact .ink-canvas { display: none !important; }
@@ -571,11 +573,11 @@ a.proj{text-decoration:none;color:inherit;}
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: var(--name-size, clamp(20px, 5.5vw, 24px)) !important;
+    font-size: calc(22px - var(--p, 0) * 6px) !important;
     transition: none !important;
   }
   .left.is-compact .mobile-brand .mb-name {
-    font-size: var(--name-size, 16px) !important;
+    font-size: 16px !important;
     letter-spacing: -0.01em !important;
   }
 
@@ -604,7 +606,7 @@ a.proj{text-decoration:none;color:inherit;}
     transform: scale(1.08) !important;
   }
   .sticker-img {
-    width: var(--sticker-w, clamp(72px, 19vw, 84px)) !important;
+    width: calc(76px - var(--p, 0) * 40px) !important;
     height: auto !important;
     display: block !important;
     -webkit-transform: translateZ(0);
@@ -616,7 +618,7 @@ a.proj{text-decoration:none;color:inherit;}
   }
   /* In thin compact header, sticker scales smaller */
   .left.is-compact .sticker-img {
-    width: var(--sticker-w, 36px) !important;
+    width: 36px !important;
     height: auto !important;
   }
   /* On mobile: disable synthetic eye overlay to reveal Rayhan's real photo eyes */
@@ -628,13 +630,13 @@ a.proj{text-decoration:none;color:inherit;}
   .paper-weather {
     width: 100% !important;
     max-width: 420px !important;
-    margin: var(--wx-mt, 8px) auto 0 !important;
+    margin: calc(8px - var(--p, 0) * 8px) auto 0 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    max-height: var(--wx-max-h, 280px) !important;
-    opacity: var(--wx-opacity, 1) !important;
-    transform: translateY(var(--wx-ty, 0px)) scaleY(var(--wx-sy, 1)) translateZ(0) !important;
+    max-height: calc((1 - var(--p, 0)) * 230px) !important;
+    opacity: calc(1 - var(--p, 0) * 1.35) !important;
+    transform: translateY(calc(var(--p, 0) * -8px)) scaleY(calc(1 - var(--p, 0) * 0.12)) translateZ(0) !important;
     transform-origin: top center !important;
     overflow: hidden !important;
     contain: paint !important;
@@ -647,11 +649,11 @@ a.proj{text-decoration:none;color:inherit;}
   /* When paper section gets thin: the weather animation smoothly collapses and disappears */
   .left.is-compact .paper-weather {
     display: flex !important;
-    max-height: var(--wx-max-h, 0) !important;
-    opacity: var(--wx-opacity, 0) !important;
-    transform: translateY(var(--wx-ty, -8px)) scaleY(var(--wx-sy, 0.85)) translateZ(0) !important;
-    margin-top: var(--wx-mt, 0) !important;
-    pointer-events: var(--wx-pe, none) !important;
+    max-height: 0 !important;
+    opacity: 0 !important;
+    transform: translateY(-8px) scaleY(0.85) translateZ(0) !important;
+    margin-top: 0 !important;
+    pointer-events: none !important;
     transition: none !important;
   }
   /* live ASCII weather sky: always prioritized and visible across all mobile dimensions */
@@ -1152,6 +1154,7 @@ function loopEyes() {
 }
 
 function triggerEyeUpdate(x, y) {
+  if (window.innerWidth <= 768) return;
   targetCursorX = x;
   targetCursorY = y;
   if (!eyeAnimRunning) {
@@ -1165,15 +1168,18 @@ window.addEventListener('mousemove', e => {
 }, { passive: true });
 
 window.addEventListener('touchstart', e => {
+  if (window.innerWidth <= 768) return;
   if (e.touches && e.touches.length) triggerEyeUpdate(e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: true });
 
 window.addEventListener('touchmove', e => {
+  if (window.innerWidth <= 768) return;
   if (e.touches && e.touches.length) triggerEyeUpdate(e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: true });
 
 // Natural periodic blinking
 function blinkEyes() {
+  if (window.innerWidth <= 768) return;
   const eyes = document.querySelectorAll('.sticker-eye');
   eyes.forEach(el => el.classList.add('blinking'));
   setTimeout(() => {
@@ -2050,73 +2056,61 @@ window.addEventListener('blur', () => {
 });
 
 // Mobile touch listeners with instant visual tactile feedback (spring press & pop)
+function onStickerTouchMove(e) {
+  if (!isDragging || e.touches.length !== 1 || window.innerWidth <= 768) return;
+  const t = e.touches[0];
+  moveStickerDrag(t.clientX, t.clientY);
+  e.preventDefault();
+}
+
+function onStickerTouchEnd() {
+  window.removeEventListener('touchmove', onStickerTouchMove);
+  window.removeEventListener('touchend', onStickerTouchEnd);
+  window.removeEventListener('touchcancel', onStickerTouchEnd);
+  if (isDragging) endStickerDrag();
+}
+
 stickerScene.addEventListener('touchstart', e => {
   if (window.innerWidth <= 768) {
     stickerScene.classList.add('touch-press');
-    const eyes = document.querySelectorAll('.sticker-eye');
-    eyes.forEach(el => el.classList.add('blinking'));
-    if (e.touches && e.touches[0]) {
-      triggerEyeUpdate(e.touches[0].clientX, e.touches[0].clientY);
-    }
     return;
   }
   if (e.touches.length !== 1) return;
   const t = e.touches[0];
   startStickerDrag(t.clientX, t.clientY);
+  window.addEventListener('touchmove', onStickerTouchMove, { passive: false });
+  window.addEventListener('touchend', onStickerTouchEnd, { passive: true });
+  window.addEventListener('touchcancel', onStickerTouchEnd, { passive: true });
   e.preventDefault();
 }, { passive: true });
 
-document.addEventListener('touchmove', e => {
-  if (!isDragging || e.touches.length !== 1 || window.innerWidth <= 768) return;
-  const t = e.touches[0];
-  moveStickerDrag(t.clientX, t.clientY);
-  e.preventDefault();
-}, { passive: false });
-
-document.addEventListener('touchend', () => {
+stickerScene.addEventListener('touchend', () => {
   if (window.innerWidth <= 768) {
     if (stickerScene.classList.contains('touch-press')) {
       stickerScene.classList.remove('touch-press');
       stickerScene.classList.add('touch-pop');
       setTimeout(() => {
         stickerScene.classList.remove('touch-pop');
-        const eyes = document.querySelectorAll('.sticker-eye');
-        eyes.forEach(el => el.classList.remove('blinking'));
       }, 160);
     }
   }
-  if (isDragging) endStickerDrag();
 });
 
-document.addEventListener('touchcancel', () => {
+stickerScene.addEventListener('touchcancel', () => {
   if (window.innerWidth <= 768) {
     stickerScene.classList.remove('touch-press', 'touch-pop');
-    const eyes = document.querySelectorAll('.sticker-eye');
-    eyes.forEach(el => el.classList.remove('blinking'));
   }
-  if (isDragging) endStickerDrag();
 });
 
-// Mobile sticky scroll-driven shrinking header controller
+// Mobile sticky scroll-driven shrinking header controller (ultra-lightweight single CSS variable)
 let mobileHeaderTicking = false;
-const MOBILE_COLLAPSE_RANGE = 140; // Pixels of vertical scroll to complete the shrink
+const MOBILE_COLLAPSE_RANGE = 180; // Natural, gentle scroll distance
 
 function updateMobileHeader() {
   if (window.innerWidth > 768) {
     if (leftPanel) {
-      leftPanel.style.removeProperty('--pad-t');
-      leftPanel.style.removeProperty('--pad-b');
-      leftPanel.style.removeProperty('--sticker-w');
-      leftPanel.style.removeProperty('--name-size');
-      leftPanel.style.removeProperty('--wx-max-h');
-      leftPanel.style.removeProperty('--wx-opacity');
-      leftPanel.style.removeProperty('--wx-ty');
-      leftPanel.style.removeProperty('--wx-sy');
-      leftPanel.style.removeProperty('--wx-mt');
+      leftPanel.style.removeProperty('--p');
       leftPanel.style.removeProperty('--wx-pe');
-      leftPanel.style.removeProperty('--header-bg');
-      leftPanel.style.removeProperty('--header-shadow');
-      leftPanel.style.removeProperty('--header-border');
       leftPanel.classList.remove('is-compact');
     }
     return;
@@ -2125,43 +2119,14 @@ function updateMobileHeader() {
   const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
   const p = Math.min(Math.max(scrollY / MOBILE_COLLAPSE_RANGE, 0), 1);
 
-  // Directly drive dimensions and appearance from scroll position (1:1 with user's scroll speed)
-  const padT = (16 - p * 9).toFixed(1) + 'px';
-  const padB = (12 - p * 5).toFixed(1) + 'px';
-  const stickerW = (76 - p * 40).toFixed(1) + 'px';
-  const nameSize = (22 - p * 6).toFixed(1) + 'px';
-  const wxMaxH = ((1 - p) * 230).toFixed(1) + 'px';
-  const wxOpacity = Math.max(0, 1 - p * 1.35).toFixed(2);
-  const wxTy = (-p * 8).toFixed(1) + 'px';
-  const wxSy = (1 - p * 0.12).toFixed(2);
-  const wxMt = (8 - p * 8).toFixed(1) + 'px';
-  const wxPe = p >= 0.85 ? 'none' : 'auto';
-
-  leftPanel.style.setProperty('--pad-t', padT);
-  leftPanel.style.setProperty('--pad-b', padB);
-  leftPanel.style.setProperty('--sticker-w', stickerW);
-  leftPanel.style.setProperty('--name-size', nameSize);
-  leftPanel.style.setProperty('--wx-max-h', wxMaxH);
-  leftPanel.style.setProperty('--wx-opacity', wxOpacity);
-  leftPanel.style.setProperty('--wx-ty', wxTy);
-  leftPanel.style.setProperty('--wx-sy', wxSy);
-  leftPanel.style.setProperty('--wx-mt', wxMt);
-  leftPanel.style.setProperty('--wx-pe', wxPe);
-
-  if (p > 0.05) {
-    leftPanel.style.setProperty('--header-bg', 'rgba(247, 243, 235, ' + (0.92 + p * 0.06).toFixed(2) + ')');
-    leftPanel.style.setProperty('--header-shadow', '0 4px 18px rgba(40, 25, 15, ' + (p * 0.12).toFixed(2) + ')');
-    leftPanel.style.setProperty('--header-border', 'rgba(130, 95, 55, ' + (0.32 + p * 0.10).toFixed(2) + ')');
-  } else {
-    leftPanel.style.setProperty('--header-bg', '#f7f3eb');
-    leftPanel.style.setProperty('--header-shadow', 'none');
-    leftPanel.style.setProperty('--header-border', 'rgba(130, 95, 55, .32)');
-  }
+  // Single CSS variable drives all animations directly via CSS calc() on the GPU
+  leftPanel.style.setProperty('--p', p.toFixed(3));
+  leftPanel.style.setProperty('--wx-pe', p >= 0.85 ? 'none' : 'auto');
 
   if (p >= 0.95) {
-    leftPanel.classList.add('is-compact');
+    if (!leftPanel.classList.contains('is-compact')) leftPanel.classList.add('is-compact');
   } else {
-    leftPanel.classList.remove('is-compact');
+    if (leftPanel.classList.contains('is-compact')) leftPanel.classList.remove('is-compact');
   }
 }
 
@@ -2356,7 +2321,8 @@ if (mobileBrand) {
     return { x: Math.min(Math.max(e.clientX - r.left, 0), W - 1), y: Math.min(Math.max(e.clientY - r.top, 0), H - 1) };
   };
   paper.addEventListener('pointerdown', e => {
-    if (e.button !== 0 || e.target.closest('button') || e.target.closest('a') || e.target.closest('#sticker-scene') || paper.classList.contains('is-compact') || (window.innerWidth <= 768 && window.scrollY > 20)) return;
+    if (window.innerWidth <= 768) return;
+    if (e.button !== 0 || e.target.closest('button') || e.target.closest('a') || e.target.closest('#sticker-scene') || paper.classList.contains('is-compact')) return;
     if (paper.setPointerCapture) {
       try { paper.setPointerCapture(e.pointerId); } catch(_) {}
     }
@@ -2382,16 +2348,6 @@ if (mobileBrand) {
   });
   const stopDraw = () => { if (drawing) { drawing = false; arm(); } };
   window.addEventListener('pointerup', stopDraw);
-  window.addEventListener('pointercancel', stopDraw);
-  paper.addEventListener('touchstart', e => {
-    if (e.target.closest('button') || e.target.closest('a') || e.target.closest('#sticker-scene') || paper.classList.contains('is-compact') || (window.innerWidth <= 768 && window.scrollY > 20)) return;
-    e.preventDefault();
-  }, { passive: false });
-  paper.addEventListener('touchmove', e => {
-    if (drawing && !paper.classList.contains('is-compact') && !(window.innerWidth <= 768 && window.scrollY > 20)) {
-      e.preventDefault();
-    }
-  }, { passive: false });
   window.addEventListener('resize', setup);
   setup();
 })();
@@ -2771,8 +2727,12 @@ if (mobileBrand) {
   setInterval(tickClock, 1000); tickClock();
   const t0 = performance.now();
   const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  draw(0);
   // the sky always moves — reduce-motion only slows the clock, never freezes it
-  setInterval(() => draw((performance.now() - t0) / 1000), still ? 900 : 120);
+  setInterval(() => {
+    if (window.innerWidth <= 768 && (window.scrollY > 150 || (host.closest('.left') && host.closest('.left').classList.contains('is-compact')))) return;
+    draw((performance.now() - t0) / 1000);
+  }, still ? 900 : 120);
   window.addEventListener('resize', () => draw(lastT));
   const load = () => fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code,is_day&temperature_unit=fahrenheit&timezone=America%2FNew_York&forecast_days=1`)
     .then(r => r.json()).then(j => {
