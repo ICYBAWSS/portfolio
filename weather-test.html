@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live ASCII Weather Showcase — All States</title>
+<title>Live ASCII Weather Showcase — All States & Lunar Phases</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,6 +16,9 @@
     --text: #e8e2d9;
     --text-muted: rgba(232, 226, 217, 0.6);
     --card-text: #2a1f14;
+    --banner-bg: rgba(99, 102, 241, 0.12);
+    --banner-border: rgba(99, 102, 241, 0.32);
+    --banner-accent: #f59e0b;
   }
   body.theme-light {
     --bg: #eae4d8;
@@ -25,6 +28,9 @@
     --text: #241a0c;
     --text-muted: rgba(40, 26, 12, 0.65);
     --card-text: #2a1f14;
+    --banner-bg: rgba(99, 102, 241, 0.08);
+    --banner-border: rgba(99, 102, 241, 0.25);
+    --banner-accent: #d97706;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -64,7 +70,7 @@
     font-size: 14px;
     color: var(--text-muted);
     margin-top: 6px;
-    max-width: 700px;
+    max-width: 780px;
     line-height: 1.5;
   }
   .controls {
@@ -98,6 +104,40 @@
     color: #1a1208;
     border-color: #c9a87c;
   }
+
+  /* Astronomical Lunar Status Banner */
+  .moon-banner {
+    background: var(--banner-bg);
+    border: 1px solid var(--banner-border);
+    border-radius: 8px;
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-family: 'Roboto Mono', monospace;
+  }
+  .moon-banner-title {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--banner-accent);
+    letter-spacing: -0.01em;
+  }
+  .moon-banner-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .moon-banner-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(245, 158, 11, 0.16);
+    color: var(--banner-accent);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    font-weight: 600;
+  }
+
   .filter-pills {
     display: flex;
     gap: 8px;
@@ -159,6 +199,10 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 26px rgba(0,0,0,0.35);
   }
+  .weather-card.is-current-phase {
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 1px #f59e0b, var(--card-shadow);
+  }
   .card-top {
     display: flex;
     justify-content: space-between;
@@ -190,6 +234,8 @@
   }
   .badge-day { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
   .badge-night { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+  .badge-moon { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+  .badge-current { background: #f59e0b; color: #1c1917; font-weight: 700; }
   .badge-code { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
 
   /* Live ASCII Display */
@@ -218,6 +264,7 @@
   .wx-ascii .wxc-sun-glow { color: #f59e0b; }
   .wx-ascii .wxc-sky { color: rgba(14, 165, 233, 0.45); }
   .wx-ascii .wxc-moon { color: #f59e0b; font-weight: 700; text-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
+  .wx-ascii .wxc-moon-new { color: rgba(99, 102, 241, 0.55); font-weight: 600; }
   .wx-ascii .wxc-star { color: #fde047; font-weight: 700; text-shadow: 0 0 6px rgba(253, 224, 71, 0.45); }
   .wx-ascii .wxc-night-sky { color: rgba(99, 102, 241, 0.32); }
   .wx-ascii .wxc-night-cloud { color: #6366f1; }
@@ -261,8 +308,8 @@
 <div class="header">
   <div class="title-row">
     <div class="title-group">
-      <h1>All Weather Animations Showcase</h1>
-      <p>Every dynamic weather scene running simultaneously in real time. Use this view to compare and inspect all ASCII sky formations, sun/moon phases, cloud behaviors, rain/snow mechanics, and color palettes.</p>
+      <h1>All Weather Animations & Lunar Phases Showcase</h1>
+      <p>Every dynamic weather scene and astronomical lunar phase running simultaneously in real time. Use this showcase to verify and inspect all ASCII sky formations, sun/moon phases, cloud behaviors, rain/snow mechanics, and color palettes.</p>
     </div>
     <div class="controls">
       <button class="btn" id="btn-pause" onclick="togglePause()">Pause Animations</button>
@@ -270,11 +317,22 @@
       <button class="btn" id="btn-theme" onclick="toggleTheme()">Theme: Dark</button>
     </div>
   </div>
+
+  <!-- Live Lunar Astronomical Banner -->
+  <div class="moon-banner" id="moon-live-banner">
+    <div>
+      <span class="moon-banner-title" id="moon-banner-title">Astronomical Lunar Status: Computing...</span>
+      <div class="moon-banner-desc" id="moon-banner-desc">Synodic cycle age, illumination, and current phase.</div>
+    </div>
+    <span class="moon-banner-tag" id="moon-banner-tag">Live Ephemeris</span>
+  </div>
+
   <div class="filter-pills">
-    <button class="filter-btn active" onclick="filterCards('all', this)">All Scenes (13)</button>
+    <button class="filter-btn active" onclick="filterCards('all', this)">All Scenes (21)</button>
+    <button class="filter-btn" onclick="filterCards('moon', this)">Lunar Phases (8)</button>
     <button class="filter-btn" onclick="filterCards('day', this)">Daytime (7)</button>
-    <button class="filter-btn" onclick="filterCards('night', this)">Nighttime (6)</button>
-    <button class="filter-btn" onclick="filterCards('precip', this)">Precipitation (Snow/Rain/Storm)</button>
+    <button class="filter-btn" onclick="filterCards('night', this)">Nighttime (14)</button>
+    <button class="filter-btn" onclick="filterCards('precip', this)">Precipitation (5)</button>
   </div>
 </div>
 
@@ -294,19 +352,96 @@ const SUN = [
   '  .----.  ',
   ' /******\\ ',
   '|********|',
-  ' \\******/ ',
+  ' \\******/',
   '  \'----\'  '
 ];
 
-// Flipped Waxing Crescent Moon (facing right, opening on left)
-const MOON = [
-  '    .-.   ',
-  '    /**\\  ',
-  '     (**) ',
-  '     (**) ',
-  '    \\**/  ',
-  '    \'-\'   '
-];
+// 8 astronomical lunar phases, exactly 10x5 grid to match the sun disk
+const MOON_PHASES = {
+  new: [
+    '  .----.  ',
+    ' / .  . \\ ',
+    '|   ..   |',
+    ' \\ .  . / ',
+    '  \'----\'  '
+  ],
+  waxing_crescent: [
+    '    .-.   ',
+    '    /**\\  ',
+    '     (**) ',
+    '    \\**/  ',
+    '    \'-\'   '
+  ],
+  first_quarter: [
+    '  .---.   ',
+    '  |***\\   ',
+    '  |****|  ',
+    '  |***/   ',
+    '  \'---\'   '
+  ],
+  waxing_gibbous: [
+    '  .----.  ',
+    ' (******\\ ',
+    ' (*******|',
+    ' (******/ ',
+    '  \'----\'  '
+  ],
+  full: [
+    '  .----.  ',
+    ' /******\\ ',
+    '|********|',
+    ' \\******/ ',
+    '  \'----\'  '
+  ],
+  waning_gibbous: [
+    '  .----.  ',
+    ' /******) ',
+    '|*******) ',
+    ' \\******) ',
+    '  \'----\'  '
+  ],
+  last_quarter: [
+    '   .---.  ',
+    '   /***|  ',
+    '  |****|  ',
+    '   \\***|  ',
+    '  \'---\'   '
+  ],
+  waning_crescent: [
+    '   .-.    ',
+    '  /**\\    ',
+    ' (**)     ',
+    '  \\**/    ',
+    '    \'-\'   '
+  ]
+};
+
+const getMoonData = (date = new Date()) => {
+  const y0 = date.getUTCFullYear(), m0 = date.getUTCMonth() + 1;
+  const d0 = date.getUTCDate() + (date.getUTCHours() + date.getUTCMinutes() / 60 + date.getUTCSeconds() / 3600) / 24;
+  let y = y0, m = m0;
+  if (m <= 2) { y -= 1; m += 12; }
+  const a = Math.floor(y / 100);
+  const b = 2 - a + Math.floor(a / 4);
+  const jd = Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d0 + b - 1524.5;
+  const daysSinceNew = jd - 2451549.76;
+  const synodicMonth = 29.53058867;
+  const phase = ((daysSinceNew % synodicMonth) + synodicMonth) % synodicMonth / synodicMonth;
+  const age = phase * synodicMonth;
+  const illumination = Math.round((1 - Math.cos(2 * Math.PI * phase)) / 2 * 100);
+  let key = 'new', name = 'New Moon';
+  if (phase < 0.03 || phase >= 0.97) { key = 'new', name = 'New Moon'; }
+  else if (phase < 0.22) { key = 'waxing_crescent', name = 'Waxing Crescent'; }
+  else if (phase < 0.28) { key = 'first_quarter', name = 'First Quarter'; }
+  else if (phase < 0.47) { key = 'waxing_gibbous', name = 'Waxing Gibbous'; }
+  else if (phase < 0.53) { key = 'full', name = 'Full Moon'; }
+  else if (phase < 0.72) { key = 'waning_gibbous', name = 'Waning Gibbous'; }
+  else if (phase < 0.78) { key = 'last_quarter', name = 'Last Quarter'; }
+  else { key = 'waning_crescent', name = 'Waning Crescent'; }
+  return { key, name, phase, age: Math.round(age * 10) / 10, illumination };
+};
+
+const liveMoon = getMoonData();
 
 const TRACKS = [
   { x: .05, y: .52, rx: .21, ry: .12, v: 1.6 },
@@ -346,10 +481,22 @@ const weights = code => {
   return { c: 1, s: .10, r: .85, n: 0, f: 0, st: 0 };
 };
 
-// All 13 distinct weather scenes to showcase
-const SCENES = [
+// 8 Dedicated Lunar Phase Showcase Cards
+const MOON_SCENES = [
+  { id: 'moon-new', title: 'New Moon', phaseKey: 'new', code: 0, night: true, category: 'moon night', label: '0% illuminated • Day 0 of 29.5', badge: 'New Moon', swatches: ['rgba(99,102,241,0.55)', '#fde047', 'rgba(99,102,241,0.32)'] },
+  { id: 'moon-waxing-crescent', title: 'Waxing Crescent', phaseKey: 'waxing_crescent', code: 0, night: true, category: 'moon night', label: '12% illuminated • Day 3.5 of 29.5', badge: 'Waxing Crescent', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
+  { id: 'moon-first-quarter', title: 'First Quarter (Half Moon)', phaseKey: 'first_quarter', code: 0, night: true, category: 'moon night', label: '50% illuminated • Day 7.4 of 29.5', badge: 'First Quarter', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
+  { id: 'moon-waxing-gibbous', title: 'Waxing Gibbous', phaseKey: 'waxing_gibbous', code: 0, night: true, category: 'moon night', label: '88% illuminated • Day 11.1 of 29.5', badge: 'Waxing Gibbous', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
+  { id: 'moon-full', title: 'Full Moon', phaseKey: 'full', code: 0, night: true, category: 'moon night', label: '100% illuminated • Day 14.8 of 29.5', badge: 'Full Moon', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
+  { id: 'moon-waning-gibbous', title: 'Waning Gibbous', phaseKey: 'waning_gibbous', code: 0, night: true, category: 'moon night', label: '88% illuminated • Day 18.5 of 29.5', badge: 'Waning Gibbous', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
+  { id: 'moon-last-quarter', title: 'Last Quarter (Third Quarter)', phaseKey: 'last_quarter', code: 0, night: true, category: 'moon night', label: '50% illuminated • Day 22.1 of 29.5', badge: 'Last Quarter', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
+  { id: 'moon-waning-crescent', title: 'Waning Crescent (C-Shape)', phaseKey: 'waning_crescent', code: 0, night: true, category: 'moon night', label: '12% illuminated • Day 25.8 of 29.5', badge: 'Waning Crescent', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] }
+];
+
+// 13 Distinct WMO Weather Scenes
+const WEATHER_SCENES = [
   { id: 'clear-day', title: 'Clear Sky', code: 0, night: false, category: 'day', label: 'clear (day)', swatches: ['#ea580c', '#f59e0b', 'rgba(14,165,233,0.45)'] },
-  { id: 'clear-night', title: 'Clear Night (Waxing Moon & Stars)', code: 0, night: true, category: 'night', label: 'clear (night)', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
+  { id: 'clear-night', title: 'Clear Night (Live Moon & Stars)', code: 0, night: true, category: 'night', label: 'clear (night)', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
   { id: 'mainly-day', title: 'Mainly Clear (Day)', code: 1, night: false, category: 'day', label: 'mainly clear (day)', swatches: ['#ea580c', '#3b82f6', '#f59e0b'] },
   { id: 'mainly-night', title: 'Mainly Clear (Night)', code: 1, night: true, category: 'night', label: 'mainly clear (night)', swatches: ['#f59e0b', '#6366f1', '#fde047'] },
   { id: 'partly-day', title: 'Partly Cloudy (Sun Rays on Clouds)', code: 2, night: false, category: 'day', label: 'partly cloudy (day)', swatches: ['#ea580c', '#3b82f6', '#f59e0b'] },
@@ -363,13 +510,17 @@ const SCENES = [
   { id: 'storm', title: 'Thunderstorm (Purple Clouds & Lightning)', code: 95, night: false, category: 'precip day', label: 'stormy', swatches: ['#7c3aed', '#facc15', '#0284c7'] }
 ];
 
-function renderFrame(el, code, night, t) {
+const ALL_CARDS = [...MOON_SCENES, ...WEATHER_SCENES];
+
+function renderFrame(el, code, night, t, specificPhase) {
   const w = weights(code);
-  const body = night ? MOON : SUN;
+  const activePhaseKey = specificPhase || liveMoon.key;
+  const body = night ? (MOON_PHASES[activePhaseKey] || MOON_PHASES.waxing_crescent) : SUN;
+  const isNewMoon = night && activePhaseKey === 'new';
   const bw = body[0].length, bh = body.length;
   const showBody = w.s > .25;
   const bodyX = night ? 34 : 33, bodyY = 2;
-  const sax = (bodyX + (night ? 4.0 : 4.5)) / (W - 1), say = (bodyY + (night ? 2.5 : 2.0)) / (H - 1);
+  const sax = (bodyX + 4.5) / (W - 1), say = (bodyY + 2.0) / (H - 1);
   let out = '', open = null;
 
   for (let y = 0; y < H; y++){
@@ -422,11 +573,12 @@ function renderFrame(el, code, night, t) {
         if (by2 >= 0 && by2 < bh && bx2 >= 0 && bx2 < bw){
           const c2 = body[by2][bx2];
           if (c2 !== ' '){
+            const mKind = isNewMoon ? 'moon-new' : 'moon';
             if (ck > 0.45){
-              kind = night ? 'moon' : 'sun';
+              kind = night ? mKind : 'sun';
             } else {
               ch = c2;
-              kind = night ? 'moon' : 'sun';
+              kind = night ? mKind : 'sun';
             }
           } else {
             inBody = true;
@@ -456,36 +608,32 @@ function renderFrame(el, code, night, t) {
   el.innerHTML = out + '</span>';
 }
 
+// Populate Moon Banner
+const bannerTitle = document.getElementById('moon-banner-title');
+const bannerDesc = document.getElementById('moon-banner-desc');
+const bannerTag = document.getElementById('moon-banner-tag');
+if (bannerTitle && bannerDesc) {
+  bannerTitle.textContent = "Astronomical Moon Today: " + liveMoon.name + " (" + liveMoon.illumination + "% lit)";
+  bannerDesc.textContent = "Day " + liveMoon.age + " of 29.5-day synodic lunar cycle • Real-time astronomical calculation";
+  bannerTag.textContent = liveMoon.name;
+}
+
 // Build cards in DOM
 const grid = document.getElementById('grid');
-SCENES.forEach(s => {
+ALL_CARDS.forEach(s => {
   const card = document.createElement('div');
   card.className = 'weather-card';
   card.dataset.category = s.category;
+  if (s.phaseKey && s.phaseKey === liveMoon.key) {
+    card.classList.add('is-current-phase');
+  }
   
-  const swatchesHtml = s.swatches.map(c => `<span class="swatch" style="background:${c}" title="${c}"></span>`).join('');
-  
-  card.innerHTML = `
-    <div class="card-top">
-      <div>
-        <div class="card-title">${s.title}</div>
-      </div>
-      <div class="card-badges">
-        <span class="badge ${s.night ? 'badge-night' : 'badge-day'}">${s.night ? '🌙 Night' : '☀️ Day'}</span>
-        <span class="badge badge-code">WMO ${s.code}</span>
-      </div>
-    </div>
-    <div class="wx-ascii-wrap">
-      <pre class="wx-ascii" id="art-${s.id}"></pre>
-    </div>
-    <div class="card-footer">
-      <span>${s.label}</span>
-      <div class="swatches">
-        <span>Palette:</span>
-        ${swatchesHtml}
-      </div>
-    </div>
-  `;
+  const swatchesHtml = s.swatches.map(c => "<span class='swatch' style='background:" + c + "' title='" + c + "'></span>").join('');
+  const badgeHtml = s.phaseKey
+    ? "<span class='badge " + (s.phaseKey === liveMoon.key ? 'badge-current' : 'badge-moon') + "'>" + (s.phaseKey === liveMoon.key ? 'Current Moon' : s.badge) + "</span><span class='badge badge-night'>Night</span>"
+    : "<span class='badge " + (s.night ? 'badge-night' : 'badge-day') + "'>" + (s.night ? 'Night' : 'Day') + "</span><span class='badge badge-code'>WMO " + s.code + "</span>";
+
+  card.innerHTML = '<div class="card-top"><div><div class="card-title">' + s.title + '</div></div><div class="card-badges">' + badgeHtml + '</div></div><div class="wx-ascii-wrap"><pre class="wx-ascii" id="art-' + s.id + '"></pre></div><div class="card-footer"><span>' + s.label + '</span><div class="swatches"><span>Palette:</span>' + swatchesHtml + '</div></div>';
   grid.appendChild(card);
 });
 
@@ -497,10 +645,10 @@ const t0 = performance.now();
 function tick() {
   if (!isPaused) {
     const elapsed = (performance.now() - t0) / 1000 * speedFactor;
-    SCENES.forEach(s => {
-      const el = document.getElementById(`art-${s.id}`);
+    ALL_CARDS.forEach(s => {
+      const el = document.getElementById("art-" + s.id);
       if (el && el.closest('.weather-card').style.display !== 'none') {
-        renderFrame(el, s.code, s.night, elapsed);
+        renderFrame(el, s.code, s.night, elapsed, s.phaseKey);
       }
     });
   }
@@ -521,7 +669,7 @@ let curSpeedIdx = 0;
 function toggleSpeed() {
   curSpeedIdx = (curSpeedIdx + 1) % speeds.length;
   speedFactor = speeds[curSpeedIdx];
-  document.getElementById('btn-speed').textContent = `Speed: ${speedFactor}x`;
+  document.getElementById('btn-speed').textContent = "Speed: " + speedFactor + "x";
 }
 
 function toggleTheme() {
