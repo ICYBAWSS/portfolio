@@ -479,8 +479,12 @@ a.proj{text-decoration:none;color:inherit;}
 
 /* ── Mobile: natural vertical flow with full paper header, readable cards, and live ASCII weather ── */
 @media (max-width: 768px) {
-  html, body, .port, .left, .right {
+  html, body, .port, .left, .right, .section, #sec-board {
     overflow-anchor: none !important;
+    scroll-snap-type: none !important;
+    scroll-snap-align: none !important;
+    -webkit-scroll-snap-type: none !important;
+    scroll-behavior: auto !important;
   }
   html {
     overflow-y: auto !important;
@@ -1776,8 +1780,13 @@ document.querySelectorAll('.work-tab').forEach(t=>t.addEventListener('click',()=
 const right=document.getElementById('right');
 document.querySelectorAll('.section').forEach(sec=>{
   const lbl=sec.querySelector('.sec-label');
-  if(lbl) lbl.addEventListener('click',e=>{ e.stopPropagation(); right.scrollTo({top: sec.offsetTop - right.offsetTop, behavior:'smooth'}); });
+  if(lbl) lbl.addEventListener('click',e=>{
+    if (window.innerWidth <= 768) return;
+    e.stopPropagation();
+    right.scrollTo({top: sec.offsetTop - right.offsetTop, behavior:'smooth'});
+  });
   sec.addEventListener('click',()=>{
+    if (window.innerWidth <= 768) return;
     const r=sec.getBoundingClientRect(), pr=right.getBoundingClientRect();
     if(r.top > pr.top + 80) right.scrollTo({top: sec.offsetTop - right.offsetTop, behavior:'smooth'});
   });

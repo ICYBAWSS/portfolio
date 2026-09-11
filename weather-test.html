@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live ASCII Weather Showcase — All States</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #12100e;
+    --card-bg: #f7f3eb;
+    --card-border: rgba(130, 95, 55, 0.24);
+    --card-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    --text: #e8e2d9;
+    --text-muted: rgba(232, 226, 217, 0.6);
+    --card-text: #2a1f14;
+  }
+  body.theme-light {
+    --bg: #eae4d8;
+    --card-bg: #fffdf9;
+    --card-border: rgba(130, 95, 55, 0.28);
+    --card-shadow: 0 4px 16px rgba(40, 25, 15, 0.08);
+    --text: #241a0c;
+    --text-muted: rgba(40, 26, 12, 0.65);
+    --card-text: #2a1f14;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 28px 20px 80px;
+    min-height: 100vh;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .header {
+    max-width: 1400px;
+    margin: 0 auto 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  body.theme-light .header {
+    border-bottom-color: rgba(0,0,0,0.12);
+  }
+  .title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .title-group h1 {
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-family: 'Roboto Mono', monospace;
+  }
+  .title-group p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    max-width: 700px;
+    line-height: 1.5;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  body.theme-light .btn {
+    border-color: rgba(0,0,0,0.18);
+    background: rgba(0,0,0,0.05);
+  }
+  .btn:hover {
+    background: rgba(255,255,255,0.16);
+    transform: translateY(-1px);
+  }
+  .btn.active {
+    background: #c9a87c;
+    color: #1a1208;
+    border-color: #c9a87c;
+  }
+  .filter-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    font-size: 11px;
+    font-family: 'Roboto Mono', monospace;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-muted);
+    border: 1px solid rgba(255,255,255,0.12);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  body.theme-light .filter-btn {
+    background: rgba(0,0,0,0.04);
+    border-color: rgba(0,0,0,0.12);
+  }
+  .filter-btn.active {
+    background: rgba(255,255,255,0.22);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.35);
+  }
+  body.theme-light .filter-btn.active {
+    background: rgba(0,0,0,0.14);
+    color: var(--text);
+    border-color: rgba(0,0,0,0.28);
+  }
+
+  /* Grid Layout */
+  .weather-grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
+    gap: 24px;
+  }
+  @media (max-width: 500px) {
+    .weather-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Weather Card */
+  .weather-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--card-border);
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .weather-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 26px rgba(0,0,0,0.35);
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    border-bottom: 1px solid rgba(130, 95, 55, 0.16);
+    padding-bottom: 8px;
+  }
+  .card-title {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: #241a0c;
+    letter-spacing: -0.01em;
+  }
+  .card-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge-day { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+  .badge-night { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+  .badge-code { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+
+  /* Live ASCII Display */
+  .wx-ascii-wrap {
+    background: rgba(247, 243, 235, 0.6);
+    border-radius: 4px;
+    padding: 8px 4px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .wx-ascii {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 9.5px;
+    line-height: 1.15;
+    white-space: pre;
+    margin: 0;
+    overflow: hidden;
+    color: rgba(60, 45, 30, 0.28);
+    user-select: none;
+  }
+
+  /* Exact Color System from index.html */
+  .wx-ascii .wxc-sun { color: #ea580c; font-weight: 600; }
+  .wx-ascii .wxc-sun-glow { color: #f59e0b; }
+  .wx-ascii .wxc-sky { color: rgba(14, 165, 233, 0.45); }
+  .wx-ascii .wxc-moon { color: #f59e0b; font-weight: 700; text-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
+  .wx-ascii .wxc-star { color: #fde047; font-weight: 700; text-shadow: 0 0 6px rgba(253, 224, 71, 0.45); }
+  .wx-ascii .wxc-night-sky { color: rgba(99, 102, 241, 0.32); }
+  .wx-ascii .wxc-night-cloud { color: #6366f1; }
+  .wx-ascii .wxc-cloud { color: #3b82f6; }
+  .wx-ascii .wxc-cloud-dense { color: #1d4ed8; }
+  .wx-ascii .wxc-fog { color: #0d9488; }
+  .wx-ascii .wxc-rain { color: #0284c7; font-weight: 600; }
+  .wx-ascii .wxc-snow { color: #06b6d4; font-weight: 700; }
+  .wx-ascii .wxc-storm { color: #7c3aed; }
+  .wx-ascii .wxc-bolt { color: #facc15; font-weight: 700; text-shadow: 0 0 8px rgba(250, 204, 21, 0.65); }
+  .wx-ascii .wxc-night { color: #f59e0b; font-weight: 700; }
+  .wx-ascii .wxc-dim { color: rgba(60, 45, 30, 0.28); }
+
+  /* Swatch Footer */
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+    border-top: 1px solid rgba(130, 95, 55, 0.12);
+    font-size: 11px;
+    color: rgba(60, 45, 30, 0.7);
+    font-family: 'Roboto Mono', monospace;
+  }
+  .swatches {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,0.18);
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title-row">
+    <div class="title-group">
+      <h1>All Weather Animations Showcase</h1>
+      <p>Every dynamic weather scene running simultaneously in real time. Use this view to compare and inspect all ASCII sky formations, sun/moon phases, cloud behaviors, rain/snow mechanics, and color palettes.</p>
+    </div>
+    <div class="controls">
+      <button class="btn" id="btn-pause" onclick="togglePause()">Pause Animations</button>
+      <button class="btn" id="btn-speed" onclick="toggleSpeed()">Speed: 1x</button>
+      <button class="btn" id="btn-theme" onclick="toggleTheme()">Theme: Dark</button>
+    </div>
+  </div>
+  <div class="filter-pills">
+    <button class="filter-btn active" onclick="filterCards('all', this)">All Scenes (13)</button>
+    <button class="filter-btn" onclick="filterCards('day', this)">Daytime (7)</button>
+    <button class="filter-btn" onclick="filterCards('night', this)">Nighttime (6)</button>
+    <button class="filter-btn" onclick="filterCards('precip', this)">Precipitation (Snow/Rain/Storm)</button>
+  </div>
+</div>
+
+<div class="weather-grid" id="grid">
+  <!-- Dynamic cards inserted here -->
+</div>
+
+<script>
+// Core Weather Engine Ported Directly from index.html
+const W = 48, H = 16;
+const RAMP = ' .:-=+*#%@';
+const BAYER = [0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5].map(v => v / 16 - .5);
+const hash = n => { const x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); };
+const clamp = v => v < 0 ? 0 : v > 1 ? 1 : v;
+
+const SUN = [
+  '  .----.  ',
+  ' /******\\ ',
+  '|********|',
+  ' \\******/ ',
+  '  \'----\'  '
+];
+
+// Flipped Waxing Crescent Moon (facing right, opening on left)
+const MOON = [
+  '    .-.   ',
+  '    /**\\  ',
+  '     (**) ',
+  '     (**) ',
+  '    \\**/  ',
+  '    \'-\'   '
+];
+
+const TRACKS = [
+  { x: .05, y: .52, rx: .21, ry: .12, v: 1.6 },
+  { x: .52, y: .62, rx: .17, ry: .10, v: 2.2 },
+  { x: .82, y: .46, rx: .14, ry: .09, v: 1.2 },
+  { x: .30, y: .78, rx: .25, ry: .14, v: 1.0 }
+];
+
+const pn = (px, py) => {
+  const x0 = Math.floor(px), y0 = Math.floor(py), fx = px - x0, fy = py - y0;
+  const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+  const a = hash(x0 * 12.9 + y0 * 78.2), b = hash((x0 + 1) * 12.9 + y0 * 78.2);
+  const c = hash(x0 * 12.9 + (y0 + 1) * 78.2), d = hash((x0 + 1) * 12.9 + (y0 + 1) * 78.2);
+  return (a * (1 - sx) + b * sx) * (1 - sy) + (c * (1 - sx) + d * sx) * sy;
+};
+
+const cloudAt = (ax, ay, t, w) => {
+  let k = 0;
+  for (let i = 0; i < TRACKS.length; i++){
+    const b = TRACKS[i], cx = (b.x + t * b.v / W) % 1.25;
+    const dx = (ax - cx) / b.rx, dy = (ay - b.y) / b.ry;
+    const d = dx * dx + dy * dy;
+    if (d < 1) k += (1 - d) * (1 - d) * w.c;
+  }
+  return k;
+};
+
+const weights = code => {
+  if (code === 0) return { c: .25, s: 1,    r: 0,   n: 0,  f: 0, st: 0 };
+  if (code === 1) return { c: .45, s: .9,   r: 0,   n: 0,  f: 0, st: 0 };
+  if (code === 2) return { c: .75, s: .75,  r: 0,   n: 0,  f: 0, st: 0 };
+  if (code === 3) return { c: 1.0, s: .15,  r: 0,   n: 0,  f: 0, st: 0 };
+  if (code === 45 || code === 48) return { c: .22, s: .15, r: 0, n: 0, f: 1, st: 0 };
+  if (code >= 51 && code <= 57) return { c: 1,  s: .12, r: .35, n: 0,  f: 0, st: 0 };
+  if ((code >= 71 && code <= 77) || code === 85 || code === 86) return { c: 1, s: .10, r: 0, n: .8, f: 0, st: 0 };
+  if (code >= 95) return { c: 1.15, s: 0, r: 1,   n: 0,  f: 0, st: 1 };
+  return { c: 1, s: .10, r: .85, n: 0, f: 0, st: 0 };
+};
+
+// All 13 distinct weather scenes to showcase
+const SCENES = [
+  { id: 'clear-day', title: 'Clear Sky', code: 0, night: false, category: 'day', label: 'clear (day)', swatches: ['#ea580c', '#f59e0b', 'rgba(14,165,233,0.45)'] },
+  { id: 'clear-night', title: 'Clear Night (Waxing Moon & Stars)', code: 0, night: true, category: 'night', label: 'clear (night)', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
+  { id: 'mainly-day', title: 'Mainly Clear (Day)', code: 1, night: false, category: 'day', label: 'mainly clear (day)', swatches: ['#ea580c', '#3b82f6', '#f59e0b'] },
+  { id: 'mainly-night', title: 'Mainly Clear (Night)', code: 1, night: true, category: 'night', label: 'mainly clear (night)', swatches: ['#f59e0b', '#6366f1', '#fde047'] },
+  { id: 'partly-day', title: 'Partly Cloudy (Sun Rays on Clouds)', code: 2, night: false, category: 'day', label: 'partly cloudy (day)', swatches: ['#ea580c', '#3b82f6', '#f59e0b'] },
+  { id: 'partly-night', title: 'Partly Cloudy (Moon Behind Clouds)', code: 2, night: true, category: 'night', label: 'partly cloudy (night)', swatches: ['#f59e0b', '#6366f1', '#fde047'] },
+  { id: 'overcast', title: 'Overcast (Heavy Cloud Cover)', code: 3, night: false, category: 'day', label: 'overcast', swatches: ['#3b82f6', '#1d4ed8'] },
+  { id: 'fog', title: 'Fog (Misty Seafoam Teal Banks)', code: 45, night: false, category: 'day', label: 'foggy', swatches: ['#0d9488', '#3b82f6'] },
+  { id: 'drizzle', title: 'Drizzle (Light Rain Drops)', code: 53, night: false, category: 'precip day', label: 'drizzly', swatches: ['#0284c7', '#3b82f6'] },
+  { id: 'rain', title: 'Rain (Azure Falling Streaks)', code: 61, night: false, category: 'precip day', label: 'rainy', swatches: ['#0284c7', '#1d4ed8'] },
+  { id: 'rain-night', title: 'Rain at Night', code: 61, night: true, category: 'precip night', label: 'rainy (night)', swatches: ['#0284c7', '#6366f1', 'rgba(99,102,241,0.32)'] },
+  { id: 'snow', title: 'Snow (Crisp Glacial Cyan Flakes)', code: 71, night: false, category: 'precip day', label: 'snowy', swatches: ['#06b6d4', '#3b82f6'] },
+  { id: 'storm', title: 'Thunderstorm (Purple Clouds & Lightning)', code: 95, night: false, category: 'precip day', label: 'stormy', swatches: ['#7c3aed', '#facc15', '#0284c7'] }
+];
+
+function renderFrame(el, code, night, t) {
+  const w = weights(code);
+  const body = night ? MOON : SUN;
+  const bw = body[0].length, bh = body.length;
+  const showBody = w.s > .25;
+  const bodyX = night ? 34 : 33, bodyY = 2;
+  const sax = (bodyX + (night ? 4.0 : 4.5)) / (W - 1), say = (bodyY + (night ? 2.5 : 2.0)) / (H - 1);
+  let out = '', open = null;
+
+  for (let y = 0; y < H; y++){
+    const ay = y / (H - 1);
+    for (let x = 0; x < W; x++){
+      const ax = x / (W - 1);
+      let v = 0.04 + 0.10 * ay + 0.05 * hash(x * 1.9 + y * 3.7), kind = night ? 'night-sky' : 'dim', ch = null;
+      const ck = cloudAt(ax, ay, t, w);
+
+      // Sun rays radiating onto drifting clouds
+      let sunLight = 0;
+      if (!night && w.s > 0.05){
+        const dx = (ax - sax) * 1.6, dy = (ay - say);
+        const dSun = Math.hypot(dx, dy);
+        const ang = Math.atan2(dy, dx);
+        const beam = Math.max(0, Math.cos(ang * 6 - t * 0.25)) * 0.6 + Math.max(0, Math.cos(ang * 10 + t * 0.15 + 1.2)) * 0.4;
+        const ray = Math.pow(beam, 1.8) * Math.max(0, 1 - dSun / 1.1);
+        const glow = Math.max(0, 1 - dSun / 0.6);
+        sunLight = w.s * (glow * 0.35 + ray * 0.65) * (0.8 + 0.2 * Math.sin(t * 1.2 + ang * 2));
+      }
+
+      if (ck > 0){
+        v += ck * 1.6 * (0.85 + 0.3 * hash(x * 1.7 + y * 3.1));
+        if (sunLight > 0){
+          v += ck * sunLight * 2.8;
+          if (sunLight > 0.08 && ck > 0.04) kind = 'sun';
+          else if (ck > .08) kind = w.st > 0 ? 'storm' : 'cloud';
+        } else if (ck > .08) {
+          kind = night ? 'night-cloud' : (w.st > 0 ? 'storm' : (w.r > 0 ? 'cloud-dense' : 'cloud'));
+        }
+      } else if (!night && w.s > 0.1){
+        const dx0 = (ax - sax) * 1.6, dy0 = (ay - say);
+        const dSun0 = Math.hypot(dx0, dy0);
+        if (dSun0 < 0.28) {
+          v += (1 - dSun0 / 0.28) * 0.10 * w.s;
+          kind = 'sun-glow';
+        } else {
+          kind = 'sky';
+        }
+      }
+      if (w.f > 0){
+        const bank = pn((x + t * 5) / 11, ay * 6);
+        const wisp = Math.max(0, Math.sin(ay * 9.4 - 1.1) - .72) / .28;
+        const fv = bank * .7 + wisp * .35 + (ay - .4) * .12;
+        if (fv > .5){ v = .20 + .26 * Math.min(1, (fv - .5) / .45); kind = 'fog'; }
+      }
+      let inBody = false;
+      if (showBody){
+        const by2 = y - bodyY, bx2 = x - bodyX;
+        if (by2 >= 0 && by2 < bh && bx2 >= 0 && bx2 < bw){
+          const c2 = body[by2][bx2];
+          if (c2 !== ' '){
+            if (ck > 0.45){
+              kind = night ? 'moon' : 'sun';
+            } else {
+              ch = c2;
+              kind = night ? 'moon' : 'sun';
+            }
+          } else {
+            inBody = true;
+          }
+        }
+      }
+      if (night && y < 8 && hash(x * 2.7 + y * 5.1) > .975){ v = .9; kind = 'star'; }
+      if (w.r > 0 && y > 8 && hash(x * 5.5) > 1 - w.r * .9){
+        if ((((y - (hash(x * 5.5) * H + t * 26)) % H) + H) % H < 3){ v = 1; kind = 'rain'; }
+      }
+      if (w.n > 0 && y > 7 && hash(x * 7.3) > 1 - w.n * .35){
+        if ((((y - (hash(x * 3.1) * H + t * 5)) % H) + H) % H < 1){ v = .7; kind = 'snow'; }
+      }
+      if (w.st > 0 && y > 7 && Math.sin(t * .9) > .55){
+        if (Math.abs(x - (22 + 4 * Math.sin(y * .7))) < 1){ v = 1; kind = 'bolt'; }
+      }
+      if (ch === null){
+        if (inBody) v *= .45;
+        v = clamp(v + BAYER[(y % 4) * 4 + (x % 4)] * .1 + (hash(x * 9.1 + y * 4.7) - .5) * .1);
+        ch = RAMP[Math.max(0, Math.min(9, Math.round(v * 9)))];
+      }
+      if (kind !== open){ if (open !== null) out += '</span>'; out += '<span class="wxc-' + kind + '">'; open = kind; }
+      out += ch;
+    }
+    out += '\n';
+  }
+  el.innerHTML = out + '</span>';
+}
+
+// Build cards in DOM
+const grid = document.getElementById('grid');
+SCENES.forEach(s => {
+  const card = document.createElement('div');
+  card.className = 'weather-card';
+  card.dataset.category = s.category;
+  
+  const swatchesHtml = s.swatches.map(c => `<span class="swatch" style="background:${c}" title="${c}"></span>`).join('');
+  
+  card.innerHTML = `
+    <div class="card-top">
+      <div>
+        <div class="card-title">${s.title}</div>
+      </div>
+      <div class="card-badges">
+        <span class="badge ${s.night ? 'badge-night' : 'badge-day'}">${s.night ? '🌙 Night' : '☀️ Day'}</span>
+        <span class="badge badge-code">WMO ${s.code}</span>
+      </div>
+    </div>
+    <div class="wx-ascii-wrap">
+      <pre class="wx-ascii" id="art-${s.id}"></pre>
+    </div>
+    <div class="card-footer">
+      <span>${s.label}</span>
+      <div class="swatches">
+        <span>Palette:</span>
+        ${swatchesHtml}
+      </div>
+    </div>
+  `;
+  grid.appendChild(card);
+});
+
+// Render Loop
+let isPaused = false;
+let speedFactor = 1.0;
+const t0 = performance.now();
+
+function tick() {
+  if (!isPaused) {
+    const elapsed = (performance.now() - t0) / 1000 * speedFactor;
+    SCENES.forEach(s => {
+      const el = document.getElementById(`art-${s.id}`);
+      if (el && el.closest('.weather-card').style.display !== 'none') {
+        renderFrame(el, s.code, s.night, elapsed);
+      }
+    });
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+// UI Controls
+function togglePause() {
+  isPaused = !isPaused;
+  const btn = document.getElementById('btn-pause');
+  btn.textContent = isPaused ? 'Resume Animations' : 'Pause Animations';
+  btn.classList.toggle('active', isPaused);
+}
+
+const speeds = [1.0, 2.0, 0.5];
+let curSpeedIdx = 0;
+function toggleSpeed() {
+  curSpeedIdx = (curSpeedIdx + 1) % speeds.length;
+  speedFactor = speeds[curSpeedIdx];
+  document.getElementById('btn-speed').textContent = `Speed: ${speedFactor}x`;
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('theme-light');
+  const isLight = document.body.classList.contains('theme-light');
+  document.getElementById('btn-theme').textContent = isLight ? 'Theme: Light' : 'Theme: Dark';
+}
+
+function filterCards(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.weather-card').forEach(c => {
+    if (cat === 'all') {
+      c.style.display = 'flex';
+    } else {
+      const cats = c.dataset.category.split(' ');
+      c.style.display = cats.includes(cat) ? 'flex' : 'none';
+    }
+  });
+}
+</script>
+</body>
+</html>
