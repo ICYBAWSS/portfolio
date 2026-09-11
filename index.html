@@ -938,9 +938,9 @@ a.proj{text-decoration:none;color:inherit;}
           <svg class="tab-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="10" r="2.5" fill="currentColor"/><line x1="10" y1="3" x2="10" y2="6" stroke="currentColor" stroke-width="1.5"/></svg>
           <span>DJ</span>
         </button>
-        <button class="work-tab" data-hobby="producer">
+        <button class="work-tab" data-hobby="music">
           <svg class="tab-icon" viewBox="0 0 20 20" fill="none"><rect x="2" y="12" width="2" height="5" rx=".5" fill="currentColor"/><rect x="5.5" y="9" width="2" height="8" rx=".5" fill="currentColor"/><rect x="9" y="6" width="2" height="11" rx=".5" fill="currentColor"/><rect x="12.5" y="10" width="2" height="7" rx=".5" fill="currentColor"/><rect x="16" y="7" width="2" height="10" rx=".5" fill="currentColor"/></svg>
-          <span>Producer</span>
+          <span>Music</span>
         </button>
         <button class="work-tab" data-hobby="vfx">
           <svg class="tab-icon" viewBox="0 0 20 20" fill="none"><polygon points="10,2 12.5,7 18,7.5 14,11.5 15.5,17 10,14 4.5,17 6,11.5 2,7.5 7.5,7" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="10" cy="10" r="2" fill="currentColor"/></svg>
@@ -1020,6 +1020,7 @@ const outfits={
   // ── NEW OUTFITS ──────────────────────────────────────────────────────────
   dev:{body:'#1f2a3a',pants:'#222',shoes:'#333',skate:false,laptop:true},
   dj:{body:'#1a1a2a',pants:'#111118',shoes:'#1a1a1a',skate:false,headphones:true},
+  music:{body:'#1a1220',pants:'#161020',shoes:'#2a1a30',skate:false,headphones:true},
   producer:{body:'#1a1220',pants:'#161020',shoes:'#2a1a30',skate:false,headphones:true},
   vfx:{body:'#0d1f1a',pants:'#0a1510',shoes:'#1a2820',skate:false,laptop:true, capColor:'#1a3a2a'},
   // ── OLD / PRESERVED OUTFITS ──────────────────────────────────────────────
@@ -1138,6 +1139,7 @@ const STICKER_IMG = {
   default:  'assets/stickers/default.png',
   dev:      'assets/stickers/developer.png',
   dj:       'assets/stickers/dj.png',
+  music:    'assets/stickers/producer.png',
   producer: 'assets/stickers/producer.png',
   vfx:      'assets/stickers/vfx.png'
 };
@@ -1261,7 +1263,7 @@ window.addEventListener('load', () => {
   triggerEyeUpdate(window.innerWidth * 0.65, window.innerHeight * 0.35);
 });
 
-const hobbyMap={dev:'dev',dj:'dj',producer:'producer',vfx:'vfx',
+const hobbyMap={dev:'dev',dj:'dj',music:'music',producer:'music',vfx:'vfx',
   // old preserved mappings
   skate:'skate',chef:'chef',cs:'cs'};
 
@@ -1390,6 +1392,11 @@ const contentData = {
     label: "listen to my show!",
     workType: 'text',
     work: '<pre class="a-pre">' + DJ_RADIO.join('\n') + '</pre>' + `<p class="about-p"><strong>Radio DJ at The Core on 90.3 FM</strong></p><p class="about-p">Follow the show — <a href="https://www.instagram.com/headphonemusic_on90.3/" target="_blank" rel="noopener">@headphonemusic_on90.3</a></p>`
+  },
+  music: {
+    label: "music i've produced",
+    workType: 'ipod',
+    work: MEDIA.music
   },
   producer: {
     label: "music i've produced",
