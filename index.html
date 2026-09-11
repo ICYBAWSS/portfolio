@@ -2702,16 +2702,16 @@ if (mobileBrand) {
     if (code >= 95) return { c: 1.15, s: 0, r: 1,   d: 0, n: 0,  f: 0, st: 1 };
     return { c: 1, s: .10, r: .85, d: 0, n: 0, f: 0, st: 0 };                       // 61-67 rain, 80-82 showers
   };
-  // Curated isotropic celestial star field: 20 stars evenly distributed across rows 0..7 without lines or clusters
+  // Curated isotropic celestial star field: 15 stars evenly distributed across rows 0..7 without lines or clusters
   const STARS = new Set([
-    3, 15, 28, 44,                        // y = 0
-    8 + 48, 22 + 48,                      // y = 1
-    14 + 96, 27 + 96,                     // y = 2
-    4 + 144, 18 + 144, 30 + 144,          // y = 3
-    9 + 192, 23 + 192,                    // y = 4
-    2 + 240, 16 + 240,                    // y = 5
-    7 + 288, 21 + 288, 29 + 288,          // y = 6
-    13 + 336, 45 + 336                    // y = 7
+    3, 18, 44,                            // y = 0
+    10 + 48, 26 + 48,                     // y = 1
+    16 + 96,                              // y = 2
+    4 + 144, 22 + 144,                    // y = 3
+    11 + 192, 28 + 192,                   // y = 4
+    2 + 240, 17 + 240,                    // y = 5
+    8 + 288, 23 + 288,                    // y = 6
+    14 + 336                              // y = 7
   ]);
   // drifting cloud tracks: x/y/radii in grid units, v = columns per second (rightward, wraps)
   const TRACKS = [
@@ -2835,8 +2835,9 @@ if (mobileBrand) {
             }
           }
         }
-        if (night && y < 8 && STARS.has(y * 48 + x)){
-          v = 0.85 + 0.15 * Math.sin(t * 2.2 + x * 1.7 + y * 2.9);
+        if (night && y < 8 && STARS.has(y * 48 + x) && ck < 0.08){
+          const starDim = Math.max(0.2, 1 - ck / 0.08);
+          v = (0.85 + 0.15 * Math.sin(t * 2.2 + x * 1.7 + y * 2.9)) * starDim;
           kind = 'star';
         }
         if (w.d > 0 && y > 7){                       // drizzle: random sparse drips
