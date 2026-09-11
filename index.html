@@ -74,7 +74,47 @@ html,body{background:#1c1410;}
     drop-shadow(0 4px 2px rgba(0,0,0,0.22))
     drop-shadow(0 8px 16px rgba(0,0,0,0.16));
 }
-.peel-container, canvas#px{display:none !important;}
+canvas#px{display:none !important;}
+
+/* ── Dog-Ear Corner Fold (Peeled Hint) ── */
+.sticker-dogear {
+  position: absolute;
+  right: 38px;
+  bottom: 0px;
+  width: 25px;
+  height: 25px;
+  pointer-events: none;
+  z-index: 10;
+  transform-origin: bottom right;
+  transition: opacity 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sticker-scene:hover .sticker-dogear {
+  transform: scale(1.1) translate(-1px, -1px);
+}
+.dogear-flap {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #faf5ec 35%, #e3d8c8 75%, #cbbba6 100%);
+  filter: drop-shadow(-2.5px -2.5px 3.5px rgba(0,0,0,0.35));
+  border-top-left-radius: 2px;
+}
+.dogear-flap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 42%, rgba(255,255,255,0.85) 48%, rgba(0,0,0,0.18) 52%, transparent 60%);
+  pointer-events: none;
+}
+.sticker-dogear.dismissed,
+.sticker-wrap.is-moved .sticker-dogear,
+.sticker-wrap.picked-up .sticker-dogear,
+.sticker-scene.is-moved .sticker-dogear,
+.sticker-scene.dragging .sticker-dogear {
+  opacity: 0 !important;
+  transform: scale(0.4) translate(8px, 8px) !important;
+  pointer-events: none !important;
+}
 
 /* ── Eyes Tracking Cursor ── */
 .sticker-eyes {
@@ -868,6 +908,9 @@ a.proj{text-decoration:none;color:inherit;}
           <div class="glasses-glare">
             <div class="glare-left"></div>
             <div class="glare-right"></div>
+          </div>
+          <div class="sticker-dogear" id="sticker-dogear" aria-hidden="true">
+            <div class="dogear-flap"></div>
           </div>
         </div>
       </div>
@@ -1926,6 +1969,9 @@ function updateStickerPos(x, y) {
 function startStickerDrag(clientX, clientY) {
   if (window.innerWidth <= 768) return; // on mobile: sticker is docked in paper header
   isDragging = true;
+  if (stickerWrap) stickerWrap.classList.add('picked-up');
+  const dogEar = document.getElementById('sticker-dogear');
+  if (dogEar) dogEar.classList.add('dismissed');
   dragStartX = clientX;
   dragStartY = clientY;
   lastDragClientX = clientX;
@@ -1958,6 +2004,8 @@ function moveStickerDrag(clientX, clientY) {
     hasMovedSticker = true;
     stickerWrap.classList.add('is-moved');
     stickerScene.classList.add('is-moved');
+    const dogEar = document.getElementById('sticker-dogear');
+    if (dogEar) dogEar.classList.add('dismissed');
   }
 
   const portEl = document.querySelector('.port') || document.body;
