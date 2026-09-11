@@ -195,13 +195,21 @@ html,body{background:#1c1410;}
 .mobile-brand{display:none;}
 .paper-weather{margin-top:auto;position:relative;z-index:10;font-family:'Roboto Mono',monospace;color:#2a1f14;user-select:none;}
 .wx-ascii{font-size:10px;line-height:1.15;white-space:pre;margin:0;overflow:hidden;color:rgba(60,45,30,.2);}
-.wx-ascii .wxc-sun{color:#b45309;}
-.wx-ascii .wxc-cloud{color:#4b5563;}
-.wx-ascii .wxc-fog{color:rgba(71,85,105,.6);}
-.wx-ascii .wxc-rain{color:#0369a1;}
-.wx-ascii .wxc-snow{color:#0ea5e9;}
-.wx-ascii .wxc-storm{color:#6d28d9;}
-.wx-ascii .wxc-night{color:#312e81;}
+.wx-ascii .wxc-sun{color:#ea580c;font-weight:600;}
+.wx-ascii .wxc-sun-glow{color:#f59e0b;}
+.wx-ascii .wxc-sky{color:rgba(14,165,233,.45);}
+.wx-ascii .wxc-moon{color:#f59e0b;font-weight:700;text-shadow:0 0 8px rgba(245,158,11,.3);}
+.wx-ascii .wxc-star{color:#fde047;font-weight:700;text-shadow:0 0 6px rgba(253,224,71,.45);}
+.wx-ascii .wxc-night-sky{color:rgba(99,102,241,.32);}
+.wx-ascii .wxc-night-cloud{color:#6366f1;}
+.wx-ascii .wxc-cloud{color:#3b82f6;}
+.wx-ascii .wxc-cloud-dense{color:#1d4ed8;}
+.wx-ascii .wxc-fog{color:#0d9488;}
+.wx-ascii .wxc-rain{color:#0284c7;font-weight:600;}
+.wx-ascii .wxc-snow{color:#06b6d4;font-weight:700;}
+.wx-ascii .wxc-storm{color:#7c3aed;}
+.wx-ascii .wxc-bolt{color:#facc15;font-weight:700;text-shadow:0 0 8px rgba(250,204,21,.65);}
+.wx-ascii .wxc-night{color:#f59e0b;font-weight:700;}
 .wx-line{display:flex;align-items:baseline;gap:7px;margin-top:6px;padding-top:5px;border-top:.5px solid rgba(60,45,30,.2);font-size:10px;letter-spacing:.04em;color:rgba(60,45,30,.72);}
 .wx-place{font-weight:500;color:rgba(60,45,30,.9);}
 .wx-temp{font-weight:700;font-size:12px;color:#1a1208;}
@@ -2578,7 +2586,14 @@ if (mobileBrand) {
     ' \\******/ ',
     '  \'----\'  '
   ];
-  const MOON = ['   ____  ', '  / ___) ', ' | |     ', ' | |     ', '  \\ \\___ ', '   \\____)'];
+  const MOON = [
+    '    .-.   ',
+    '    /**\\  ',
+    '     (**) ',
+    '     (**) ',
+    '    \\**/  ',
+    '    \'-\'   '
+  ];
   // c = cloud mass, s = sun/moon, r = rain, n = snow, f = fog, st = storm
   const weights = code => {
     if (code === 0) return { c: .25, s: 1,    r: 0,   n: 0,  f: 0, st: 0 };
@@ -2636,7 +2651,7 @@ if (mobileBrand) {
       const ay = y / (H - 1);
       for (let x = 0; x < W; x++){
         const ax = x / (W - 1);
-        let v = 0.04 + 0.10 * ay + 0.05 * hash(x * 1.9 + y * 3.7), kind = 'dim', ch = null;   // baseline: never blank, never a checkerboard
+        let v = 0.04 + 0.10 * ay + 0.05 * hash(x * 1.9 + y * 3.7), kind = night ? 'night-sky' : 'dim', ch = null;   // baseline: never blank, never a checkerboard
         const ck = cloudAt(ax, ay, t, w);             // cloud masses
 
         // Sun rays radiating onto drifting clouds
@@ -2656,15 +2671,20 @@ if (mobileBrand) {
           if (sunLight > 0){
             v += ck * sunLight * 2.8;                                  // sun rays light up the cloud!
             if (sunLight > 0.08 && ck > 0.04) kind = 'sun';           // golden sunlight highlights on cloud edges
-            else if (ck > .08) kind = 'cloud';
+            else if (ck > .08) kind = w.st > 0 ? 'storm' : 'cloud';
           } else if (ck > .08) {
-            kind = 'cloud';
+            kind = night ? 'night-cloud' : (w.st > 0 ? 'storm' : (w.r > 0 ? 'cloud-dense' : 'cloud'));
           }
         } else if (!night && w.s > 0.1){
           // Clean open sky: subtle ambient warmth near the sun disk, without spoke ray lines in open sky
           const dx0 = (ax - sax) * 1.6, dy0 = (ay - say);
           const dSun0 = Math.hypot(dx0, dy0);
-          if (dSun0 < 0.28) v += (1 - dSun0 / 0.28) * 0.10 * w.s;
+          if (dSun0 < 0.28) {
+            v += (1 - dSun0 / 0.28) * 0.10 * w.s;
+            kind = 'sun-glow';
+          } else {
+            kind = 'sky';
+          }
         }
         if (w.f > 0){                                // fog: soft banks + two thin wisps, clear paper between
           const bank = pn((x + t * 5) / 11, ay * 6);                        // drifts right, wide patches
@@ -2679,17 +2699,17 @@ if (mobileBrand) {
             const c2 = body[by2][bx2];
             if (c2 !== ' '){
               if (ck > 0.45){
-                kind = 'sun';                         // dense cloud passing directly across the sun is illuminated
+                kind = night ? 'moon' : 'sun';                         // dense cloud passing directly across the sun is illuminated
               } else {
                 ch = c2;
-                kind = night ? 'night' : 'sun';
+                kind = night ? 'moon' : 'sun';
               }
             } else {
               inBody = true;                          // its gaps keep a thinner dither, not blank paper
             }
           }
         }
-        if (night && y < 8 && hash(x * 2.7 + y * 5.1) > .975){ v = .9; kind = 'night'; }
+        if (night && y < 8 && hash(x * 2.7 + y * 5.1) > .975){ v = .9; kind = 'star'; }
         if (w.r > 0 && y > 8 && hash(x * 5.5) > 1 - w.r * .9){       // rain columns, falling
           if ((((y - (hash(x * 5.5) * H + t * 26)) % H) + H) % H < 3){ v = 1; kind = 'rain'; }
         }
@@ -2697,7 +2717,7 @@ if (mobileBrand) {
           if ((((y - (hash(x * 3.1) * H + t * 5)) % H) + H) % H < 1){ v = .7; kind = 'snow'; }
         }
         if (w.st > 0 && y > 7 && Math.sin(t * .9) > .55){            // bolt flashes in bursts
-          if (Math.abs(x - (22 + 4 * Math.sin(y * .7))) < 1){ v = 1; kind = 'storm'; }
+          if (Math.abs(x - (22 + 4 * Math.sin(y * .7))) < 1){ v = 1; kind = 'bolt'; }
         }
         if (ch === null){
           if (inBody) v *= .45;                       // thinner sky inside the sun, still dithered
