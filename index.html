@@ -13,7 +13,7 @@
 html,body{background:#1c1410;}
 .port{background:#2a1f15;color:#e8e2d9;font-family:'Valley Sans',sans-serif;display:flex;flex-direction:row;height:100vh;height:100dvh;overflow:hidden;position:relative;}
 
-.left{width:clamp(220px,25vw,330px);flex:0 0 clamp(220px,25vw,330px);height:100%;padding:clamp(1rem,2.5vh,2rem) clamp(0.9rem,1.5vw,1.5rem);display:flex;flex-direction:column;border-right:.5px solid rgba(180,160,130,.18);position:relative;
+.left{width:clamp(260px,26vw,360px);flex:0 0 clamp(260px,26vw,360px);height:100%;padding:clamp(1rem,2.5vh,2rem) clamp(0.9rem,1.5vw,1.5rem);display:flex;flex-direction:column;border-right:.5px solid rgba(180,160,130,.18);position:relative;
   background-color:#f0e7d2;
   background-image:url("assets/paper.jpg");   /* unsplash photo-1659166925474-1706ba9546e4 */
   background-size:cover;background-position:center;
@@ -258,28 +258,67 @@ canvas#px{display:none !important;}
 /* ── Live ASCII sky, stamped straight on the paper (no card, nothing to set by hand) ── */
 .mobile-bar{display:contents;}
 .mobile-brand{display:none;}
-.paper-weather{margin-top:auto;position:relative;z-index:10;font-family:'Roboto Mono',monospace;color:#2a1f14;user-select:none;}
-.wx-ascii{font-size:10px;line-height:1.15;white-space:pre;margin:0;overflow:hidden;color:rgba(60,45,30,.2);}
-.wx-ascii .wxc-sun{color:#ea580c;font-weight:600;}
-.wx-ascii .wxc-sun-glow{color:#f59e0b;}
-.wx-ascii .wxc-sky{color:rgba(14,165,233,.45);}
-.wx-ascii .wxc-moon{color:#f59e0b;font-weight:700;text-shadow:0 0 8px rgba(245,158,11,.3);}
-.wx-ascii .wxc-moon-new{color:rgba(99,102,241,.55);font-weight:600;}
-.wx-ascii .wxc-star{color:#fde047;font-weight:700;text-shadow:0 0 6px rgba(253,224,71,.45);}
-.wx-ascii .wxc-night-sky{color:rgba(99,102,241,.32);}
-.wx-ascii .wxc-night-cloud{color:#6366f1;}
-.wx-ascii .wxc-cloud{color:#3b82f6;}
-.wx-ascii .wxc-cloud-dense{color:#1d4ed8;}
-.wx-ascii .wxc-fog{color:#64748b;font-weight:600;}
-.wx-ascii .wxc-rain{color:#0284c7;font-weight:600;}
-.wx-ascii .wxc-snow{color:#06b6d4;font-weight:700;}
-.wx-ascii .wxc-storm{color:#7c3aed;}
-.wx-ascii .wxc-bolt{color:#facc15;font-weight:700;text-shadow:0 0 8px rgba(250,204,21,.65);}
-.wx-ascii .wxc-night{color:#f59e0b;font-weight:700;}
-.wx-line{display:flex;align-items:baseline;gap:7px;margin-top:6px;padding-top:5px;border-top:.5px solid rgba(60,45,30,.2);font-size:10px;letter-spacing:.04em;color:rgba(60,45,30,.72);}
-.wx-place{font-weight:500;color:rgba(60,45,30,.9);}
-.wx-temp{font-weight:700;font-size:12px;color:#1a1208;}
-.wx-clock{margin-left:auto;color:rgba(60,45,30,.55);}
+.paper-weather{margin-top:auto;margin-inline:-0.5rem;position:relative;z-index:10;font-family:'Roboto Mono',monospace;color:#2a1f14;user-select:none;}
+.wx-ascii{
+  font-size:11.5px;
+  line-height:1.18;
+  white-space:pre;
+  margin:0;
+  overflow:hidden;
+  color:rgba(60,45,30,.42);
+  font-weight:600;
+  border-radius:8px;
+  padding:7px 5px;
+  border:1px solid transparent;
+  transition:background .6s ease, border-color .6s ease, box-shadow .6s ease;
+  text-shadow:none !important;
+}
+.wx-ascii, .wx-ascii *{text-shadow:none !important;}
+
+/* Day Sky: Solid sky blue background with crisp white clouds & warm yellow sun */
+.paper-weather:not(.is-night) .wx-ascii{
+  background:#0284c7;
+  border:1px solid rgba(2,100,160,.45);
+  color:rgba(255,255,255,.2);
+  box-shadow:0 2px 8px rgba(35,22,12,.12);
+}
+.paper-weather:not(.is-night) .wx-ascii .wxc-sun{color:#facc15;font-weight:800;}
+.paper-weather:not(.is-night) .wx-ascii .wxc-sun-glow{color:#fde047;font-weight:700;}
+.paper-weather:not(.is-night) .wx-ascii .wxc-sky{color:rgba(255,255,255,.24);font-weight:400;}
+.paper-weather:not(.is-night) .wx-ascii .wxc-cloud{color:#ffffff;font-weight:800;}
+.paper-weather:not(.is-night) .wx-ascii .wxc-cloud-dense{color:#f8fafc;font-weight:800;}
+.paper-weather:not(.is-night) .wx-ascii .wxc-fog{color:rgba(241,245,249,.85);font-weight:700;}
+.paper-weather:not(.is-night) .wx-ascii .wxc-rain{color:#e0f2fe;font-weight:700;}
+.paper-weather:not(.is-night) .wx-ascii .wxc-snow{color:#ffffff;font-weight:800;}
+.paper-weather:not(.is-night) .wx-ascii .wxc-storm{color:#e2e8f0;font-weight:700;}
+.paper-weather:not(.is-night) .wx-ascii .wxc-bolt{color:#ffffff;font-weight:900;}
+.paper-weather:not(.is-night) .wx-ascii .wxc-dim{color:rgba(255,255,255,.12);}
+
+/* Night Sky: Solid midnight dark background with crisp non-glowing stars and moon */
+.paper-weather.is-night .wx-ascii{
+  background:#090e1c;
+  border:1px solid rgba(255,255,255,.14);
+  color:rgba(148,163,184,.14);
+  box-shadow:0 2px 8px rgba(35,22,12,.12);
+}
+.paper-weather.is-night .wx-ascii .wxc-moon{color:#fffbeb;font-weight:800;}
+.paper-weather.is-night .wx-ascii .wxc-moon-new{color:rgba(148,163,184,.45);font-weight:600;}
+.paper-weather.is-night .wx-ascii .wxc-night-glow{color:rgba(254,243,199,.35);font-weight:600;}
+.paper-weather.is-night .wx-ascii .wxc-star{color:#ffffff;font-weight:800;}
+.paper-weather.is-night .wx-ascii .wxc-night-sky{color:rgba(148,163,184,.14);font-weight:400;}
+.paper-weather.is-night .wx-ascii .wxc-night-cloud{color:#64748b;font-weight:800;}
+.paper-weather.is-night .wx-ascii .wxc-cloud{color:#94a3b8;font-weight:800;}
+.paper-weather.is-night .wx-ascii .wxc-cloud-dense{color:#cbd5e1;font-weight:800;}
+.paper-weather.is-night .wx-ascii .wxc-dim{color:rgba(148,163,184,.08);}
+.paper-weather.is-night .wx-ascii .wxc-rain{color:#7dd3fc;font-weight:700;}
+.paper-weather.is-night .wx-ascii .wxc-snow{color:#ffffff;font-weight:800;}
+.paper-weather.is-night .wx-ascii .wxc-storm{color:#64748b;font-weight:800;}
+.paper-weather.is-night .wx-ascii .wxc-bolt{color:#ffffff;font-weight:900;}
+.wx-line{display:flex;align-items:baseline;gap:7px;margin-top:6px;padding-top:5px;border-top:.5px solid rgba(60,45,30,.22);font-size:11px;letter-spacing:.04em;color:rgba(60,45,30,.78);}
+.wx-place{font-weight:600;color:rgba(60,45,30,.92);}
+.wx-temp{font-weight:700;font-size:13px;color:#1a1208;}
+.wx-cond{font-weight:500;}
+.wx-clock{margin-left:auto;color:rgba(60,45,30,.62);}
 
 :root{--peek:clamp(48px,6vh,60px);}
 
@@ -295,7 +334,7 @@ canvas#px{display:none !important;}
 .sec-label::after{content:'';flex:1;height:.5px;background:rgba(232,226,217,.12);transition:background .2s;}
 .sec-label:hover::after{background:rgba(232,226,217,.25);}
 .work-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:clamp(0.5rem,1.4vh,1.2rem);flex-shrink:0;}
-.work-tab{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(232,226,217,.55);background:none;border:.5px solid rgba(196,168,130,.28);padding:7px 14px;border-radius:999px;cursor:pointer;font-family:'Roboto Mono',monospace;font-weight:500;transition:all .2s;}
+.work-tab{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.04em;color:rgba(232,226,217,.55);background:none;border:.5px solid rgba(196,168,130,.28);padding:7px 14px;border-radius:999px;cursor:pointer;font-family:'Roboto Mono',monospace;font-weight:500;transition:all .2s;}
 .work-tab .tab-icon{width:13px;height:13px;flex:0 0 13px;}
 .work-tab:hover{color:#e8e2d9;border-color:rgba(196,168,130,.55);}
 .work-tab.active{color:#1a1308;background:#c9a87c;border-color:#c9a87c;}
@@ -373,7 +412,7 @@ a.proj{text-decoration:none;color:inherit;}
 .proj-title{font-family:'Roboto Mono',monospace;font-weight:700;font-size:clamp(20px,2vw,28px);color:#241a0c;margin-bottom:.4rem;}
 .proj-desc{font-size:clamp(14px,1.15vw,16px);color:rgba(50,35,14,.62);line-height:1.55;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:auto;}
 .proj-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:.6rem;min-height:24px;}
-.tag{font-size:clamp(11px,.95vw,13px);letter-spacing:.08em;text-transform:uppercase;color:rgba(96,64,26,.8);border:.5px solid rgba(122,86,40,.35);background:rgba(122,86,40,.07);padding:3px 9px;border-radius:3px;}
+.tag{font-size:clamp(11px,.95vw,13px);letter-spacing:.04em;color:rgba(96,64,26,.8);border:.5px solid rgba(122,86,40,.35);background:rgba(122,86,40,.07);padding:3px 9px;border-radius:3px;}
 .proj-arrow{display:flex;align-items:center;justify-content:center;color:rgba(110,78,38,.6);transition:transform .2s,color .2s;align-self:flex-end;margin-top:.4rem;transform:translate(0,0);}
 .proj-arrow svg{display:block;width:clamp(14px,1.2vw,17px);height:auto;stroke:currentColor;}
 .proj:hover .proj-arrow{color:#6e4518;transform:translate(2px,-2px);}
@@ -395,7 +434,7 @@ a.proj{text-decoration:none;color:inherit;}
 .cc-header{display:flex;align-items:center;gap:10px;}
 .cc-logo{width:20px;height:20px;color:#c4a882;flex-shrink:0;transition:color .2s ease,transform .2s ease;}
 .contact-card:hover .cc-logo{color:#e8dfc9;transform:scale(1.1);}
-.cc-label{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:#c4a882;font-family:'Roboto Mono',monospace;font-weight:700;}
+.cc-label{font-size:12.5px;letter-spacing:.04em;color:#c4a882;font-family:'Roboto Mono',monospace;font-weight:700;}
 .cc-val{font-size:clamp(14.5px,1.35vw,16.5px);color:#e8e2d9;font-weight:500;font-family:'Roboto Mono',monospace;word-break:break-word;}
 .cc-hint{font-size:13px;color:rgba(196,168,130,.65);margin-top:2px;}
 
@@ -410,7 +449,7 @@ a.proj{text-decoration:none;color:inherit;}
 .board-frame{position:absolute;inset:0;margin:0;padding:0;font-family:'Roboto Mono',monospace;font-size:13px;line-height:1.2;
   color:#d8cfc0;pointer-events:none;user-select:none;}
 .board-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;
-  font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#d8cfc0;opacity:.35;text-align:center;}
+  font-size:11px;letter-spacing:.06em;color:#d8cfc0;opacity:.35;text-align:center;}
 .board-empty.hidden{display:none;}
 .board-note{position:absolute;width:56px;height:38px;padding:0;border:none;cursor:pointer;background:#f4ecd8;z-index:2;
   box-shadow:0 2px 4px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.25) inset;}
@@ -419,12 +458,12 @@ a.proj{text-decoration:none;color:inherit;}
   background:#dc2626;box-shadow:0 1px 2px rgba(0,0,0,.35);}
 .board-note:hover{filter:brightness(1.1) drop-shadow(0 0 3px rgba(255,255,255,.5));}
 .board-cork.ready-to-pin{cursor:pointer;}
-.board-public{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(232,226,217,.35);text-align:center;margin:8px 0 0;flex-shrink:0;}
+.board-public{font-size:10px;letter-spacing:.04em;color:rgba(232,226,217,.35);text-align:center;margin:8px 0 0;flex-shrink:0;}
 .board-pad-wrap{display:flex;flex-direction:column;gap:9px;align-items:center;margin-top:1rem;flex-shrink:0;}
 .board-pad{width:min(480px,100%);height:auto;background:#efe6d0;border-radius:3px;cursor:crosshair;touch-action:none;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.2),inset 0 0 18px rgba(120,90,40,.18),0 1px 0 rgba(255,255,255,.2) inset;}
 .board-actions{display:flex;gap:10px;align-items:center;}
-.board-btn{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#e8e2d9;background:none;border:.5px solid rgba(196,168,130,.32);padding:6px 14px;border-radius:999px;cursor:pointer;font-family:'Roboto Mono',monospace;font-weight:500;transition:all .2s;}
+.board-btn{font-size:10px;letter-spacing:.05em;color:#e8e2d9;background:none;border:.5px solid rgba(196,168,130,.32);padding:6px 14px;border-radius:999px;cursor:pointer;font-family:'Roboto Mono',monospace;font-weight:500;transition:all .2s;}
 .board-btn:hover{color:#1a1308;background:#c9a87c;border-color:#c9a87c;}
 .board-hint{font-size:10px;color:rgba(232,226,217,.45);}
 
@@ -562,55 +601,56 @@ a.proj{text-decoration:none;color:inherit;}
     height: auto !important;
     min-height: 100dvh !important;
     overflow: visible !important;
+    padding-top: var(--mobile-header-h, 305px) !important;
   }
   .left {
-    --p: 0;
     width: 100% !important;
     flex: 0 0 auto !important;
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
-    padding: calc(16px - var(--p, 0) * 9px) 18px calc(12px - var(--p, 0) * 5px) !important;
+    padding: 14px 16px 12px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
     justify-content: flex-start !important;
     gap: 0 !important;
     border-right: none !important;
-    border-bottom: 1.5px solid rgba(130, 95, 55, calc(0.32 + var(--p, 0) * 0.10)) !important;
-    position: sticky !important;
+    border-bottom: 1.5px solid rgba(130, 95, 55, 0.34) !important;
+    position: fixed !important;
     top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
     z-index: 500 !important;
     box-sizing: border-box !important;
-    background: rgba(247, 243, 235, 0.96) !important;
+    background: rgba(247, 243, 235, 0.97) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
-    box-shadow: 0 4px 18px rgba(40, 25, 15, calc(var(--p, 0) * 0.12)) !important;
+    box-shadow: 0 2px 10px rgba(40, 25, 15, 0.06) !important;
     touch-action: pan-y !important;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    transition: none !important;
+    transition: padding 0.26s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.26s ease, border-color 0.26s ease !important;
   }
-  /* When scrolled: the whole paper section gets thin smoothly */
+  /* When scrolled: fixed header smoothly compacts without shifting document flow */
   .left.is-compact {
-    position: sticky !important;
+    position: fixed !important;
     top: 0 !important;
-    left: auto !important;
-    right: auto !important;
+    left: 0 !important;
+    right: 0 !important;
     width: 100% !important;
     height: auto !important;
     max-height: none !important;
     flex-direction: column !important;
-    padding: 7px 18px !important;
-    background: rgba(247, 243, 235, 0.96) !important;
+    padding: 7px 16px !important;
+    background: rgba(247, 243, 235, 0.98) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
-    border-bottom: 1.5px solid rgba(130, 95, 55, .42) !important;
-    box-shadow: 0 4px 18px rgba(40, 25, 15, .12) !important;
+    border-bottom: 1.5px solid rgba(130, 95, 55, .44) !important;
+    box-shadow: 0 4px 18px rgba(40, 25, 15, .14) !important;
     touch-action: pan-y !important;
-    transition: none !important;
   }
   .left.is-compact .ink-canvas { display: none !important; }
   #text-canvas { display: none !important; }
@@ -638,15 +678,14 @@ a.proj{text-decoration:none;color:inherit;}
   .mobile-brand .mb-name {
     font-family: 'Roboto Mono', monospace;
     font-weight: 700;
-    font-size: clamp(20px, 5.5vw, 24px);
+    font-size: 22px !important;
     color: #241a0c;
     letter-spacing: -0.02em;
     line-height: 1.15;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: calc(22px - var(--p, 0) * 6px) !important;
-    transition: none !important;
+    transition: font-size 0.26s cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
   .left.is-compact .mobile-brand .mb-name {
     font-size: 16px !important;
@@ -678,15 +717,14 @@ a.proj{text-decoration:none;color:inherit;}
     transform: scale(1.08) !important;
   }
   .sticker-img {
-    width: calc(76px - var(--p, 0) * 40px) !important;
+    width: 72px !important;
     height: auto !important;
     display: block !important;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    will-change: width, transform !important;
-    transition: none !important;
+    transition: width 0.26s cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
   /* In thin compact header, sticker scales smaller */
   .left.is-compact .sticker-img {
@@ -704,60 +742,56 @@ a.proj{text-decoration:none;color:inherit;}
     clip-path: none !important;
   }
 
-
-
   .paper-weather {
     width: 100% !important;
-    max-width: 420px !important;
-    margin: calc(8px - var(--p, 0) * 8px) auto 0 !important;
+    max-width: 480px !important;
+    margin: 8px auto 0 !important;
+    padding-top: 6px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    max-height: calc((1 - var(--p, 0)) * 230px) !important;
-    opacity: calc(1 - var(--p, 0) * 1.35) !important;
-    transform: translateY(calc(var(--p, 0) * -8px)) scaleY(calc(1 - var(--p, 0) * 0.12)) translateZ(0) !important;
+    max-height: 340px !important;
+    opacity: 1 !important;
+    transform: translateY(0) scaleY(1) translateZ(0) !important;
     transform-origin: top center !important;
     overflow: hidden !important;
     contain: paint !important;
-    pointer-events: var(--wx-pe, auto) !important;
+    pointer-events: auto !important;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    will-change: max-height, opacity, transform !important;
-    transition: none !important;
+    transition: max-height 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), margin-top 0.26s ease, padding-top 0.26s ease !important;
   }
   /* When paper section gets thin: the weather animation smoothly collapses and disappears */
   .left.is-compact .paper-weather {
     display: flex !important;
     max-height: 0 !important;
     opacity: 0 !important;
-    transform: translateY(-8px) scaleY(0.85) translateZ(0) !important;
+    transform: translateY(-6px) scaleY(0.92) translateZ(0) !important;
     margin-top: 0 !important;
+    padding-top: 0 !important;
     pointer-events: none !important;
-    transition: none !important;
   }
-  /* live ASCII weather sky: always prioritized and visible across all mobile dimensions */
+  /* live ASCII weather sky: always prioritized, large, and vibrant across all mobile dimensions */
   .paper-weather .wx-ascii {
     display: block !important;
-    font-size: clamp(7.5px, 2.3vw, 10px) !important;
-    line-height: 1.15 !important;
+    line-height: 1.18 !important;
     text-align: center !important;
     width: 100% !important;
-    color: rgba(60, 45, 30, .28) !important;
   }
   .paper-weather .wx-line {
     width: 100% !important;
-    max-width: 400px !important;
+    max-width: 460px !important;
     margin-top: 8px !important;
     padding-top: 6px !important;
-    border-top: .5px solid rgba(60, 45, 30, .22) !important;
+    border-top: .5px solid rgba(60, 45, 30, .25) !important;
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
     font-size: 12px !important;
-    color: rgba(60, 45, 30, .8) !important;
+    color: rgba(60, 45, 30, .88) !important;
   }
   .paper-weather .wx-temp { font-size: 14px !important; font-weight: 700 !important; }
-  .paper-weather .wx-cond { font-size: 12px !important; }
+  .paper-weather .wx-cond { font-size: 12px !important; font-weight: 600 !important; }
   .paper-weather .wx-place { font-size: 12px !important; font-weight: 600 !important; }
   .paper-weather .wx-clock { font-size: 12px !important; }
 
@@ -826,29 +860,40 @@ a.proj{text-decoration:none;color:inherit;}
   .cc-val { font-size: 16.5px !important; }
   .about-p { font-size: 16px !important; line-height: 1.8 !important; }
 
-  /* Bulletin board on mobile */
+  /* Bulletin board on mobile — expanded full-width, taller corkboard & bigger notes */
   #sec-board {
     height: auto !important;
     max-height: none !important;
     overflow: visible !important;
-    padding-bottom: max(7.5rem, calc(6rem + env(safe-area-inset-bottom, 34px))) !important;
+    padding: 2rem 0.7rem max(7.5rem, calc(6rem + env(safe-area-inset-bottom, 34px))) !important;
   }
   .board-scroll {
+    width: 100% !important;
     max-width: 100% !important;
-    overflow-x: auto !important;
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
-    padding-bottom: 8px !important;
-    -webkit-overflow-scrolling: touch !important;
+    overflow: hidden !important;
+    padding: 6px !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(216, 207, 192, 0.22) !important;
   }
-  .board-scroll::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
+  .board-cork {
+    width: 100% !important;
+    height: clamp(340px, 52vh, 430px) !important;
+    transform: none !important;
+    border-radius: 4px !important;
+    box-shadow: inset 0 0 0 1.5px rgba(216, 207, 192, 0.2), inset 0 2px 14px rgba(0, 0, 0, 0.65) !important;
+  }
+  .board-note {
+    width: 72px !important;
+    height: 50px !important;
+  }
+  .board-empty {
+    font-size: 12px !important;
+    padding: 0 18px !important;
+    line-height: 1.5 !important;
   }
   .board-pad-wrap {
     width: 100% !important;
-    max-width: 480px !important;
+    max-width: 100% !important;
     margin: 1.2rem auto 0 !important;
     padding-bottom: 2.5rem !important;
   }
@@ -865,7 +910,8 @@ a.proj{text-decoration:none;color:inherit;}
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
-    aspect-ratio: 480 / 300 !important;
+    min-height: 250px !important;
+    aspect-ratio: 4 / 3 !important;
     touch-action: none !important;
   }
 }
@@ -877,12 +923,17 @@ a.proj{text-decoration:none;color:inherit;}
 /* TV glyph controls: carved out of the art (blank cells under each one) and positioned in
    ch / 1.2em character cells, exactly like the iPod wheel — no pixel-offset controls. */
 .tv-video{position:absolute;left:7ch;top:9.6em;width:14ch;height:8.4em;font-family:'Roboto Mono',monospace;font-size:var(--tvfs);background:#000;object-fit:cover;border-radius:2px;opacity:0;transition:opacity .3s;cursor:pointer;}
-.tv-glyph{position:absolute;font-family:'Roboto Mono',monospace;font-size:var(--tvfs);line-height:1.2;padding:0;margin:0;border:none;background:none;color:#cfc4ae;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;user-select:none;transition:color .12s,transform .08s;}
+.tv-video.is-scrubbing{filter:contrast(1.25) brightness(1.12) saturate(0.85);animation:tvScrubJitter .09s steps(2) infinite;}
+@keyframes tvScrubJitter{0%{transform:translate(0,0) skewX(0deg);}50%{transform:translate(-1.5px,1px) skewX(-1.2deg);}100%{transform:translate(1.5px,-1px) skewX(1.2deg);}}
+.tv-osd{position:absolute;left:7.5ch;top:10.1em;z-index:5;font-family:'Roboto Mono',monospace;font-size:calc(var(--tvfs) * 0.72);font-weight:700;letter-spacing:.05em;color:#4ade80;text-shadow:0 0 6px rgba(74,222,128,.85),1px 1px 0 #000;background:rgba(0,0,0,.68);padding:2px 6px;border-radius:2px;pointer-events:none;user-select:none;opacity:0;transition:opacity .12s ease;}
+.tv-osd.show{opacity:1;}
+.tv-glyph{position:absolute;font-family:'Roboto Mono',monospace;font-size:var(--tvfs);line-height:1.2;padding:4px 0;margin:-4px 0;border:none;background:none;color:#cfc4ae;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;user-select:none;touch-action:manipulation;transition:color .12s,transform .08s;}
 .tv-glyph:hover{color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.9);}
-.tv-glyph:active{transform:scale(.92);color:#c9a87c;}
+.tv-glyph:active,.tv-glyph.is-active{transform:scale(.92);color:#fde047;text-shadow:0 0 10px rgba(250,204,21,.95);}
 .tv-led-indicator{position:absolute;left:6ch;top:20.4em;width:1ch;font-family:'Roboto Mono',monospace;font-size:var(--tvfs);line-height:1.2;color:#5a2e10;pointer-events:none;user-select:none;}
 .tv-led-indicator.on{color:#ffb02e;text-shadow:0 0 8px rgba(255,176,46,.95);}
-.tv-vol-bar{position:absolute;left:16ch;top:20.4em;width:4ch;font-family:'Roboto Mono',monospace;font-size:var(--tvfs);line-height:1.2;color:#c9a87c;pointer-events:none;user-select:none;}
+.tv-vol-bar{position:absolute;left:14ch;top:20.4em;width:6ch;font-family:'Roboto Mono',monospace;font-size:var(--tvfs);line-height:1.2;color:#c9a87c;user-select:none;cursor:pointer;touch-action:manipulation;letter-spacing:.04em;}
+.tv-vol-bar:hover{color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.9);}
 .a-glyph{position:absolute;transform:translate(-50%,-50%);min-width:2.4ch;text-align:center;background:none;border:none;padding:0;line-height:1;font-family:'Roboto Mono',monospace;font-size:12px;color:#e6dcc9;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
 .a-glyph:hover{color:#fff7e9;text-shadow:0 0 8px rgba(232,216,184,.85);}
 .a-glyph:active{color:#c9a87c;}
@@ -1035,6 +1086,19 @@ a.proj{text-decoration:none;color:inherit;}
       <div class="sec-label">talk to me</div>
       <div class="contact-wrap">
         <div class="contact-grid">
+          <a class="contact-card" href="assets/Rayhan-Mohamed-Resume.pdf" target="_blank" rel="noopener" type="application/pdf" aria-label="Open Rayhan Mohamed's resume as a PDF in a new tab">
+            <div class="cc-header">
+              <svg class="cc-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="8" y1="13" x2="16" y2="13"></line>
+                <line x1="8" y1="17" x2="13" y2="17"></line>
+              </svg>
+              <div class="cc-label">Resume</div>
+            </div>
+            <div class="cc-val">PDF</div>
+            <div class="cc-hint">Open</div>
+          </a>
           <a class="contact-card" href="mailto:rayhan@email.com" target="_blank" rel="noopener">
             <div class="cc-header">
               <svg class="cc-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1082,7 +1146,7 @@ a.proj{text-decoration:none;color:inherit;}
       <div class="board-pad-wrap">
         <canvas id="board-pad" class="board-pad" width="480" height="300"></canvas>
         <div class="board-actions">
-          <button id="board-clear" class="board-btn">Clear pad</button>
+          <button id="board-clear" class="board-btn">clear pad</button>
           <span class="board-hint" id="board-hint">draw a doodle below, then tap the board to pin it</span>
         </div>
       </div>
@@ -1401,7 +1465,10 @@ async function loadHackathons(){
   try {
     const r = await fetch('https://raw.githubusercontent.com/ICYBAWSS/portfolio/main/hackathons.json', { cache: 'no-cache' });
     if (!r.ok) throw new Error('hackathons fetch ' + r.status);
-    return await r.json();
+    const list = await r.json();
+    // an empty remote list means the scraper got blocked — keep the section visible
+    if (!Array.isArray(list) || !list.length) throw new Error('hackathons.json is empty');
+    return list;
   } catch(e){
     console.warn('hackathons.json fetch failed — using fallback', e);
     return FALLBACK_HACKATHONS;
@@ -1555,41 +1622,56 @@ const ART = [
 ];
   if (!tracks.length){ container.className='work-rack'; container.innerHTML='<p class="ipod-empty">No tracks yet — add files to <code>MEDIA.music</code>.</p>'; return; }
   if (ipodAudio) ipodAudio.pause();
-  let i = 0;
+  let i = 0, ipodVol = 6, volToastUntil = 0, volToastTimer = null;
+  const IPOD_VOL_CURVE = [0, 0.08, 0.18, 0.30, 0.44, 0.60, 0.76, 0.88, 1.0];
   const audio = ipodAudio = new Audio();
   audio.preload = 'auto';
   audio.src = tracks[0].src;
+  audio.volume = IPOD_VOL_CURVE[ipodVol];
   container.className='work-rack';
   container.innerHTML = `
     <div class="ipod-device">
       <pre class="a-pre" id="ipod-art"></pre>
-      <button class="a-glyph ag-menu" data-a="menu" aria-label="menu" style="left:20ch;top:23.4em">MENU</button>
+      <button class="a-glyph ag-vol" data-a="vol-up" aria-label="volume up" style="left:20ch;top:23.4em">+</button>
       <button class="a-glyph" data-a="prev" aria-label="previous track" style="left:11.5ch;top:27.6em"><<</button>
-      <button class="a-glyph ag-center" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em">O</button>
+      <button class="a-glyph ag-center" id="ipod-center-btn" data-a="toggle" aria-label="play or pause" style="left:20ch;top:27.6em">►</button>
       <button class="a-glyph" data-a="next" aria-label="next track" style="left:28.5ch;top:27.6em">>></button>
-      <button class="a-glyph" data-a="play" aria-label="play or pause" style="left:20ch;top:31.8em">></button>
+      <button class="a-glyph ag-vol" data-a="vol-down" aria-label="volume down" style="left:20ch;top:31.8em">-</button>
       ${tracks.slice(0, 3).map((t,k)=>'<button class="a-rowzone" data-i="' + k + '" aria-label="play ' + t.title + '" style="top:' + ([4,6,8][k] * 1.2 - 0.2) + 'em;height:1.6em"></button>').join('\n      ')}
     </div>`;
   const art = container.querySelector('#ipod-art');
+  const centerBtn = container.querySelector('#ipod-center-btn');
   // ── ASCII spectrum visualizer: the blank LCD row above the status line shows 25
   //    frequency-segmented bars as ▁▂▃▄▅▆▇█ glyphs. Real Web Audio FFT is used when
   //    available; a synchronized rhythmic procedural EQ fallback is used if Web Audio
   //    is suspended, unrouted, or silent, guaranteeing lively visuals whenever audio plays.
   if (ipodVizRaf) cancelAnimationFrame(ipodVizRaf);
   if (ipodVizAC) { try { ipodVizAC.close(); } catch(_) {} ipodVizAC = null; }
-  let analyser = null, fbuf = null, edges = null, weights = null;
+  let analyser = null, ipodGain = null, fbuf = null, edges = null, weights = null;
   let gPeak = 120;
   const sm = new Array(25).fill(0);                            // 25 bars over cols 6..30
   const RAMP = [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+  const applyIpodVol = () => {
+    const g = IPOD_VOL_CURVE[ipodVol];
+    audio.volume = g;
+    audio.muted = (ipodVol === 0);
+    if (ipodGain && ipodVizAC) {
+      try { ipodGain.gain.setValueAtTime(g, ipodVizAC.currentTime); } catch(_) { ipodGain.gain.value = g; }
+    }
+  };
   const ensureGraph = () => {
-    if (ipodVizAC) { kickAC(); return true; }
+    if (ipodVizAC) { kickAC(); applyIpodVol(); return true; }
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return false;
     try {
       ipodVizAC = new AC();
       analyser = ipodVizAC.createAnalyser(); analyser.fftSize = 1024;
+      ipodGain = ipodVizAC.createGain();
+      ipodGain.gain.value = IPOD_VOL_CURVE[ipodVol];
       ipodVizSrc = ipodVizAC.createMediaElementSource(audio);
-      ipodVizSrc.connect(analyser); analyser.connect(ipodVizAC.destination);
+      ipodVizSrc.connect(analyser);
+      analyser.connect(ipodGain);
+      ipodGain.connect(ipodVizAC.destination);
       fbuf = new Uint8Array(analyser.frequencyBinCount);
       kickAC();
       return true;
@@ -1663,14 +1745,21 @@ const ART = [
     const lines = ART.slice();
     TOK.forEach((tok, k) => {
       if (k < tracks.length) {
-        const prefix = i === k ? (audio.paused ? '· ' : '> ') : '  ';
+        const prefix = i === k ? (audio.paused ? '· ' : '► ') : '  ';
         lines[SLOT[k]] = swap(SLOT[k], tok, prefix + tracks[k].title);
       }
     });
-    const st = audio.error ? '[!] can\'t play file' : (audio.paused ? '|| paused' : '> playing');
-    const durStr = (audio.duration && isFinite(audio.duration)) ? fmt(audio.duration) : '--:--';
-    const right = fmt(audio.currentTime) + ' / ' + durStr;
-    lines[12] = swap(12, 'Backlight', st + sp(Math.max(0, slotW(12,'Backlight') - st.length - right.length)) + right);
+    if (performance.now() < volToastUntil) {
+      const filled = '█'.repeat(ipodVol) + '░'.repeat(8 - ipodVol);
+      const pct = Math.round((ipodVol / 8) * 100) + '%';
+      const vStr = 'vol [' + filled + ']';
+      lines[12] = swap(12, 'Backlight', vStr + sp(Math.max(0, slotW(12, 'Backlight') - vStr.length - pct.length)) + pct);
+    } else {
+      const st = audio.error ? '[!] can\'t play file' : (audio.paused ? '|| paused' : '► playing');
+      const durStr = (audio.duration && isFinite(audio.duration)) ? fmt(audio.duration) : '--:--';
+      const right = fmt(audio.currentTime) + ' / ' + durStr;
+      lines[12] = swap(12, 'Backlight', st + sp(Math.max(0, slotW(12,'Backlight') - st.length - right.length)) + right);
+    }
     carve(lines);
     return lines;
   };
@@ -1685,6 +1774,10 @@ const ART = [
     }
   };
   const draw = () => {
+    if (centerBtn) {
+      centerBtn.textContent = audio.paused ? '►' : '||';
+      centerBtn.setAttribute('aria-label', audio.paused ? 'play' : 'pause');
+    }
     const lines = makeLines();
     if (!audio.paused) eqRows(lines);
     art.textContent = lines.join('\n');
@@ -1698,6 +1791,7 @@ const ART = [
     i = (n + tracks.length) % tracks.length;
     ensureGraph();
     kickAC();
+    applyIpodVol();
     sm.fill(0);
     gPeak = 120;
     audio.src = tracks[i].src;
@@ -1722,7 +1816,7 @@ const ART = [
     const a = b.dataset.a;
     ensureGraph();
     kickAC();
-    if (a === 'toggle' || a === 'play') {
+    if (a === 'toggle') {
       if (!audio.src) {
         load(0, true);
       } else if (audio.paused) {
@@ -1731,8 +1825,13 @@ const ART = [
       } else {
         audio.pause();
       }
-    } else if (a === 'menu') {
-      load(0, true);
+    } else if (a === 'vol-up' || a === 'vol-down') {
+      ipodVol = Math.max(0, Math.min(8, ipodVol + (a === 'vol-up' ? 1 : -1)));
+      applyIpodVol();
+      volToastUntil = performance.now() + 1400;
+      if (volToastTimer) clearTimeout(volToastTimer);
+      volToastTimer = setTimeout(draw, 1450);
+      draw();
     } else {
       load(i + (a === 'next' ? 1 : -1), true);
     }
@@ -1766,6 +1865,154 @@ const tapeArt = (n) => {
   const inner = String(n).padStart(2, '0').padEnd(W - 2, ' ');
   return [bar, blank, blank, blank, blank, blank, '|' + inner + '|', bar].join('\n');
 };
+let tvSfxAC = null, tvMediaNode = null, tvMediaGain = null, tvBoundVideo = null;
+function ensureTvAudio(videoEl, gainVal) {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  try {
+    if (!tvSfxAC) tvSfxAC = new AC();
+    if (tvSfxAC.state === 'suspended') tvSfxAC.resume().catch(()=>{});
+    if (videoEl && tvBoundVideo !== videoEl) {
+      tvBoundVideo = videoEl;
+      tvMediaGain = tvSfxAC.createGain();
+      tvMediaGain.gain.value = gainVal;
+      tvMediaNode = tvSfxAC.createMediaElementSource(videoEl);
+      tvMediaNode.connect(tvMediaGain);
+      tvMediaGain.connect(tvSfxAC.destination);
+    } else if (tvMediaGain) {
+      tvMediaGain.gain.setValueAtTime(gainVal, tvSfxAC.currentTime);
+    }
+  } catch(_) {}
+  return tvSfxAC;
+}
+function playTvVolTick(gainVal) {
+  const ac = ensureTvAudio(null, gainVal);
+  if (!ac) return;
+  try {
+    const now = ac.currentTime;
+    const osc = ac.createOscillator();
+    const g = ac.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(520 + gainVal * 440, now);
+    g.gain.setValueAtTime(0.18 * gainVal, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+    osc.connect(g);
+    g.connect(ac.destination);
+    osc.start(now);
+    osc.stop(now + 0.06);
+  } catch(_) {}
+}
+function startTvScrubSfx(dir, gainVal) {
+  const ac = ensureTvAudio(null, gainVal);
+  if (!ac) return () => {};
+  let stopped = false;
+  try {
+    const now = ac.currentTime;
+    const sfxVol = Math.max(0.25, gainVal * 0.75);
+
+    // 1. Mechanical cassette button press click
+    const clickOsc = ac.createOscillator();
+    const clickGain = ac.createGain();
+    clickOsc.type = 'square';
+    clickOsc.frequency.setValueAtTime(190, now);
+    clickOsc.frequency.exponentialRampToValueAtTime(55, now + 0.028);
+    clickGain.gain.setValueAtTime(0.32 * sfxVol, now);
+    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+    clickOsc.connect(clickGain);
+    clickGain.connect(ac.destination);
+    clickOsc.start(now);
+    clickOsc.stop(now + 0.032);
+
+    // 2. Continuous VHS tape transport whir (bandpass-filtered noise)
+    const bufLen = ac.sampleRate;
+    const noiseBuf = ac.createBuffer(1, bufLen, ac.sampleRate);
+    const data = noiseBuf.getChannelData(0);
+    for (let k = 0; k < bufLen; k++) data[k] = Math.random() * 2 - 1;
+    const noise = ac.createBufferSource();
+    noise.buffer = noiseBuf;
+    noise.loop = true;
+    const bp = ac.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.setValueAtTime(dir > 0 ? 780 : 520, now);
+    bp.Q.setValueAtTime(2.4, now);
+    const noiseGain = ac.createGain();
+    noiseGain.gain.setValueAtTime(0.01, now);
+    noiseGain.gain.linearRampToValueAtTime(0.22 * sfxVol, now + 0.03);
+    noise.connect(bp);
+    bp.connect(noiseGain);
+    noiseGain.connect(ac.destination);
+    noise.start(now);
+
+    // 3. Classic VCR high-speed magnetic head audio chirp / warble
+    const carrier = ac.createOscillator();
+    const carrier2 = ac.createOscillator();
+    const lfo = ac.createOscillator();
+    const lfoGain = ac.createGain();
+    const chirpGain = ac.createGain();
+
+    carrier.type = 'sawtooth';
+    carrier2.type = 'triangle';
+    const baseFreq = dir > 0 ? 980 : 680;
+    carrier.frequency.setValueAtTime(baseFreq, now);
+    carrier2.frequency.setValueAtTime(baseFreq * 1.48, now);
+
+    // Rapid tape-head flutter modulation (22 Hz)
+    lfo.type = 'sawtooth';
+    lfo.frequency.setValueAtTime(dir > 0 ? 23 : 19, now);
+    lfoGain.gain.setValueAtTime(dir > 0 ? 460 : -380, now);
+    lfo.connect(lfoGain);
+    lfoGain.connect(carrier.frequency);
+    lfoGain.connect(carrier2.frequency);
+
+    const chirpFilter = ac.createBiquadFilter();
+    chirpFilter.type = 'bandpass';
+    chirpFilter.frequency.setValueAtTime(dir > 0 ? 1350 : 920, now);
+    chirpFilter.Q.setValueAtTime(1.8, now);
+
+    chirpGain.gain.setValueAtTime(0.01, now);
+    chirpGain.gain.linearRampToValueAtTime(0.18 * sfxVol, now + 0.025);
+
+    carrier.connect(chirpFilter);
+    carrier2.connect(chirpFilter);
+    chirpFilter.connect(chirpGain);
+    chirpGain.connect(ac.destination);
+
+    carrier.start(now);
+    carrier2.start(now);
+    lfo.start(now);
+
+    return () => {
+      if (stopped) return;
+      stopped = true;
+      try {
+        const tEnd = ac.currentTime;
+        noiseGain.gain.setValueAtTime(noiseGain.gain.value, tEnd);
+        noiseGain.gain.exponentialRampToValueAtTime(0.0001, tEnd + 0.045);
+        chirpGain.gain.setValueAtTime(chirpGain.gain.value, tEnd);
+        chirpGain.gain.exponentialRampToValueAtTime(0.0001, tEnd + 0.045);
+        noise.stop(tEnd + 0.05);
+        carrier.stop(tEnd + 0.05);
+        carrier2.stop(tEnd + 0.05);
+        lfo.stop(tEnd + 0.05);
+
+        // Mechanical release click
+        const relOsc = ac.createOscillator();
+        const relGain = ac.createGain();
+        relOsc.type = 'triangle';
+        relOsc.frequency.setValueAtTime(140, tEnd);
+        relOsc.frequency.exponentialRampToValueAtTime(45, tEnd + 0.025);
+        relGain.gain.setValueAtTime(0.22 * sfxVol, tEnd);
+        relGain.gain.exponentialRampToValueAtTime(0.001, tEnd + 0.028);
+        relOsc.connect(relGain);
+        relGain.connect(ac.destination);
+        relOsc.start(tEnd);
+        relOsc.stop(tEnd + 0.03);
+      } catch(_) {}
+    };
+  } catch(_) {
+    return () => {};
+  }
+}
 function initTv(container, videos){
   // Screen hole = art rows 8..14, cols 7..20 (video drops in there). Rows 16/17 are carved
   // blank: transport, dial and volume glyphs render into those cells — same trick as the
@@ -1800,33 +2047,66 @@ function initTv(container, videos){
       <div class="tv-side">
         <div class="tv-a">
           <pre class="a-pre" id="tv-art">${ART.join('\n')}</pre>
-          <video id="tv-main" class="tv-video" muted loop playsinline preload="none"></video>
+          <video id="tv-main" class="tv-video" loop playsinline preload="none"></video>
+          <div id="tv-osd" class="tv-osd" aria-hidden="true"></div>
           <button class="tv-glyph" data-a="rw" aria-label="rewind" style="left:6ch;top:19.2em;width:4ch">[<<]</button>
           <button class="tv-glyph" data-a="toggle" aria-label="play or pause" style="left:11ch;top:19.2em;width:3ch">[>]</button>
           <button class="tv-glyph" data-a="ff" aria-label="fast forward" style="left:15ch;top:19.2em;width:4ch">[>>]</button>
           <button class="tv-glyph" data-a="ch" aria-label="next channel" style="left:21ch;top:19.2em;width:1ch">O</button>
           <span class="tv-led-indicator" id="a-led">*</span>
-          <span class="tv-glyph" id="a-ch" style="left:8ch;top:20.4em;width:3ch;pointer-events:none">CH1</span>
-          <button class="tv-glyph" data-a="vd" aria-label="volume down" style="left:13ch;top:20.4em;width:3ch">[-]</button>
-          <span class="tv-vol-bar" id="a-voltxt"></span>
-          <button class="tv-glyph" data-a="vu" aria-label="volume up" style="left:20ch;top:20.4em;width:3ch">[+]</button>
+          <span class="tv-glyph" id="a-ch" style="left:8ch;top:20.4em;width:3ch;pointer-events:none">ch1</span>
+          <button class="tv-glyph tv-vol-bar" id="a-voltxt" aria-label="cycle volume"></button>
         </div>
       </div>
     </div>`;
   const main = container.querySelector('#tv-main');
+  const osd = container.querySelector('#tv-osd');
   tvVideo = main;
   main.addEventListener('play', () => { if (ipodAudio) ipodAudio.pause(); });
   const led = container.querySelector('#a-led'), chTxt = container.querySelector('#a-ch'), volTxt = container.querySelector('#a-voltxt');
   const toggleBtn = container.querySelector('[data-a="toggle"]');
-  let idx = 0;
-  const setVol = v => {
-    main.volume = Math.max(0, Math.min(1, v));
-    volTxt.textContent = '='.repeat(Math.round(main.volume * 4)).padEnd(4, '-');
+  const VOL_BARS  = ['▁___', '▁▃__', '▁▃▅_', '▁▃▅▇'];
+  const VOL_GAINS = [0.15, 0.38, 0.68, 1.00];
+  let idx = 0, vol = 2, osdTimer = null;
+  const showOsd = (txt, dur = 650) => {
+    if (!osd) return;
+    osd.textContent = txt;
+    osd.classList.add('show');
+    if (osdTimer) clearTimeout(osdTimer);
+    if (dur > 0) osdTimer = setTimeout(() => osd.classList.remove('show'), dur);
   };
-  const playVideo = n => { idx = (n + videos.length) % videos.length; const v = videos[idx]; main.src = v.src; main.muted = false; main.loop = true; main.play().catch(()=>{}); chTxt.textContent = 'CH' + (idx+1); };
+  const setVol = (lvl, withFeedback = false) => {
+    vol = ((lvl % 4) + 4) % 4;
+    const g = VOL_GAINS[vol];
+    main.muted = false;
+    main.volume = g;
+    ensureTvAudio(main, g);
+    volTxt.textContent = VOL_BARS[vol];
+    if (withFeedback) {
+      playTvVolTick(g);
+      showOsd('vol ' + VOL_BARS[vol], 700);
+    }
+  };
+  const playVideo = n => {
+    idx = (n + videos.length) % videos.length;
+    const v = videos[idx];
+    const g = VOL_GAINS[vol];
+    ensureTvAudio(main, g);
+    main.src = v.src;
+    main.muted = false;
+    main.volume = g;
+    main.loop = true;
+    main.play().catch(()=>{});
+    chTxt.textContent = 'ch' + (idx+1);
+  };
   const syncPlay = () => { toggleBtn.textContent = main.paused ? '[>]' : '[||]'; toggleBtn.setAttribute('aria-label', main.paused ? 'play' : 'pause'); };
-  const togglePlay = () => { if (!main.getAttribute('src')) playVideo(0); else if (main.paused) main.play().catch(()=>{}); else main.pause(); };
-  setVol(0.8); chTxt.textContent = 'CH1';
+  const togglePlay = () => {
+    ensureTvAudio(main, VOL_GAINS[vol]);
+    if (!main.getAttribute('src')) playVideo(0);
+    else if (main.paused) main.play().catch(()=>{});
+    else main.pause();
+  };
+  setVol(2, false); chTxt.textContent = 'ch1';
   container.querySelectorAll('.vhs').forEach(t=>t.addEventListener('click',()=>playVideo(+t.dataset.i)));
   container.querySelectorAll('.vhs').forEach(tape=>{
     tape.addEventListener('mousemove',e=>{
@@ -1837,18 +2117,61 @@ function initTv(container, videos){
     tape.addEventListener('mouseleave',()=>{ tape.style.transform=''; });
   });
   container.querySelector('[data-a="ch"]').addEventListener('click',()=>playVideo(idx+1));
-  container.querySelector('[data-a="vd"]').addEventListener('click',()=>setVol(main.volume-0.15));
-  container.querySelector('[data-a="vu"]').addEventListener('click',()=>setVol(main.volume+0.15));
+  volTxt.addEventListener('click',()=>setVol(vol + 1, true));
   main.addEventListener('playing',()=>{ main.style.opacity = 1; led.classList.add('on'); syncPlay(); });
   main.addEventListener('pause',()=>{ led.classList.remove('on'); syncPlay(); });
   main.addEventListener('click', togglePlay);
   toggleBtn.addEventListener('click', togglePlay);
-  let scanT = null;
+  let scanT = null, stopScrubSfx = null, minScrubTimer = null, pressStart = 0;
   container.querySelectorAll('[data-a="rw"],[data-a="ff"]').forEach(b=>{
     const dir = b.dataset.a === 'ff' ? 1 : -1;
-    const scan = () => { if(scanT) clearInterval(scanT); scanT = setInterval(()=>{ const d = main.duration || 0; main.currentTime = Math.max(0, Math.min(d, main.currentTime + dir * 4)); }, 150); };
-    const stop = () => { if(scanT){ clearInterval(scanT); scanT = null; } };
-    b.addEventListener('pointerdown', e => { b.setPointerCapture(e.pointerId); scan(); });
+    const label = dir > 0 ? 'ff >>' : '<< rew';
+    const stepVideo = (dt) => {
+      if (!main.getAttribute('src')) playVideo(0);
+      const d = main.duration;
+      if (d && isFinite(d) && d > 0) {
+        main.currentTime = ((main.currentTime + dir * dt) % d + d) % d;
+      } else {
+        main.currentTime = Math.max(0, (main.currentTime || 0) + dir * dt);
+      }
+    };
+    const cleanupScrub = () => {
+      if (scanT) { clearInterval(scanT); scanT = null; }
+      if (stopScrubSfx) { stopScrubSfx(); stopScrubSfx = null; }
+      main.classList.remove('is-scrubbing');
+      b.classList.remove('is-active');
+      if (osd) osd.classList.remove('show');
+    };
+    const scan = () => {
+      if (minScrubTimer) { clearTimeout(minScrubTimer); minScrubTimer = null; }
+      cleanupScrub();
+      pressStart = performance.now();
+      b.classList.add('is-active');
+      main.classList.add('is-scrubbing');
+      main.style.opacity = 1;
+      showOsd(label, 0);
+      stopScrubSfx = startTvScrubSfx(dir, VOL_GAINS[vol]);
+      stepVideo(2.8);
+      scanT = setInterval(() => {
+        stepVideo(1.4);
+      }, 95);
+    };
+    const stop = () => {
+      if (!scanT && !stopScrubSfx) return;
+      const elapsed = performance.now() - pressStart;
+      if (scanT) { clearInterval(scanT); scanT = null; }
+      const remain = Math.max(0, 280 - elapsed);
+      if (remain > 0) {
+        minScrubTimer = setTimeout(cleanupScrub, remain);
+      } else {
+        cleanupScrub();
+      }
+    };
+    b.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      try { b.setPointerCapture(e.pointerId); } catch(_) {}
+      scan();
+    });
     ['pointerup','pointerleave','pointercancel'].forEach(ev => b.addEventListener(ev, stop));
   });
   syncPlay();
@@ -2264,31 +2587,55 @@ stickerScene.addEventListener('touchcancel', () => {
   }
 });
 
-// Mobile sticky scroll-driven shrinking header controller (ultra-lightweight single CSS variable)
+// Mobile fixed header controller with static layout spacer & hysteresis (zero scroll jitter)
 let mobileHeaderTicking = false;
-const MOBILE_COLLAPSE_RANGE = 180; // Natural, gentle scroll distance
+let mobileIsCompact = false;
+let lastMobileSpacerW = 0;
+
+function syncMobileHeaderSpacer(force = false) {
+  if (!leftPanel) return;
+  if (window.innerWidth > 768) {
+    document.documentElement.style.removeProperty('--mobile-header-h');
+    lastMobileSpacerW = 0;
+    return;
+  }
+  if (!force && Math.abs(window.innerWidth - lastMobileSpacerW) < 2 && document.documentElement.style.getPropertyValue('--mobile-header-h')) {
+    return;
+  }
+  lastMobileSpacerW = window.innerWidth;
+  const wasCompact = leftPanel.classList.contains('is-compact');
+  if (wasCompact) {
+    leftPanel.style.setProperty('transition', 'none', 'important');
+    leftPanel.classList.remove('is-compact');
+  }
+  const h = leftPanel.offsetHeight;
+  if (h > 40) {
+    document.documentElement.style.setProperty('--mobile-header-h', h + 'px');
+  }
+  if (wasCompact) {
+    leftPanel.classList.add('is-compact');
+    void leftPanel.offsetHeight;
+    leftPanel.style.removeProperty('transition');
+  }
+}
 
 function updateMobileHeader() {
   if (window.innerWidth > 768) {
     if (leftPanel) {
-      leftPanel.style.removeProperty('--p');
-      leftPanel.style.removeProperty('--wx-pe');
       leftPanel.classList.remove('is-compact');
     }
+    mobileIsCompact = false;
+    document.documentElement.style.removeProperty('--mobile-header-h');
     return;
   }
 
   const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-  const p = Math.min(Math.max(scrollY / MOBILE_COLLAPSE_RANGE, 0), 1);
-
-  // Single CSS variable drives all animations directly via CSS calc() on the GPU
-  leftPanel.style.setProperty('--p', p.toFixed(3));
-  leftPanel.style.setProperty('--wx-pe', p >= 0.85 ? 'none' : 'auto');
-
-  if (p >= 0.95) {
-    if (!leftPanel.classList.contains('is-compact')) leftPanel.classList.add('is-compact');
-  } else {
-    if (leftPanel.classList.contains('is-compact')) leftPanel.classList.remove('is-compact');
+  if (!mobileIsCompact && scrollY > 48) {
+    mobileIsCompact = true;
+    leftPanel.classList.add('is-compact');
+  } else if (mobileIsCompact && scrollY < 14) {
+    mobileIsCompact = false;
+    leftPanel.classList.remove('is-compact');
   }
 }
 
@@ -2303,7 +2650,8 @@ function onScrollThrottled() {
 }
 
 window.addEventListener('scroll', onScrollThrottled, { passive: true });
-window.addEventListener('resize', updateMobileHeader);
+window.addEventListener('resize', () => { syncMobileHeaderSpacer(false); updateMobileHeader(); });
+syncMobileHeaderSpacer(true);
 updateMobileHeader();
 
 const mobileBrand = document.querySelector('.mobile-brand');
@@ -2547,10 +2895,16 @@ if (mobileBrand) {
     });
     fitBoard();
   };
-  // cork is a fixed 546×296 design; scale it down to fit narrow panes so the
-  // frame + notes + pins stay coherent (children are %-positioned → scale with it)
+  // cork is a fixed 546×296 design on desktop; on mobile it expands natively to full width & taller height
   function fitBoard() {
     if (!scrollBox) return;
+    if (window.innerWidth <= 768) {
+      scrollBox.style.width = '';
+      scrollBox.style.height = '';
+      cork.style.transform = '';
+      cork.style.transformOrigin = '';
+      return;
+    }
     scrollBox.style.width = ''; scrollBox.style.height = '';   // measure natural size first
     const avail = scrollBox.clientWidth - 8;                   // available width minus padding
     const s = avail >= 546 ? 1 : Math.max(0.3, avail / 546);
@@ -2632,7 +2986,7 @@ if (mobileBrand) {
     } else if (!fs || !myUid) {
       hint.textContent = 'still connecting — try again in a second';
     } else {
-      hint.textContent = 'tap ON the cork board to pin it';
+      hint.textContent = 'tap on the cork board to pin it';
     }
   };
 
@@ -2820,15 +3174,15 @@ if (mobileBrand) {
   };
   // c = cloud mass, s = sun/moon, r = rain, d = drizzle, n = snow, f = fog, st = storm
   const weights = code => {
-    if (code === 0) return { c: .25, s: 1,    r: 0,   d: 0, n: 0,  f: 0, st: 0 };
-    if (code === 1) return { c: .45, s: .9,   r: 0,   d: 0, n: 0,  f: 0, st: 0 };
-    if (code === 2) return { c: .75, s: .75,  r: 0,   d: 0, n: 0,  f: 0, st: 0 };
-    if (code === 3) return { c: 1.0, s: .15,  r: 0,   d: 0, n: 0,  f: 0, st: 0 };
-    if (code === 45 || code === 48) return { c: .22, s: .15, r: 0, d: 0, n: 0, f: 1, st: 0 };
-    if (code >= 51 && code <= 57) return { c: 1,  s: .12, r: 0,   d: 1, n: 0,  f: 0, st: 0 };
-    if ((code >= 71 && code <= 77) || code === 85 || code === 86) return { c: 1, s: .10, r: 0, d: 0, n: .8, f: 0, st: 0 };
-    if (code >= 95) return { c: 1.15, s: 0, r: 1,   d: 0, n: 0,  f: 0, st: 1 };
-    return { c: 1, s: .10, r: .85, d: 0, n: 0, f: 0, st: 0 };                       // 61-67 rain, 80-82 showers
+    if (code === 0) return { c: .25, s: 1,   r: 0,   d: 0, n: 0,  f: 0, st: 0 };   // clear
+    if (code === 1) return { c: .45, s: .9,  r: 0,   d: 0, n: 0,  f: 0, st: 0 };   // mainly clear
+    if (code === 2) return { c: .75, s: .75, r: 0,   d: 0, n: 0,  f: 0, st: 0 };   // partly cloudy
+    if (code === 3) return { c: 1.25, s: 0,  r: 0,   d: 0, n: 0,  f: 0, st: 0 };   // overcast (NO sunlight)
+    if (code === 45 || code === 48) return { c: .35, s: 0, r: 0, d: 0, n: 0, f: 1, st: 0 }; // fog (NO sunlight)
+    if (code >= 51 && code <= 57) return { c: 1.1, s: 0, r: 0, d: 1, n: 0, f: 0, st: 0 };   // drizzle (NO sunlight)
+    if ((code >= 71 && code <= 77) || code === 85 || code === 86) return { c: 1.1, s: 0, r: 0, d: 0, n: .8, f: 0, st: 0 }; // snow (NO sunlight)
+    if (code >= 95) return { c: 1.25, s: 0, r: 1, d: 0, n: 0, f: 0, st: 1 };       // storm (NO sunlight)
+    return { c: 1.1, s: 0, r: .85, d: 0, n: 0, f: 0, st: 0 };                       // 61-67 rain, 80-82 showers (NO sunlight)
   };
   // Curated isotropic celestial star field: 15 stars evenly distributed across rows 0..7 without lines or clusters
   const STARS = new Set([
@@ -2873,9 +3227,13 @@ if (mobileBrand) {
     const curW = art.clientWidth || host.clientWidth || 300;
     if (curW !== lastW) {                  // 48 cols of mono ≈ 0.6em each
       lastW = curW;
-      art.style.fontSize = Math.max(7, (curW - 4) / W / 0.6).toFixed(2) + 'px';
+      art.style.fontSize = Math.max(8.5, (curW - 2) / W / 0.602).toFixed(2) + 'px';
+      if (typeof syncMobileHeaderSpacer === 'function' && window.innerWidth <= 768) {
+        requestAnimationFrame(() => syncMobileHeaderSpacer(true));
+      }
     }
     const w = weights(code === null ? 0 : code), night = isNight();
+    host.classList.toggle('is-night', night);
     const curMoon = getMoonData();
     const activePhaseKey = forcePhase || curMoon.key;
     const body = night ? (MOON_PHASES[activePhaseKey] || MOON_PHASES.waxing_crescent) : SUN;
@@ -2900,7 +3258,7 @@ if (mobileBrand) {
       const ay = y / (H - 1);
       for (let x = 0; x < W; x++){
         const ax = x / (W - 1);
-        let v = 0.04 + 0.10 * ay + 0.05 * hash(x * 1.9 + y * 3.7), kind = night ? 'night-sky' : 'dim', ch = null;   // baseline: never blank, never a checkerboard
+        let v = 0, kind = night ? 'night-sky' : 'dim', ch = null;
         const ck = cloudAt(ax, ay, t, w);             // cloud masses
 
         // Sun rays radiating onto drifting clouds
@@ -2915,8 +3273,8 @@ if (mobileBrand) {
           sunLight = w.s * (glow * 0.35 + ray * 0.65) * (0.8 + 0.2 * Math.sin(t * 1.2 + ang * 2));
         }
 
-        if (ck > 0){
-          v += ck * 1.6 * (0.85 + 0.3 * hash(x * 1.7 + y * 3.1));     // static grain: only the mass travels
+        if (ck > 0.03){
+          v += 0.18 + ck * 1.5 * (0.85 + 0.3 * hash(x * 1.7 + y * 3.1));     // cloud mass
           if (sunLight > 0){
             v += ck * sunLight * 2.8;                                  // sun rays light up the cloud!
             if (sunLight > 0.08 && ck > 0.04) kind = 'sun';           // golden sunlight highlights on cloud edges
@@ -2929,21 +3287,19 @@ if (mobileBrand) {
             }
           }
         } else if (!night && w.s > 0.1){
-          // Clean open sky: subtle ambient warmth near the sun disk, without spoke ray lines in open sky
+          // Clean open sky: subtle ambient warmth near the sun disk
           const dx0 = (ax - sax) * 1.6, dy0 = (ay - say);
           const dSun0 = Math.hypot(dx0, dy0);
           if (dSun0 < 0.28) {
-            v += (1 - dSun0 / 0.28) * 0.10 * w.s;
+            v += (1 - dSun0 / 0.28) * 0.14 * w.s;
             kind = 'sun-glow';
-          } else {
-            kind = 'sky';
           }
         }
         if (w.f > 0){                                // fog: soft banks + two thin wisps, clear paper between
           const bank = pn((x + t * 5) / 11, ay * 6);                        // drifts right, wide patches
           const wisp = Math.max(0, Math.sin(ay * 9.4 - 1.1) - .72) / .28;   // two thin bands
           const fv = bank * .7 + wisp * .35 + (ay - .4) * .12;              // fog pools low
-          if (fv > .5){ v = .20 + .26 * Math.min(1, (fv - .5) / .45); kind = 'fog'; }   // stays light ink, paler than cloud
+          if (fv > .45){ v = Math.max(v, .22 + .3 * Math.min(1, (fv - .45) / .45)); kind = 'fog'; }
         }
         let inBody = false;
         if (showBody){                                // drawn sun / crescent moon
@@ -2964,8 +3320,7 @@ if (mobileBrand) {
           }
         }
         if (night && y < 8 && STARS.has(y * 48 + x) && ck < 0.08){
-          const starDim = Math.max(0.2, 1 - ck / 0.08);
-          v = (0.85 + 0.15 * Math.sin(t * 2.2 + x * 1.7 + y * 2.9)) * starDim;
+          ch = (x % 3 === 0) ? '*' : '.';
           kind = 'star';
         }
         if (w.d > 0 && y > 7){                       // drizzle: random sparse drips
@@ -2974,14 +3329,20 @@ if (mobileBrand) {
             const dropSpeed = 9 + ((colSeed * 100) % 6);
             const dropPhase = colSeed * 53.7;
             const dropY = ((y - (t * dropSpeed + dropPhase)) % 16 + 16) % 16;
-            if (dropY < 1.0){ v = 0.95; kind = 'rain'; }
+            if (dropY < 1.0){ ch = '.'; kind = 'rain'; }
           }
         }
-        if (w.r > 0 && y > 8 && hash(x * 5.5) > 1 - w.r * .9){       // rain columns, falling
-          if ((((y - (hash(x * 5.5) * H + t * 26)) % H) + H) % H < 3){ v = 1; kind = 'rain'; }
+        if (w.r > 0 && y > 7 && hash(x * 5.5) > 1 - w.r * .85){       // rain columns, falling
+          if ((((y - (hash(x * 5.5) * H + t * 24)) % H) + H) % H < 2){
+            ch = (y % 2 === 0 ? '/' : '|');
+            kind = 'rain';
+          }
         }
-        if (w.n > 0 && y > 7 && hash(x * 7.3) > 1 - w.n * .35){      // snow, falling slower
-          if ((((y - (hash(x * 3.1) * H + t * 5)) % H) + H) % H < 1){ v = .7; kind = 'snow'; }
+        if (w.n > 0 && y > 6 && hash(x * 7.3) > 1 - w.n * .4){      // snow, falling slower
+          if ((((y - (hash(x * 3.1) * H + t * 4)) % H) + H) % H < 1){
+            ch = '*';
+            kind = 'snow';
+          }
         }
         if (boltActive && y > 6){                                    // crisp jagged lightning strike
           const boltX = boltBaseX + Math.round(Math.sin(y * 1.5 + boltSeed * 5) * 3);
@@ -2992,9 +3353,13 @@ if (mobileBrand) {
           }
         }
         if (ch === null){
-          if (inBody) v *= .45;                       // thinner sky inside the sun, still dithered
-          v = clamp(v + BAYER[(y % 4) * 4 + (x % 4)] * .1 + (hash(x * 9.1 + y * 4.7) - .5) * .1);   // dither, de-gridded with noise
-          ch = RAMP[Math.max(0, Math.min(9, Math.round(v * 9)))];
+          if (inBody) v *= .3;
+          if (v > 0.06){
+            v = clamp(v + BAYER[(y % 4) * 4 + (x % 4)] * .08);
+            ch = RAMP[Math.max(1, Math.min(9, Math.round(v * 9)))];
+          } else {
+            ch = ' ';
+          }
         }
         if (kind !== open){ if (open !== null) out += '</span>'; out += '<span class="wxc-' + kind + '">'; open = kind; }
         out += ch;
@@ -3009,6 +3374,7 @@ if (mobileBrand) {
   const paintData = () => {
     tempEl.textContent = temp == null ? '--°F' : Math.round(temp) + '°F';
     condEl.textContent = code == null ? '—' : label(code);
+    host.classList.toggle('is-night', isNight());
   };
   const tickClock = () => {
     try {
@@ -3028,7 +3394,7 @@ if (mobileBrand) {
     if (window.innerWidth <= 768 && (window.scrollY > 150 || (host.closest('.left') && host.closest('.left').classList.contains('is-compact')))) return;
     draw((performance.now() - t0) / 1000);
   }, still ? 900 : 120);
-  window.addEventListener('resize', () => draw(lastT));
+  window.addEventListener('resize', () => { lastW = 0; draw(lastT); });
   const load = () => fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code,is_day&temperature_unit=fahrenheit&timezone=America%2FNew_York&forecast_days=1`)
     .then(r => r.json()).then(j => {
       temp = j.current.temperature_2m;
@@ -3092,9 +3458,9 @@ if (mobileBrand) {
 updateStickerPos(stickerX, stickerY);
 bindTilt();
 setHobby('dev');   // render pinned projects on load (not just after a tab click)
-window.addEventListener('load', () => { updateStickerPos(stickerX, stickerY); renderText(); updateMobileHeader(); });
-window.addEventListener('resize', () => { updateStickerPos(stickerX, stickerY); renderText(); updateMobileHeader(); });
-window.addEventListener('fonts-ready', renderText);
+window.addEventListener('load', () => { updateStickerPos(stickerX, stickerY); renderText(); syncMobileHeaderSpacer(true); updateMobileHeader(); });
+window.addEventListener('resize', () => { updateStickerPos(stickerX, stickerY); renderText(); syncMobileHeaderSpacer(false); updateMobileHeader(); });
+window.addEventListener('fonts-ready', () => { renderText(); syncMobileHeaderSpacer(true); });
 </script>
 <script type="module">document.fonts.ready.then(() => window.dispatchEvent(new Event('fonts-ready')));
 </script>

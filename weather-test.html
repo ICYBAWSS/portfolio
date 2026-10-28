@@ -240,43 +240,66 @@
 
   /* Live ASCII Display */
   .wx-ascii-wrap {
-    background: rgba(247, 243, 235, 0.6);
-    border-radius: 4px;
-    padding: 8px 4px;
+    background: #0284c7;
+    border: 1px solid rgba(2, 100, 160, 0.45);
+    border-radius: 6px;
+    padding: 10px 8px;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    box-shadow: 0 2px 8px rgba(35, 22, 12, 0.12);
+  }
+  .wx-ascii-wrap.is-night {
+    background: #090e1c !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    box-shadow: 0 2px 8px rgba(35, 22, 12, 0.12);
   }
   .wx-ascii {
     font-family: 'Roboto Mono', monospace;
-    font-size: 9.5px;
-    line-height: 1.15;
+    font-size: 11px;
+    line-height: 1.18;
     white-space: pre;
     margin: 0;
     overflow: hidden;
-    color: rgba(60, 45, 30, 0.28);
+    color: rgba(255, 255, 255, 0.22);
+    font-weight: 600;
     user-select: none;
+    text-shadow: none !important;
   }
+  .wx-ascii, .wx-ascii * { text-shadow: none !important; }
 
-  /* Exact Color System from index.html */
-  .wx-ascii .wxc-sun { color: #ea580c; font-weight: 600; }
-  .wx-ascii .wxc-sun-glow { color: #f59e0b; }
-  .wx-ascii .wxc-sky { color: rgba(14, 165, 233, 0.45); }
-  .wx-ascii .wxc-moon { color: #f59e0b; font-weight: 700; text-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
-  .wx-ascii .wxc-moon-new { color: rgba(99, 102, 241, 0.55); font-weight: 600; }
-  .wx-ascii .wxc-star { color: #fde047; font-weight: 700; text-shadow: 0 0 6px rgba(253, 224, 71, 0.45); }
-  .wx-ascii .wxc-night-sky { color: rgba(99, 102, 241, 0.32); }
-  .wx-ascii .wxc-night-cloud { color: #6366f1; }
-  .wx-ascii .wxc-cloud { color: #3b82f6; }
-  .wx-ascii .wxc-cloud-dense { color: #1d4ed8; }
-  .wx-ascii .wxc-fog { color: #64748b; font-weight: 600; }
-  .wx-ascii .wxc-rain { color: #0284c7; font-weight: 600; }
-  .wx-ascii .wxc-snow { color: #06b6d4; font-weight: 700; }
-  .wx-ascii .wxc-storm { color: #7c3aed; }
-  .wx-ascii .wxc-bolt { color: #facc15; font-weight: 700; text-shadow: 0 0 8px rgba(250, 204, 21, 0.65); }
-  .wx-ascii .wxc-night { color: #f59e0b; font-weight: 700; }
-  .wx-ascii .wxc-dim { color: rgba(60, 45, 30, 0.28); }
+  /* Day Palette: Solid sky blue background with white clouds & bright sun, no glow */
+  .wx-ascii .wxc-sun { color: #facc15; font-weight: 800; }
+  .wx-ascii .wxc-sun-glow { color: #fde047; font-weight: 700; }
+  .wx-ascii .wxc-sky { color: rgba(255, 255, 255, 0.24); font-weight: 400; }
+  .wx-ascii .wxc-cloud { color: #ffffff; font-weight: 800; }
+  .wx-ascii .wxc-cloud-dense { color: #f8fafc; font-weight: 800; }
+  .wx-ascii .wxc-fog { color: rgba(241, 245, 249, 0.85); font-weight: 700; }
+  .wx-ascii .wxc-rain { color: #e0f2fe; font-weight: 700; }
+  .wx-ascii .wxc-snow { color: #ffffff; font-weight: 800; }
+  .wx-ascii .wxc-storm { color: #e2e8f0; font-weight: 700; }
+  .wx-ascii .wxc-bolt { color: #ffffff; font-weight: 900; }
+  .wx-ascii .wxc-dim { color: rgba(255, 255, 255, 0.12); }
+
+  /* Night Palette: Solid midnight dark background (#090e1c) with crisp non-glowing elements */
+  .wx-ascii.is-night {
+    color: rgba(148, 163, 184, 0.14);
+  }
+  .wx-ascii.is-night .wxc-moon { color: #fffbeb; font-weight: 800; }
+  .wx-ascii.is-night .wxc-moon-new { color: rgba(148, 163, 184, 0.45); font-weight: 600; }
+  .wx-ascii.is-night .wxc-night-glow { color: rgba(254, 243, 199, 0.35); font-weight: 600; }
+  .wx-ascii.is-night .wxc-star { color: #ffffff; font-weight: 800; }
+  .wx-ascii.is-night .wxc-night-sky { color: rgba(148, 163, 184, 0.14); font-weight: 400; }
+  .wx-ascii.is-night .wxc-night-cloud { color: #64748b; font-weight: 800; }
+  .wx-ascii.is-night .wxc-cloud { color: #94a3b8; font-weight: 800; }
+  .wx-ascii.is-night .wxc-cloud-dense { color: #cbd5e1; font-weight: 800; }
+  .wx-ascii.is-night .wxc-dim { color: rgba(148, 163, 184, 0.08); }
+  .wx-ascii.is-night .wxc-rain { color: #7dd3fc; font-weight: 700; }
+  .wx-ascii.is-night .wxc-snow { color: #ffffff; font-weight: 800; }
+  .wx-ascii.is-night .wxc-storm { color: #64748b; font-weight: 800; }
+  .wx-ascii.is-night .wxc-bolt { color: #ffffff; font-weight: 900; }
 
   /* Swatch Footer */
   .card-footer {
@@ -471,15 +494,15 @@ const cloudAt = (ax, ay, t, w) => {
 
 // c = cloud mass, s = sun/moon, r = rain, d = drizzle, n = snow, f = fog, st = storm
 const weights = code => {
-  if (code === 0) return { c: .25, s: 1,    r: 0,   d: 0, n: 0,  f: 0, st: 0 };
-  if (code === 1) return { c: .45, s: .9,   r: 0,   d: 0, n: 0,  f: 0, st: 0 };
-  if (code === 2) return { c: .75, s: .75,  r: 0,   d: 0, n: 0,  f: 0, st: 0 };
-  if (code === 3) return { c: 1.0, s: .15,  r: 0,   d: 0, n: 0,  f: 0, st: 0 };
-  if (code === 45 || code === 48) return { c: .22, s: .15, r: 0, d: 0, n: 0, f: 1, st: 0 };
-  if (code >= 51 && code <= 57) return { c: 1,  s: .12, r: 0,   d: 1, n: 0,  f: 0, st: 0 };
-  if ((code >= 71 && code <= 77) || code === 85 || code === 86) return { c: 1, s: .10, r: 0, d: 0, n: .8, f: 0, st: 0 };
-  if (code >= 95) return { c: 1.15, s: 0, r: 1,   d: 0, n: 0,  f: 0, st: 1 };
-  return { c: 1, s: .10, r: .85, d: 0, n: 0, f: 0, st: 0 };
+  if (code === 0) return { c: .25, s: 1,   r: 0,   d: 0, n: 0,  f: 0, st: 0 };
+  if (code === 1) return { c: .45, s: .9,  r: 0,   d: 0, n: 0,  f: 0, st: 0 };
+  if (code === 2) return { c: .75, s: .75, r: 0,   d: 0, n: 0,  f: 0, st: 0 };
+  if (code === 3) return { c: 1.25, s: 0,  r: 0,   d: 0, n: 0,  f: 0, st: 0 };   // overcast (NO sunlight)
+  if (code === 45 || code === 48) return { c: .35, s: 0, r: 0, d: 0, n: 0, f: 1, st: 0 }; // fog (NO sunlight)
+  if (code >= 51 && code <= 57) return { c: 1.1, s: 0, r: 0, d: 1, n: 0, f: 0, st: 0 };   // drizzle (NO sunlight)
+  if ((code >= 71 && code <= 77) || code === 85 || code === 86) return { c: 1.1, s: 0, r: 0, d: 0, n: .8, f: 0, st: 0 }; // snow (NO sunlight)
+  if (code >= 95) return { c: 1.25, s: 0, r: 1, d: 0, n: 0, f: 0, st: 1 };       // storm (NO sunlight)
+  return { c: 1.1, s: 0, r: .85, d: 0, n: 0, f: 0, st: 0 };                       // rain (NO sunlight)
 };
 // Curated isotropic celestial star field: 15 stars evenly distributed across rows 0..7 without lines or clusters
 const STARS = new Set([
@@ -495,31 +518,31 @@ const STARS = new Set([
 
 // 8 Dedicated Lunar Phase Showcase Cards
 const MOON_SCENES = [
-  { id: 'moon-new', title: 'New Moon', phaseKey: 'new', code: 0, night: true, category: 'moon night', label: '0% illuminated • Day 0 of 29.5', badge: 'New Moon', swatches: ['rgba(99,102,241,0.55)', '#fde047', 'rgba(99,102,241,0.32)'] },
-  { id: 'moon-waxing-crescent', title: 'Waxing Crescent', phaseKey: 'waxing_crescent', code: 0, night: true, category: 'moon night', label: '12% illuminated • Day 3.5 of 29.5', badge: 'Waxing Crescent', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
-  { id: 'moon-first-quarter', title: 'First Quarter (Half Moon)', phaseKey: 'first_quarter', code: 0, night: true, category: 'moon night', label: '50% illuminated • Day 7.4 of 29.5', badge: 'First Quarter', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
-  { id: 'moon-waxing-gibbous', title: 'Waxing Gibbous', phaseKey: 'waxing_gibbous', code: 0, night: true, category: 'moon night', label: '88% illuminated • Day 11.1 of 29.5', badge: 'Waxing Gibbous', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
-  { id: 'moon-full', title: 'Full Moon', phaseKey: 'full', code: 0, night: true, category: 'moon night', label: '100% illuminated • Day 14.8 of 29.5', badge: 'Full Moon', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
-  { id: 'moon-waning-gibbous', title: 'Waning Gibbous', phaseKey: 'waning_gibbous', code: 0, night: true, category: 'moon night', label: '88% illuminated • Day 18.5 of 29.5', badge: 'Waning Gibbous', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
-  { id: 'moon-last-quarter', title: 'Last Quarter (Third Quarter)', phaseKey: 'last_quarter', code: 0, night: true, category: 'moon night', label: '50% illuminated • Day 22.1 of 29.5', badge: 'Last Quarter', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
-  { id: 'moon-waning-crescent', title: 'Waning Crescent (C-Shape)', phaseKey: 'waning_crescent', code: 0, night: true, category: 'moon night', label: '12% illuminated • Day 25.8 of 29.5', badge: 'Waning Crescent', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] }
+  { id: 'moon-new', title: 'New Moon', phaseKey: 'new', code: 0, night: true, category: 'moon night', label: '0% illuminated • Day 0 of 29.5', badge: 'New Moon', swatches: ['#fffbeb', '#ffffff', '#090e1c'] },
+  { id: 'moon-waxing-crescent', title: 'Waxing Crescent', phaseKey: 'waxing_crescent', code: 0, night: true, category: 'moon night', label: '12% illuminated • Day 3.5 of 29.5', badge: 'Waxing Crescent', swatches: ['#fffbeb', '#ffffff', '#090e1c'] },
+  { id: 'moon-first-quarter', title: 'First Quarter (Half Moon)', phaseKey: 'first_quarter', code: 0, night: true, category: 'moon night', label: '50% illuminated • Day 7.4 of 29.5', badge: 'First Quarter', swatches: ['#fffbeb', '#ffffff', '#090e1c'] },
+  { id: 'moon-waxing-gibbous', title: 'Waxing Gibbous', phaseKey: 'waxing_gibbous', code: 0, night: true, category: 'moon night', label: '88% illuminated • Day 11.1 of 29.5', badge: 'Waxing Gibbous', swatches: ['#fffbeb', '#ffffff', '#090e1c'] },
+  { id: 'moon-full', title: 'Full Moon', phaseKey: 'full', code: 0, night: true, category: 'moon night', label: '100% illuminated • Day 14.8 of 29.5', badge: 'Full Moon', swatches: ['#fffbeb', '#ffffff', '#090e1c'] },
+  { id: 'moon-waning-gibbous', title: 'Waning Gibbous', phaseKey: 'waning_gibbous', code: 0, night: true, category: 'moon night', label: '88% illuminated • Day 18.5 of 29.5', badge: 'Waning Gibbous', swatches: ['#fffbeb', '#ffffff', '#090e1c'] },
+  { id: 'moon-last-quarter', title: 'Last Quarter (Third Quarter)', phaseKey: 'last_quarter', code: 0, night: true, category: 'moon night', label: '50% illuminated • Day 22.1 of 29.5', badge: 'Last Quarter', swatches: ['#fffbeb', '#ffffff', '#090e1c'] },
+  { id: 'moon-waning-crescent', title: 'Waning Crescent (C-Shape)', phaseKey: 'waning_crescent', code: 0, night: true, category: 'moon night', label: '12% illuminated • Day 25.8 of 29.5', badge: 'Waning Crescent', swatches: ['#fffbeb', '#ffffff', '#090e1c'] }
 ];
 
 // 13 Distinct WMO Weather Scenes
 const WEATHER_SCENES = [
-  { id: 'clear-day', title: 'Clear Sky', code: 0, night: false, category: 'day', label: 'clear (day)', swatches: ['#ea580c', '#f59e0b', 'rgba(14,165,233,0.45)'] },
-  { id: 'clear-night', title: 'Clear Night (Live Moon & Stars)', code: 0, night: true, category: 'night', label: 'clear (night)', swatches: ['#f59e0b', '#fde047', 'rgba(99,102,241,0.32)'] },
-  { id: 'mainly-day', title: 'Mainly Clear (Day)', code: 1, night: false, category: 'day', label: 'mainly clear (day)', swatches: ['#ea580c', '#3b82f6', '#f59e0b'] },
-  { id: 'mainly-night', title: 'Mainly Clear (Night)', code: 1, night: true, category: 'night', label: 'mainly clear (night)', swatches: ['#f59e0b', '#6366f1', '#fde047'] },
-  { id: 'partly-day', title: 'Partly Cloudy (Sun Rays on Clouds)', code: 2, night: false, category: 'day', label: 'partly cloudy (day)', swatches: ['#ea580c', '#3b82f6', '#f59e0b'] },
-  { id: 'partly-night', title: 'Partly Cloudy (Moon Behind Clouds)', code: 2, night: true, category: 'night', label: 'partly cloudy (night)', swatches: ['#f59e0b', '#6366f1', '#fde047'] },
-  { id: 'overcast', title: 'Overcast (Heavy Cloud Cover)', code: 3, night: false, category: 'day', label: 'overcast', swatches: ['#3b82f6', '#1d4ed8'] },
-  { id: 'fog', title: 'Fog (Misty Slate Grey Banks)', code: 45, night: false, category: 'day', label: 'foggy', swatches: ['#64748b', '#3b82f6'] },
-  { id: 'drizzle', title: 'Drizzle (Sparse Light Drops)', code: 53, night: false, category: 'precip day', label: 'drizzly', swatches: ['#0284c7', '#3b82f6'] },
-  { id: 'rain', title: 'Rain (Azure Falling Streaks)', code: 61, night: false, category: 'precip day', label: 'rainy', swatches: ['#0284c7', '#1d4ed8'] },
-  { id: 'rain-night', title: 'Rain at Night', code: 61, night: true, category: 'precip night', label: 'rainy (night)', swatches: ['#0284c7', '#6366f1', 'rgba(99,102,241,0.32)'] },
-  { id: 'snow', title: 'Snow (Crisp Glacial Cyan Flakes)', code: 71, night: false, category: 'precip day', label: 'snowy', swatches: ['#06b6d4', '#3b82f6'] },
-  { id: 'storm', title: 'Thunderstorm (Purple Clouds & Lightning)', code: 95, night: false, category: 'precip day', label: 'stormy', swatches: ['#7c3aed', '#facc15', '#0284c7'] }
+  { id: 'clear-day', title: 'Clear Sky', code: 0, night: false, category: 'day', label: 'clear (day)', swatches: ['#facc15', '#fde047', '#0284c7'] },
+  { id: 'clear-night', title: 'Clear Night (Live Moon & Stars)', code: 0, night: true, category: 'night', label: 'clear (night)', swatches: ['#fffbeb', '#ffffff', '#090e1c'] },
+  { id: 'mainly-day', title: 'Mainly Clear (Day)', code: 1, night: false, category: 'day', label: 'mainly clear (day)', swatches: ['#facc15', '#ffffff', '#0284c7'] },
+  { id: 'mainly-night', title: 'Mainly Clear (Night)', code: 1, night: true, category: 'night', label: 'mainly clear (night)', swatches: ['#fffbeb', '#64748b', '#090e1c'] },
+  { id: 'partly-day', title: 'Partly Cloudy (Sun Rays on Clouds)', code: 2, night: false, category: 'day', label: 'partly cloudy (day)', swatches: ['#facc15', '#ffffff', '#0284c7'] },
+  { id: 'partly-night', title: 'Partly Cloudy (Moon Behind Clouds)', code: 2, night: true, category: 'night', label: 'partly cloudy (night)', swatches: ['#fffbeb', '#64748b', '#090e1c'] },
+  { id: 'overcast', title: 'Overcast (Heavy Cloud Cover)', code: 3, night: false, category: 'day', label: 'overcast', swatches: ['#ffffff', '#f8fafc', '#0284c7'] },
+  { id: 'fog', title: 'Fog (Misty Slate Grey Banks)', code: 45, night: false, category: 'day', label: 'foggy', swatches: ['rgba(241,245,249,0.85)', '#ffffff', '#0284c7'] },
+  { id: 'drizzle', title: 'Drizzle (Sparse Light Drops)', code: 53, night: false, category: 'precip day', label: 'drizzly', swatches: ['#e0f2fe', '#ffffff', '#0284c7'] },
+  { id: 'rain', title: 'Rain (Azure Falling Streaks)', code: 61, night: false, category: 'precip day', label: 'rainy', swatches: ['#e0f2fe', '#ffffff', '#0284c7'] },
+  { id: 'rain-night', title: 'Rain at Night', code: 61, night: true, category: 'precip night', label: 'rainy (night)', swatches: ['#7dd3fc', '#64748b', '#090e1c'] },
+  { id: 'snow', title: 'Snow (Crisp Glacial Cyan Flakes)', code: 71, night: false, category: 'precip day', label: 'snowy', swatches: ['#ffffff', '#e0f2fe', '#0284c7'] },
+  { id: 'storm', title: 'Thunderstorm (Purple Clouds & Lightning)', code: 95, night: false, category: 'precip day', label: 'stormy', swatches: ['#ffffff', '#facc15', '#0284c7'] }
 ];
 
 const ALL_CARDS = [...MOON_SCENES, ...WEATHER_SCENES];
@@ -550,7 +573,7 @@ function renderFrame(el, code, night, t, specificPhase) {
     const ay = y / (H - 1);
     for (let x = 0; x < W; x++){
       const ax = x / (W - 1);
-      let v = 0.04 + 0.10 * ay + 0.05 * hash(x * 1.9 + y * 3.7), kind = night ? 'night-sky' : 'dim', ch = null;
+      let v = 0, kind = night ? 'night-sky' : 'dim', ch = null;
       const ck = cloudAt(ax, ay, t, w);
 
       // Sun rays radiating onto drifting clouds
@@ -565,8 +588,8 @@ function renderFrame(el, code, night, t, specificPhase) {
         sunLight = w.s * (glow * 0.35 + ray * 0.65) * (0.8 + 0.2 * Math.sin(t * 1.2 + ang * 2));
       }
 
-      if (ck > 0){
-        v += ck * 1.6 * (0.85 + 0.3 * hash(x * 1.7 + y * 3.1));
+      if (ck > 0.03){
+        v += 0.18 + ck * 1.5 * (0.85 + 0.3 * hash(x * 1.7 + y * 3.1));
         if (sunLight > 0){
           v += ck * sunLight * 2.8;
           if (sunLight > 0.08 && ck > 0.04) kind = 'sun';
@@ -582,17 +605,15 @@ function renderFrame(el, code, night, t, specificPhase) {
         const dx0 = (ax - sax) * 1.6, dy0 = (ay - say);
         const dSun0 = Math.hypot(dx0, dy0);
         if (dSun0 < 0.28) {
-          v += (1 - dSun0 / 0.28) * 0.10 * w.s;
+          v += (1 - dSun0 / 0.28) * 0.14 * w.s;
           kind = 'sun-glow';
-        } else {
-          kind = 'sky';
         }
       }
       if (w.f > 0){
         const bank = pn((x + t * 5) / 11, ay * 6);
         const wisp = Math.max(0, Math.sin(ay * 9.4 - 1.1) - .72) / .28;
         const fv = bank * .7 + wisp * .35 + (ay - .4) * .12;
-        if (fv > .5){ v = .20 + .26 * Math.min(1, (fv - .5) / .45); kind = 'fog'; }
+        if (fv > .45){ v = Math.max(v, .22 + .3 * Math.min(1, (fv - .45) / .45)); kind = 'fog'; }
       }
       let inBody = false;
       if (showBody){
@@ -613,8 +634,7 @@ function renderFrame(el, code, night, t, specificPhase) {
         }
       }
       if (night && y < 8 && STARS.has(y * 48 + x) && ck < 0.08){
-        const starDim = Math.max(0.2, 1 - ck / 0.08);
-        v = (0.85 + 0.15 * Math.sin(t * 2.2 + x * 1.7 + y * 2.9)) * starDim;
+        ch = (x % 3 === 0) ? '*' : '.';
         kind = 'star';
       }
       if (w.d > 0 && y > 7){
@@ -623,14 +643,20 @@ function renderFrame(el, code, night, t, specificPhase) {
           const dropSpeed = 9 + ((colSeed * 100) % 6);
           const dropPhase = colSeed * 53.7;
           const dropY = ((y - (t * dropSpeed + dropPhase)) % 16 + 16) % 16;
-          if (dropY < 1.0){ v = 0.95; kind = 'rain'; }
+          if (dropY < 1.0){ ch = '.'; kind = 'rain'; }
         }
       }
-      if (w.r > 0 && y > 8 && hash(x * 5.5) > 1 - w.r * .9){
-        if ((((y - (hash(x * 5.5) * H + t * 26)) % H) + H) % H < 3){ v = 1; kind = 'rain'; }
+      if (w.r > 0 && y > 7 && hash(x * 5.5) > 1 - w.r * .85){
+        if ((((y - (hash(x * 5.5) * H + t * 24)) % H) + H) % H < 2){
+          ch = (y % 2 === 0 ? '/' : '|');
+          kind = 'rain';
+        }
       }
-      if (w.n > 0 && y > 7 && hash(x * 7.3) > 1 - w.n * .35){
-        if ((((y - (hash(x * 3.1) * H + t * 5)) % H) + H) % H < 1){ v = .7; kind = 'snow'; }
+      if (w.n > 0 && y > 6 && hash(x * 7.3) > 1 - w.n * .4){
+        if ((((y - (hash(x * 3.1) * H + t * 4)) % H) + H) % H < 1){
+          ch = '*';
+          kind = 'snow';
+        }
       }
       if (boltActive && y > 6){
         const boltX = boltBaseX + Math.round(Math.sin(y * 1.5 + boltSeed * 5) * 3);
@@ -641,9 +667,13 @@ function renderFrame(el, code, night, t, specificPhase) {
         }
       }
       if (ch === null){
-        if (inBody) v *= .45;
-        v = clamp(v + BAYER[(y % 4) * 4 + (x % 4)] * .1 + (hash(x * 9.1 + y * 4.7) - .5) * .1);
-        ch = RAMP[Math.max(0, Math.min(9, Math.round(v * 9)))];
+        if (inBody) v *= .3;
+        if (v > 0.06){
+          v = clamp(v + BAYER[(y % 4) * 4 + (x % 4)] * .08);
+          ch = RAMP[Math.max(1, Math.min(9, Math.round(v * 9)))];
+        } else {
+          ch = ' ';
+        }
       }
       if (kind !== open){ if (open !== null) out += '</span>'; out += '<span class="wxc-' + kind + '">'; open = kind; }
       out += ch;
@@ -666,8 +696,9 @@ if (bannerTitle && bannerDesc) {
 // Build cards in DOM
 const grid = document.getElementById('grid');
 ALL_CARDS.forEach(s => {
+  const isNight = !!s.night;
   const card = document.createElement('div');
-  card.className = 'weather-card';
+  card.className = 'weather-card' + (isNight ? ' is-night' : '');
   card.dataset.category = s.category;
   if (s.phaseKey && s.phaseKey === liveMoon.key) {
     card.classList.add('is-current-phase');
@@ -678,7 +709,7 @@ ALL_CARDS.forEach(s => {
     ? "<span class='badge " + (s.phaseKey === liveMoon.key ? 'badge-current' : 'badge-moon') + "'>" + (s.phaseKey === liveMoon.key ? 'Current Moon' : s.badge) + "</span><span class='badge badge-night'>Night</span>"
     : "<span class='badge " + (s.night ? 'badge-night' : 'badge-day') + "'>" + (s.night ? 'Night' : 'Day') + "</span><span class='badge badge-code'>WMO " + s.code + "</span>";
 
-  card.innerHTML = '<div class="card-top"><div><div class="card-title">' + s.title + '</div></div><div class="card-badges">' + badgeHtml + '</div></div><div class="wx-ascii-wrap"><pre class="wx-ascii" id="art-' + s.id + '"></pre></div><div class="card-footer"><span>' + s.label + '</span><div class="swatches"><span>Palette:</span>' + swatchesHtml + '</div></div>';
+  card.innerHTML = '<div class="card-top"><div><div class="card-title">' + s.title + '</div></div><div class="card-badges">' + badgeHtml + '</div></div><div class="wx-ascii-wrap' + (isNight ? ' is-night' : '') + '"><pre class="wx-ascii' + (isNight ? ' is-night' : '') + '" id="art-' + s.id + '"></pre></div><div class="card-footer"><span>' + s.label + '</span><div class="swatches"><span>Palette:</span>' + swatchesHtml + '</div></div>';
   grid.appendChild(card);
 });
 
