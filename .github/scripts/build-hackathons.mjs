@@ -36,7 +36,16 @@ async function galleryImage(url) {
   } catch { return null; }
 }
 
-const html = await (await fetch(`https://devpost.com/${user}`, { headers })).text();
+const res = await fetch(`https://devpost.com/${user}`, { headers });
+if (!res.ok) {
+  console.error(`Devpost returned HTTP ${res.status} for ${user} — refusing to overwrite ${outPath}`);
+  process.exit(1);
+}
+const html = await res.text();
+if (/Just a moment|challenge-platform|cf-chl/i.test(html)) {
+  console.error(`Devpost served a bot challenge for ${user} — refusing to overwrite ${outPath}`);
+  process.exit(1);
+}
 const cards = html.split(/class="[^"]*gallery-item[^"]*"/).slice(1);
 const out = [];
 for (const c of cards) {
@@ -48,6 +57,10 @@ for (const c of cards) {
   const image = await vendorImage(name, (await galleryImage(url)) || thumb);
   out.push({ name, description: tag, url, language: null, tags: [], image });
   console.log(`- ${name}: image=${image ?? 'none'} ${url}`);
+}
+if (out.length === 0) {
+  console.error(`No winning gallery cards found for ${user} — refusing to overwrite ${outPath}`);
+  process.exit(1);
 }
 mkdirSync(dirname(outPath), { recursive: true });
 writeFileSync(outPath, JSON.stringify(out, null, 2) + '\n');
