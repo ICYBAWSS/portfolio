@@ -9,7 +9,7 @@
       "Python",
       "JavaScript"
     ],
-    "stars": 0,
+    "stars": 1,
     "image": "assets/projects/wikipedia_graph.png"
   },
   {
@@ -20,7 +20,20 @@
     "tags": [
       "Swift"
     ],
-    "stars": 0,
+    "stars": 1,
     "image": "assets/projects/FlipFocus.png"
+  },
+  {
+    "name": "pokertui",
+    "description": "Poker with your freinds completely in your terminal with no server managing. ",
+    "url": "https://github.com/ICYBAWSS/pokertui",
+    "language": "Rust",
+    "tags": [
+      "Rust",
+      "Python",
+      "Shell"
+    ],
+    "stars": 2,
+    "image": null
   }
 ]
